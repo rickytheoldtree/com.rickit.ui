@@ -10,8 +10,5 @@
   "repository": {
     "url": "https://github.com/rickytheoldtree/com.rickit.rui.git",
     "type": "git"
-  },
-  "dependencies": {
-    "com.cysharp.unitask": "2.5.0"
   }
 }
