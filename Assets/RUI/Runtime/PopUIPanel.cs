@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading;
-using Cysharp.Threading.Tasks;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -32,21 +32,21 @@ namespace RicKit.UI
             OnBackClick();
         }
 
-        protected override async UniTask OnAnimationIn(CancellationToken cancellationToken)
+        protected override async Task OnAnimationIn(CancellationToken cancellationToken)
         {
             panel.localScale = 0.1f * Vector3.one;
             cgBlocker.alpha = 0;
             CanvasGroup.alpha = 0;
-            await UniTask.WhenAll(
+            await Task.WhenAll(
                 CanvasGroup.Fade(1, Duration, cancellationToken),
                 panel.Scale(Vector3.one, Duration, cancellationToken),
                 cgBlocker.Fade(1, Duration, cancellationToken));
             OnAnimationInEnd();
         }
 
-        protected override async UniTask OnAnimationOut(CancellationToken cancellationToken)
+        protected override async Task OnAnimationOut(CancellationToken cancellationToken)
         {
-            await UniTask.WhenAll(
+            await Task.WhenAll(
                 panel.Scale(0.1f * Vector3.one, Duration, cancellationToken),
                 cgBlocker.Fade(0, Duration, cancellationToken));
             OnAnimationOutEnd();

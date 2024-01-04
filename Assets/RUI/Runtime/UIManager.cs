@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cysharp.Threading.Tasks;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -114,41 +114,41 @@ namespace RicKit.UI
 
         public void ShowUI<T>(Action<T> onInit = null) where T : AbstractUIPanel
         {
-            ShowUIAsync(onInit).Forget();
+            _ = ShowUIAsync(onInit);
         }
 
         public void HideThenShowUI<T>(Action<T> onInit = null) where T : AbstractUIPanel
         {
-            HideThenShowUIAsync(onInit).Forget();
+            _ = HideThenShowUIAsync(onInit);
         }
 
         public void CloseThenShowUI<T>(Action<T> onInit = null) where T : AbstractUIPanel
         {
-            CloseThenShowUIAsync(onInit).Forget();
+            _ = CloseThenShowUIAsync(onInit);
         }
 
         public void ShowUIUnmanagable<T>(Action<T> onInit = null) where T : AbstractUIPanel
         {
-            ShowUIUnmanagableAsync(onInit).Forget();
+            _ = ShowUIUnmanagableAsync(onInit);
         }
         public void Back()
         {
-            BackAsync().Forget();
+            _ = BackAsync();
         }
 
         public void CloseCurrent()
         {
-            CloseCurrentAsync().Forget();
+            _ = CloseCurrentAsync();
         }
 
         public void HideUntil<T>() where T : AbstractUIPanel
         {
-            HideUntilAsync<T>().Forget();
+            _ = HideUntilAsync<T>();
         }
 
         public void BackThenShow<T>(Action<T> onInit = null) where T : AbstractUIPanel
         {
-            BackThenShowAsync(onInit).Forget();
+            _ = BackThenShowAsync(onInit);
         }
 
         #endregion
@@ -156,7 +156,7 @@ namespace RicKit.UI
 
         #region 异步
 
-        public async UniTask ShowUIAsync<T>(Action<T> onInit = null) where T : AbstractUIPanel
+        public async Task ShowUIAsync<T>(Action<T> onInit = null) where T : AbstractUIPanel
         {
             var sortOrder = showFormStack.Count == 0 ? 1 : showFormStack.Peek().SortOrder + 5;
             var form = GetUI<T>();
@@ -174,19 +174,19 @@ namespace RicKit.UI
         }
 
 
-        public async UniTask HideThenShowUIAsync<T>(Action<T> onInit = null) where T : AbstractUIPanel
+        public async Task HideThenShowUIAsync<T>(Action<T> onInit = null) where T : AbstractUIPanel
         {
             await HideCurrentAsync();
             await ShowUIAsync(onInit);
         }
 
-        public async UniTask CloseThenShowUIAsync<T>(Action<T> onInit = null) where T : AbstractUIPanel
+        public async Task CloseThenShowUIAsync<T>(Action<T> onInit = null) where T : AbstractUIPanel
         {
             await CloseCurrentAsync();
             await ShowUIAsync(onInit);
         }
 
-        public async UniTask ShowUIUnmanagableAsync<T>(Action<T> onInit = null) where T : AbstractUIPanel
+        public async Task ShowUIUnmanagableAsync<T>(Action<T> onInit = null) where T : AbstractUIPanel
         {
             const int sortOrder = 900;
             var form = GetUI<T>();
@@ -199,7 +199,7 @@ namespace RicKit.UI
             form.BeforeShow();
             await form.OnShowAsync();
         }
-        public async UniTask BackAsync()
+        public async Task BackAsync()
         {
             await CloseCurrentAsync();
             if (showFormStack.Count == 0) return;
@@ -212,7 +212,7 @@ namespace RicKit.UI
         }
 
 
-        public async UniTask CloseCurrentAsync()
+        public async Task CloseCurrentAsync()
         {
             if (showFormStack.Count == 0) return;
             var form = showFormStack.Pop();
@@ -221,14 +221,14 @@ namespace RicKit.UI
         }
 
 
-        private async UniTask HideCurrentAsync()
+        private async Task HideCurrentAsync()
         {
             if (showFormStack.Count == 0) return;
             var form = showFormStack.Peek();
             await form.OnHideAsync();
         }
 
-        private async UniTask HideUntilAsync<T>() where T : AbstractUIPanel
+        private async Task HideUntilAsync<T>() where T : AbstractUIPanel
         {
             while (showFormStack.Count > 0)
             {
@@ -241,11 +241,11 @@ namespace RicKit.UI
                     return;
                 }
 
-                CloseCurrentAsync().Forget();
+                _ = CloseCurrentAsync();
             }
         }
 
-        public async UniTask BackThenShowAsync<T>(Action<T> onInit) where T : AbstractUIPanel
+        public async Task BackThenShowAsync<T>(Action<T> onInit) where T : AbstractUIPanel
         {
             await BackAsync();
             await ShowUIAsync(onInit);
