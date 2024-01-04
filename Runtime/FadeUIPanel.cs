@@ -1,5 +1,5 @@
 using System.Threading;
-using Cysharp.Threading.Tasks;
+using System.Threading.Tasks;
 
 namespace RicKit.UI
 {
@@ -7,14 +7,14 @@ namespace RicKit.UI
     {
         protected const float FadeTime = 0.2f;
 
-        protected override async UniTask OnAnimationIn(CancellationToken cancellationToken)
+        protected override async Task OnAnimationIn(CancellationToken cancellationToken)
         {
             CanvasGroup.alpha = 0;
             await CanvasGroup.Fade(1, FadeTime, cancellationToken);
             OnAnimationInEnd();
         }
         
-        protected override async UniTask OnAnimationOut(CancellationToken cancellationToken)
+        protected override async Task OnAnimationOut(CancellationToken cancellationToken)
         {
             await CanvasGroup.Fade(0, FadeTime, cancellationToken);
             OnAnimationOutEnd();

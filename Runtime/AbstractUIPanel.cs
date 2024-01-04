@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,7 +27,7 @@ namespace RicKit.UI
             CanvasGroup = GetComponent<CanvasGroup>();
             CanvasRect = Canvas.GetComponent<RectTransform>();
         }
-        public async UniTask OnShowAsync()
+        public async Task OnShowAsync()
         {
             UIManager.LockInput(true);
             gameObject.SetActive(true);
@@ -37,7 +36,7 @@ namespace RicKit.UI
             await OnAnimationIn(this.GetCancellationTokenOnDestroy());
             UIManager.LockInput(false);
         }
-        public async UniTask OnHideAsync()
+        public async Task OnHideAsync()
         {
             UIManager.LockInput(true);
             CanvasGroup.blocksRaycasts = true;
@@ -56,9 +55,9 @@ namespace RicKit.UI
         }
 
         public abstract void OnESCClick();
-        protected abstract UniTask OnAnimationIn(CancellationToken cancellationToken);
+        protected abstract Task OnAnimationIn(CancellationToken cancellationToken);
 
-        protected abstract UniTask OnAnimationOut(CancellationToken cancellationToken);
+        protected abstract Task OnAnimationOut(CancellationToken cancellationToken);
 
         protected virtual void OnAnimationInEnd()
         {

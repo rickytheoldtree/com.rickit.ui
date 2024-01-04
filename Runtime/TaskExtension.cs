@@ -1,12 +1,12 @@
 ﻿using System.Threading;
-using Cysharp.Threading.Tasks;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace RicKit.UI
 {
-    public static class UniTaskAnimationExtension
+    public static class TaskExtension
     {
-        public static async UniTask Fade(this CanvasGroup target, float targetAlpha, float duration, CancellationToken cancellationToken)
+        public static async Task Fade(this CanvasGroup target, float targetAlpha, float duration, CancellationToken cancellationToken)
         {
             var startAlpha = target.alpha;
             float time = 0;
@@ -21,12 +21,12 @@ namespace RicKit.UI
                 target.alpha = Mathf.Lerp(startAlpha, targetAlpha, blend);
 
                 // 等待下一帧
-                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+                await Task.Yield();
             }
 
             target.alpha = targetAlpha;
         }
-        public static async UniTask Scale(this Transform target, Vector3 endValue, float duration, CancellationToken cancellationToken)
+        public static async Task Scale(this Transform target, Vector3 endValue, float duration, CancellationToken cancellationToken)
         {
             var startValue = target.localScale;
             float time = 0;
@@ -41,10 +41,24 @@ namespace RicKit.UI
                 target.localScale = Vector3.Lerp(startValue, endValue, blend);
 
                 // 等待下一帧
-                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+                await Task.Yield();
             }
 
             target.localScale = endValue;
+        }
+        public static CancellationToken GetCancellationTokenOnDestroy(this MonoBehaviour target)
+        {
+            var tokenSource = new CancellationTokenSource();
+            if (target.TryGetComponent<OnDestroyInvoke>(out var invoke))
+            {
+                invoke.OnDestroyEvent += () => tokenSource.Cancel();
+            }
+            else
+            {
+                invoke = target.gameObject.AddComponent<OnDestroyInvoke>();
+                invoke.OnDestroyEvent += () => tokenSource.Cancel();
+            }
+            return tokenSource.Token;
         }
     }
 }
