@@ -10,11 +10,11 @@
 UIManager为懒加载，会在第一次调用时创建，包括UICam，Blocker等重要组成部分
 
 所有自定义的面包需要继承AbstractUIPanel，继承了AbstractUIPanel的Panel预制体可以在Rickit => UI => 界面编辑器 中创建/打开 然后编辑
-## Unitask安装方式
+## UniTask安装方式
 1. 可以通过UPM(Package Manager) 使用url导入UniTask https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask,
 2. 或直接在 https://github.com/Cysharp/UniTask/releases 下载.unitypackage.
 3. 或直接在该项目根目录下载.unitypackage.
 ## RUI安装方式
 1. 确保UniTask已经导入
-2. 可以通过 UPM url导入 https://github.com/rickytheoldtree/com.rickit.rui.git#RUI
+2. 可以通过 UPM url导入 https://github.com/rickytheoldtree/com.rickit.rui.git#rui
 3. 或从Release处直接下载 .unitypackage
