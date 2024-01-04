@@ -4,7 +4,7 @@
   "author": {
     "name": "LYQ"
   },
-  "version": "0.0.2",
+  "version": "0.0.1",
   "unity": "2018.4",
   "description": "An Async UI Manager for Unity, support custom panel loading",
   "repository": {
@@ -12,6 +12,6 @@
     "type": "git"
   },
   "dependencies": {
-    "com.cysharp.unitask": "latest"
+    "com.cysharp.unitask": "2.5.0"
   }
 }
