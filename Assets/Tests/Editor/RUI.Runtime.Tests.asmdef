@@ -1,0 +1,16 @@
+{
+    "name": "RUI.Runtime.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:e6dff8b487708dd4ba70463e1ecc7971"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
