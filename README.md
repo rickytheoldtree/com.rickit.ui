@@ -13,6 +13,5 @@ UIManager为懒加载，会在第一次调用时创建，包括UICam，Blocker�
 
 所有实现的ui需要继承AbstractUIPanel，继承了AbstractUIPanel的窗口预制体可以在RicKit => UI => 界面编辑器 中创建/打开 然后编辑
 ## RUI安装方式
-1. 确保UniTask已经导入
-2. 可以通过 UPM url导入 https://github.com/rickytheoldtree/com.rickit.rui.git#rui
-3. 或从Release处直接下载 .unitypackage
+1. 可以通过 UPM url导入 https://github.com/rickytheoldtree/com.rickit.rui.git#rui
+2. 或从Release处直接下载 .unitypackage
