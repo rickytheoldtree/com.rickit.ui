@@ -9,9 +9,7 @@
 
 UIManager为懒加载，会在第一次调用时创建，包括UICam，Blocker等重要组成部分
 
-UIPanel缓存为dictionary，显示顺序用stack实现
-
-所有自定义的面包需要继承AbstractUIPanel，继承了AbstractUIPanel的面板可以在Rickit => UI => 界面编辑器 中创建/打开
+所有自定义的面包需要继承AbstractUIPanel，继承了AbstractUIPanel的Panel预制体可以在Rickit => UI => 界面编辑器 中创建/打开 然后编辑
 ## 安装方式
 1.导入前通过UPM(Package Manager) 使用url导入UniTask https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask, 或直接在 https://github.com/Cysharp/UniTask/releases 下载.unitypackage. 
 
