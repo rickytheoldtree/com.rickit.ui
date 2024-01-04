@@ -3,6 +3,8 @@
 ## 简介
 支持入场动画出场动画，动画时默认无法输入
 
+对Backspace默认支持
+
 支持自定义Panel加载，默认从Resources/UIPanels下加载；自定义时自己实现一个IPanelLoader并在Resources/UIManagerConifg中设置
 
 使用前在Resources/UIManagerConfig下设置所有参数，包括CurvingMasks, SortingLayerName, 依赖分辨率等关键设置
