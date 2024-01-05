@@ -1,5 +1,9 @@
 # Changelog
-## [0.0.3] - 2024-01.05
+## [0.0.4] - 2024-01-05
+
+- Fix IPanelLoader
+
+## [0.0.3] - 2024-01-05
 
 - Add AnimEase
 - Update UIManagerConfig Inspector

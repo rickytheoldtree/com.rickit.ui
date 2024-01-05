@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace RicKit.UI.Editor
 {
@@ -26,21 +25,32 @@ namespace RicKit.UI.Editor
             panelLoaderNames = new string[panelLoaderTypes.Count];
             for (var i = 0; i < panelLoaderTypes.Count; i++)
             {
-                panelLoaderNames[i] = panelLoaderTypes[i].Name;
+                panelLoaderNames[i] = panelLoaderTypes[i].FullName;
             }
             var config = (UIManagerConfig)target;
-            panelLoaderIndex = panelLoaderTypes.IndexOf(config.panelLoaderType);
+            for (var i = 0; i < panelLoaderTypes.Count; i++)
+            {
+                if (panelLoaderTypes[i].FullName == config.panelLoaderType)
+                {
+                    panelLoaderIndex = i;
+                    break;
+                }
+            }
         }
 
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
             panelLoaderIndex = UnityEditor.EditorGUILayout.Popup("PanelLoader", panelLoaderIndex, panelLoaderNames);
+            if (panelLoaderIndex < 0 || panelLoaderIndex >= panelLoaderTypes.Count)
+            {
+                return;
+            }
             var panelLoaderType = panelLoaderTypes[panelLoaderIndex];
             var config = (UIManagerConfig)target ;
-            if (config.panelLoaderType != panelLoaderType)
+            if (config.panelLoaderType != panelLoaderType.FullName)
             {
-                config.panelLoaderType = panelLoaderType;
+                config.panelLoaderType = panelLoaderType.FullName;
                 UnityEditor.EditorUtility.SetDirty(config);
             }
         }
