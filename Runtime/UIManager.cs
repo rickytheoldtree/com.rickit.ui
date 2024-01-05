@@ -90,7 +90,7 @@ namespace RicKit.UI
             instance.defaultRoot.offsetMin = Vector2.zero;
             instance.defaultRoot.offsetMax = Vector2.zero;
             
-            instance.panelLoader = Activator.CreateInstance(Type.GetType(instance.Config.panelLoaderName) 
+            instance.panelLoader = Activator.CreateInstance(instance.Config.panelLoaderType
                                                             ?? typeof(DefaultPanelLoader)) as IPanelLoader; 
         }
         private void Update()

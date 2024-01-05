@@ -10,13 +10,13 @@ namespace RicKit.UI
         protected override async Task OnAnimationIn(CancellationToken cancellationToken)
         {
             CanvasGroup.alpha = 0;
-            await CanvasGroup.Fade(1, FadeTime, cancellationToken);
+            await CanvasGroup.Fade(1, FadeTime, cancellationToken: cancellationToken);
             OnAnimationInEnd();
         }
         
         protected override async Task OnAnimationOut(CancellationToken cancellationToken)
         {
-            await CanvasGroup.Fade(0, FadeTime, cancellationToken);
+            await CanvasGroup.Fade(0, FadeTime, cancellationToken: cancellationToken);
             OnAnimationOutEnd();
         }
     }
