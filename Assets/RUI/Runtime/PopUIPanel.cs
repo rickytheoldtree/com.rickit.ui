@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using RicKit.UI.Ease;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -38,17 +39,17 @@ namespace RicKit.UI
             cgBlocker.alpha = 0;
             CanvasGroup.alpha = 0;
             await Task.WhenAll(
-                CanvasGroup.Fade(1, Duration, cancellationToken),
-                panel.Scale(Vector3.one, Duration, cancellationToken),
-                cgBlocker.Fade(1, Duration, cancellationToken));
+                CanvasGroup.Fade(1, Duration, cancellationToken: cancellationToken),
+                panel.Scale(Vector3.one, Duration, AnimEase.OutBack, cancellationToken),
+                cgBlocker.Fade(1, Duration, cancellationToken: cancellationToken));
             OnAnimationInEnd();
         }
 
         protected override async Task OnAnimationOut(CancellationToken cancellationToken)
         {
             await Task.WhenAll(
-                panel.Scale(0.1f * Vector3.one, Duration, cancellationToken),
-                cgBlocker.Fade(0, Duration, cancellationToken));
+                panel.Scale(0.1f * Vector3.one, Duration, AnimEase.InBack, cancellationToken),
+                cgBlocker.Fade(0, Duration, cancellationToken: cancellationToken));
             OnAnimationOutEnd();
         }
 

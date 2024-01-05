@@ -1,4 +1,9 @@
 # Changelog
+## [0.0.3] - 2024-01.05
+
+- Add AnimEase
+- Update UIManagerConfig Inspector
+
 ## [0.0.2] - 2024-01-04
 
 - Remove UniTask
