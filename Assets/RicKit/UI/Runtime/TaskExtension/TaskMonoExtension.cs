@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using UnityEngine;
 
-namespace RicKit.UI
+namespace RicKit.UI.TaskExtension
 {
     public static class TaskMonoExtension
     {

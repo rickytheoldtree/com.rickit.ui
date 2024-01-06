@@ -1,7 +1,8 @@
+using RicKit.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace RicKit.UI.Example
+namespace RicKit.UITest.Editor
 {
     public class UIThree : PopUIPanel
     {

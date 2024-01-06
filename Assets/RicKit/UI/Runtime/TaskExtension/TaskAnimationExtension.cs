@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using RicKit.UI.Ease;
 using UnityEngine;
 
-namespace RicKit.UI
+namespace RicKit.UI.TaskExtension
 {
     public static class TaskAnimationExtension
     {

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 namespace RicKit.UI.Editor
 {
@@ -8,7 +9,8 @@ namespace RicKit.UI.Editor
         [UnityEditor.InitializeOnLoadMethod]
         private static void CheckConfig()
         {
-            if (Resources.Load("UIManagerConfig") == null)
+            //是否任意Resources文件夹下存在UIManagerConfig
+            if (!UnityEditor.AssetDatabase.FindAssets("t:UIManagerConfig", new []{"Assets"}).Any())
             {
                 var config = ScriptableObject.CreateInstance<UIManagerConfig>();
                 if (!UnityEditor.AssetDatabase.IsValidFolder("Assets/Resources"))

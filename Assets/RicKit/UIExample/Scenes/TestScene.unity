@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 1396392720}
   - component: {fileID: 1396392721}
   m_Layer: 0
-  m_Name: Example
+  m_Name: Laucher
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

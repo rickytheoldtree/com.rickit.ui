@@ -1,6 +1,7 @@
+using RicKit.UI;
 using UnityEngine;
 
-namespace RicKit.UI.Example
+namespace RicKit.UITest.Editor
 {
     public class MyCustomPanelLoader : IPanelLoader
     {
