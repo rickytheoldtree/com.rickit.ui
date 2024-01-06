@@ -10,7 +10,7 @@
 ## 示例
 ![gif](https://github.com/rickytheoldtree/com.rickit.rui/blob/main/Gif/0.gif)
 - 该示例项目可以在release中的.unitypackage中找到
-## RUI安装方式
+## 安装方式
 - 可以通过 UPM url导入 https://github.com/rickytheoldtree/com.rickit.rui.git#rui
 - 或从Release处直接下载 .unitypackage
 ## TO-DO
@@ -18,6 +18,6 @@
 - 支持更多Ease
 - 解决创建`IPanelLoader`时便利全程序集进行反射的问题
 - 更多的Editor脚本?
-## 反馈与交流
+## 交流与反馈
 - Q群: 85024152
 - 有效反馈会记录到Contributor
