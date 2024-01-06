@@ -16,7 +16,7 @@
 ## TO-DO
 - 解决`Task.Yield()`问题
 - 支持更多Ease
-- 解决创建`IPanelLoader`时便利全程序集进行反射的问题
+- 解决创建`IPanelLoader`时遍历全程序集进行反射的问题
 - 更多的Editor脚本?
 ## 交流与反馈
 - Q群: 85024152
