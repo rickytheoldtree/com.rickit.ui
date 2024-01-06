@@ -14,3 +14,5 @@
 ## RUI安装方式
 - 可以通过 UPM url导入 https://github.com/rickytheoldtree/com.rickit.rui.git#rui
 - 或从Release处直接下载 .unitypackage
+## 反馈与交流
+- Q群: 85024152
