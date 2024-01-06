@@ -1,6 +1,5 @@
 # RicKit UI
 - 异步的UI管理插件
-
 ## 简介
 - 支持入场动画出场动画，动画时默认无法输入
 - 对`Esc`返回默认支持
@@ -14,6 +13,11 @@
 ## RUI安装方式
 - 可以通过 UPM url导入 https://github.com/rickytheoldtree/com.rickit.rui.git#rui
 - 或从Release处直接下载 .unitypackage
+## TO-DO
+- 解决`Task.Yield()`问题
+- 支持更多Ease
+- 解决创建`IPanelLoader`时便利全程序集进行反射的问题
+- 更多的Editor脚本?
 ## 反馈与交流
 - Q群: 85024152
 - 有效反馈会记录到Contributor
