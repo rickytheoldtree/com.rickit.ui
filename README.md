@@ -16,3 +16,4 @@
 - 或从Release处直接下载 .unitypackage
 ## 反馈与交流
 - Q群: 85024152
+- 有效反馈会记录到Contributor
