@@ -11,7 +11,7 @@
 ![gif](https://github.com/rickytheoldtree/com.rickit.rui/blob/main/Gif/0.gif)
 - 该示例项目可以在release中的.unitypackage中找到
 ## 安装方式
-- 可以通过 UPM url导入 https://github.com/rickytheoldtree/com.rickit.rui.git#rui
+- 可以通过 UPM url导入 https://github.com/rickytheoldtree/com.rickit.rui.git#ui
 - 或从Release处直接下载 .unitypackage
 ## TO-DO
 - 解决`Task.Yield()`问题
