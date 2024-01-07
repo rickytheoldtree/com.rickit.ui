@@ -5,12 +5,12 @@
 - 该示例项目可以在Release中的.unitypackage中找到
 ## 安装方式
 - 通过PackageManager安装
-  - 打开管理界面 Edit/Project Settings/Package Manager
-```
-Name: package.openupm.cn
-URL: https://package.openupm.cn
-Scope(s): com.rickit.ui
-```
+    - 打开管理界面 Edit/Project Settings/Package Manager
+    - 添加scope
+      - Name: package.openupm.cn
+      - URL: https://package.openupm.cn
+      - Scope(s): com.rickit.ui
+    - 在 Window/PackageManger 左上角选择 `My Registries` 刷新列表后, 找到`RicKit UI`下载
 ## 简介
 - 支持入场动画出场动画，动画时默认无法输入
 - 对`Esc`返回默认支持
