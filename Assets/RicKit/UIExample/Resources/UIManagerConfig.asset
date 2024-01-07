@@ -16,4 +16,4 @@ MonoBehaviour:
   sortingLayerName: UI
   referenceResolution: {x: 1080, y: 1920}
   screenMatchMode: 1
-  panelLoaderType: RicKit.UI.DefaultPanelLoader
+  panelLoaderType: RicKit.UIExample.Scripts.MyCustomPanelLoader

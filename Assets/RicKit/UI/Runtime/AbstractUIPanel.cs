@@ -18,7 +18,6 @@ namespace RicKit.UI
         protected RectTransform CanvasRect { get; private set; }
         private Canvas Canvas { get; set; }
         public virtual bool DontDestroyOnClear => false;
-        public virtual bool ShowHideSound => true;
         protected static UIManager UI => UIManager.I;
         protected virtual void Awake()
         {

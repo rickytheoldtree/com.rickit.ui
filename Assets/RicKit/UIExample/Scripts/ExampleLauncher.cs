@@ -1,8 +1,7 @@
 using RicKit.UI;
-using RicKit.UITest.Editor;
 using UnityEngine;
 
-namespace RicKit.UIExample
+namespace RicKit.UIExample.Scripts
 {
     public class ExampleLauncher : MonoBehaviour
     {
