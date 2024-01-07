@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace RicKit.UI
+namespace RicKit.UI.TaskExtension
 {
     public class OnDestroyInvoke : MonoBehaviour
     {

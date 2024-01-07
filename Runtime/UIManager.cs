@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using RicKit.UI.Helpers;
+using RicKit.UI.Panels;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;

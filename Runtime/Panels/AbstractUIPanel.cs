@@ -5,7 +5,7 @@ using RicKit.UI.TaskExtension;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace RicKit.UI
+namespace RicKit.UI.Panels
 {
     [RequireComponent(typeof(Canvas), typeof(CanvasGroup), typeof(GraphicRaycaster))]
     public abstract class AbstractUIPanel : MonoBehaviour

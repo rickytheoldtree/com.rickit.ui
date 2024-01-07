@@ -5,7 +5,7 @@ using RicKit.UI.TaskExtension;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace RicKit.UI
+namespace RicKit.UI.Panels
 {
     public abstract class PopUIPanel : AbstractUIPanel
     {
