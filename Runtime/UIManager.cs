@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace RicKit.UI
 {
-    public partial class UIManager : MonoBehaviour
+    public class UIManager : MonoBehaviour
     {
         private static UIManager instance;
 
@@ -161,7 +161,7 @@ namespace RicKit.UI
             var sortOrder = showFormStack.Count == 0 ? 1 : showFormStack.Peek().SortOrder + 5;
             var form = GetUI<T>();
             if (!form)
-                form = NewUI<T>();
+                form = await NewUI<T>();
             form.gameObject.SetActive(false);
             onInit?.Invoke(form);
             form.SetSortOrder(sortOrder);
@@ -191,7 +191,7 @@ namespace RicKit.UI
             const int sortOrder = 900;
             var form = GetUI<T>();
             if (!form)
-                form = NewUI<T>();
+                form = await NewUI<T>();
             form.gameObject.SetActive(false);
             onInit?.Invoke(form);
             form.SetSortOrder(sortOrder);
@@ -277,9 +277,12 @@ namespace RicKit.UI
             return uiFormsList.Where(form => form is T).Cast<T>().FirstOrDefault();
         }
 
-        private T NewUI<T>() where T : AbstractUIPanel
+        private async Task<T> NewUI<T>() where T : AbstractUIPanel
         {
-            var go = Instantiate(panelLoader.LoadPrefab(typeof(T).Name), defaultRoot);
+            LockInput(true);
+            var prefab = await panelLoader.LoadPrefab(typeof(T).Name);
+            LockInput(false);
+            var go =  Instantiate(prefab, defaultRoot);
             go.TryGetComponent(out T form);
             return form;
         }
@@ -297,16 +300,16 @@ namespace RicKit.UI
 
     public interface IPanelLoader
     {
-        GameObject LoadPrefab(string name);
+        Task<GameObject> LoadPrefab(string name);
     }
 
     public class DefaultPanelLoader : IPanelLoader
     {
         private const string PrefabPath = "UIPanels/";
 
-        public GameObject LoadPrefab(string name)
+        public Task<GameObject> LoadPrefab(string name)
         {
-            return Resources.Load<GameObject>(PrefabPath + name);
+            return Task.FromResult(Resources.Load<GameObject>(PrefabPath + name));
         }
     }
 }

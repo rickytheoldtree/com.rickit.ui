@@ -1,7 +1,11 @@
 # Changelog
+## [0.0.6] - 2024-01-07
+
+- Change IPanelLoader `LoadPrefab` return value into `Task<GameObject>`
+
 ## [0.0.5] - 2024-01-06
 
-- Change Project Structure
+- Change Project folder Structure
 
 ## [0.0.4] - 2024-01-05
 
