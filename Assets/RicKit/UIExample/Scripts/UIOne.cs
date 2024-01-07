@@ -1,4 +1,5 @@
 ﻿using RicKit.UI;
+using RicKit.UI.Panels;
 using UnityEngine;
 using UnityEngine.UI;
 

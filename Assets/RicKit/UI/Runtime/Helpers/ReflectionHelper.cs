@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RicKit.UI
+namespace RicKit.UI.Helpers
 {
     public static class ReflectionHelper
     {
