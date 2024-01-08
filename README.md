@@ -1,4 +1,5 @@
 # RicKit UI
+[![openupm](https://img.shields.io/npm/v/com.rickit.ui?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.rickit.ui/)
 - 异步的UI管理插件
 - ## 示例
 ![gif](https://github.com/rickytheoldtree/com.rickit.rui/blob/main/Gif/0.gif)
