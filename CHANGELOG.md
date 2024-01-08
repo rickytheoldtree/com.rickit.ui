@@ -1,4 +1,8 @@
 # Changelog
+## [0.1.1] - 2024-01-08
+
+- Add Samples~
+
 ## [0.1.0] - 2024-01-08
 - Catch errors
 - Change `UIManagerConfig` name into `UISettings`
