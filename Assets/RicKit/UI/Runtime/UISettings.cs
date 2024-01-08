@@ -4,7 +4,7 @@ using UnityEngine.UI;
 namespace RicKit.UI
 {
     [CreateAssetMenu(menuName = "RicKit/创建UIManager配置")]
-    public class UIManagerConfig : ScriptableObject
+    public class UISettings : ScriptableObject
     {
         public int cullingMask = 32;
         public string sortingLayerName = "UI";

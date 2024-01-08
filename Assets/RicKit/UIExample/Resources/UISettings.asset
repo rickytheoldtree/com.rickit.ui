@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5d90026a0c9744e78bb4d1b8a56ed704, type: 3}
-  m_Name: UIManagerConfig
+  m_Name: UISettings
   m_EditorClassIdentifier: 
   cullingMask: 32
   sortingLayerName: UI

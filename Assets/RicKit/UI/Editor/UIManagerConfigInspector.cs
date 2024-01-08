@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RicKit.UI.Editor
 {
-    [UnityEditor.CustomEditor(typeof(UIManagerConfig))]
+    [UnityEditor.CustomEditor(typeof(UISettings))]
     public class UIManagerConfigInspector : UnityEditor.Editor
     {
         private string[] panelLoaderNames;
@@ -27,7 +27,7 @@ namespace RicKit.UI.Editor
             {
                 panelLoaderNames[i] = panelLoaderTypes[i].FullName;
             }
-            var config = (UIManagerConfig)target;
+            var config = (UISettings)target;
             for (var i = 0; i < panelLoaderTypes.Count; i++)
             {
                 if (panelLoaderTypes[i].FullName == config.panelLoaderType)
@@ -47,7 +47,7 @@ namespace RicKit.UI.Editor
                 return;
             }
             var panelLoaderType = panelLoaderTypes[panelLoaderIndex];
-            var config = (UIManagerConfig)target ;
+            var config = (UISettings)target ;
             if (config.panelLoaderType != panelLoaderType.FullName)
             {
                 config.panelLoaderType = panelLoaderType.FullName;
