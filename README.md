@@ -7,9 +7,13 @@
 ## 安装方式
 - 通过PackageManager安装
     - 打开管理界面 Edit/Project Settings/Package Manager
-    - 添加scope
+    - 添加scope(CN)
       - Name: package.openupm.cn
-      - URL: https://package.openupm.cn
+      - URL: https://package.openupm.cn (国际URL: https://package.openupm.com 更新速度稍快)
+      - Scope(s): com.rickit.ui
+    - 添加scope(国际, 更新稍快)
+      - Name: package.openupm.com
+      - URL: https://package.openupm.com
       - Scope(s): com.rickit.ui
     - 在 Window/PackageManger 左上角选择 `My Registries` 刷新列表后, 找到`RicKit UI`下载
 ## 简介
