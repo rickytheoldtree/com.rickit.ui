@@ -44,7 +44,7 @@ namespace RicKit.UI
         private static void CreateInstance()
         {
             new GameObject("UIManager",typeof(UIManager)).TryGetComponent(out instance);
-            instance.Config = Resources.Load<UISettings>("UIManagerConfig");
+            instance.Config = Resources.Load<UISettings>("UISettings");
             
             new GameObject("UICam", typeof(Camera)).TryGetComponent(out instance.uiCamera);
             instance.uiCamera.transform.SetParent(instance.transform);
