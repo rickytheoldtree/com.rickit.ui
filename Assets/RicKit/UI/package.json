@@ -7,8 +7,15 @@
   "version": "0.1.1",
   "unity": "2018.4",
   "description": "An Async UI Manager for Unity, support custom panel loading both async and sync",
+  "samples": [
+    {
+      "displayName": "UI Example",
+      "description": "A simple example of RicKit UI",
+      "path": "Samples~/UIExample"
+    }
+  ],
   "repository": {
-    "url": "https://github.com/rickytheoldtree/com.rickit.rui.git#ui",
+    "url": "https://github.com/rickytheoldtree/com.rickit.rui.git",
     "type": "git"
   }
 }
