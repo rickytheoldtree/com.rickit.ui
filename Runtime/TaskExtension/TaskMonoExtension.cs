@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace RicKit.UI.TaskExtension
@@ -18,6 +19,11 @@ namespace RicKit.UI.TaskExtension
                 invoke.OnDestroyEvent += () => tokenSource.Cancel();
             }
             return tokenSource.Token;
+        }
+
+        public static async void WrapErrors(this Task task)
+        {
+            await task;
         }
     }
 }

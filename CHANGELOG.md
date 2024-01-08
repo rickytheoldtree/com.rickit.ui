@@ -1,4 +1,9 @@
 # Changelog
+## [0.0.8] - 2024-01-08
+
+- Catch errors
+- Change `UIManagerConfig` name into `UISettings`
+
 ## [0.0.7] - 2024-01-08
 
 -Add LICENSE

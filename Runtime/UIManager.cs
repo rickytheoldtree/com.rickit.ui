@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using RicKit.UI.Helpers;
 using RicKit.UI.Panels;
+using RicKit.UI.TaskExtension;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -38,12 +39,12 @@ namespace RicKit.UI
         private RectTransform rectTransform;
         public Camera UICamera => uiCamera;
         private Camera uiCamera;
-        public UIManagerConfig Config { get; private set; }
+        public UISettings Config { get; private set; }
 
         private static void CreateInstance()
         {
             new GameObject("UIManager",typeof(UIManager)).TryGetComponent(out instance);
-            instance.Config = Resources.Load<UIManagerConfig>("UIManagerConfig");
+            instance.Config = Resources.Load<UISettings>("UIManagerConfig");
             
             new GameObject("UICam", typeof(Camera)).TryGetComponent(out instance.uiCamera);
             instance.uiCamera.transform.SetParent(instance.transform);
@@ -93,7 +94,7 @@ namespace RicKit.UI
             instance.defaultRoot.offsetMax = Vector2.zero;
             
             instance.panelLoader = Activator.CreateInstance(ReflectionHelper.GetType(instance.Config.panelLoaderType)
-                                                            ?? typeof(DefaultPanelLoader)) as IPanelLoader; 
+                                                            ?? typeof(DefaultPanelLoader)) as IPanelLoader;
         }
         private void Update()
         {
@@ -116,41 +117,41 @@ namespace RicKit.UI
 
         public void ShowUI<T>(Action<T> onInit = null) where T : AbstractUIPanel
         {
-            _ = ShowUIAsync(onInit);
+            ShowUIAsync(onInit).WrapErrors();
         }
 
         public void HideThenShowUI<T>(Action<T> onInit = null) where T : AbstractUIPanel
         {
-            _ = HideThenShowUIAsync(onInit);
+            HideThenShowUIAsync(onInit).WrapErrors();
         }
 
         public void CloseThenShowUI<T>(Action<T> onInit = null) where T : AbstractUIPanel
         {
-            _ = CloseThenShowUIAsync(onInit);
+            CloseThenShowUIAsync(onInit).WrapErrors();
         }
 
         public void ShowUIUnmanagable<T>(Action<T> onInit = null) where T : AbstractUIPanel
         {
-            _ = ShowUIUnmanagableAsync(onInit);
+            ShowUIUnmanagableAsync(onInit).WrapErrors();
         }
         public void Back()
         {
-            _ = BackAsync();
+            BackAsync().WrapErrors();
         }
 
         public void CloseCurrent()
         {
-            _ = CloseCurrentAsync();
+            CloseCurrentAsync().WrapErrors();
         }
 
         public void HideUntil<T>() where T : AbstractUIPanel
         {
-            _ = HideUntilAsync<T>();
+            HideUntilAsync<T>().WrapErrors();
         }
 
         public void BackThenShow<T>(Action<T> onInit = null) where T : AbstractUIPanel
         {
-            _ = BackThenShowAsync(onInit);
+            BackThenShowAsync(onInit).WrapErrors();
         }
 
         #endregion

@@ -10,14 +10,15 @@ namespace RicKit.UI.Editor
         private static void CheckConfig()
         {
             //是否任意Resources文件夹下存在UIManagerConfig
-            if (!UnityEditor.AssetDatabase.FindAssets("t:UIManagerConfig", new []{"Assets"}).Any())
+            if (!UnityEditor.AssetDatabase.FindAssets("t:UISettings", new []{"Assets"}).Any())
             {
-                var config = ScriptableObject.CreateInstance<UIManagerConfig>();
+                
+                var config = ScriptableObject.CreateInstance<UISettings>();
                 if (!UnityEditor.AssetDatabase.IsValidFolder("Assets/Resources"))
                 {
                     UnityEditor.AssetDatabase.CreateFolder("Assets", "Resources");
                 }
-                UnityEditor.AssetDatabase.CreateAsset(config, "Assets/Resources/UIManagerConfig.asset");
+                UnityEditor.AssetDatabase.CreateAsset(config, "Assets/Resources/UISettings.asset");
                 UnityEditor.AssetDatabase.SaveAssets();
             }
         }
