@@ -1,4 +1,8 @@
 # Changelog
+## [0.0.7] - 2024-01-08
+
+-Add LICENSE
+
 ## [0.0.6] - 2024-01-07
 
 - Change IPanelLoader `LoadPrefab` return value into `Task<GameObject>`
