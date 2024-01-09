@@ -43,7 +43,6 @@ namespace RicKit.UI
 
         private static void CreateInstance()
         {
-            PlayerLoopHelper.Initialize();
             new GameObject("UIManager",typeof(UIManager)).TryGetComponent(out instance);
             instance.Config = Resources.Load<UISettings>("UISettings");
             
