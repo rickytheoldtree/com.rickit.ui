@@ -1,8 +1,9 @@
 using System;
+using UnityEngine;
 
 namespace RicKit.UI.TaskExtension
 {
-    public readonly struct SimpleTask : System.Runtime.CompilerServices.INotifyCompletion
+    public struct SimpleTask : System.Runtime.CompilerServices.INotifyCompletion
     {
         public static SimpleTask Yield() => new SimpleTask();
         public SimpleTask GetAwaiter() => this;
@@ -14,7 +15,8 @@ namespace RicKit.UI.TaskExtension
 
         public void OnCompleted(Action continuation)
         {
-            PlayerLoopHelper.InsetAfterUpdate(continuation);
+            Debug.Log("OnCompleted");
+            TaskMono.AddContinuation(continuation);
         }
     }
     

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RicKit.UI.TaskExtension
 {
-    public static class TaskMonoExtension
+    public static class MonoExtension
     {
         public static CancellationToken GetCancellationTokenOnDestroy(this MonoBehaviour target)
         {
