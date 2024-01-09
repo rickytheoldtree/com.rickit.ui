@@ -1,4 +1,8 @@
 # Changelog
+## [0.1.3] - 2024-01-09
+
+- fix: `UIManager` `ClearAll` bug
+
 ## [0.1.2] - 2024-01-08
 
 - Replace `Task.Yield()` by `Coroutine`

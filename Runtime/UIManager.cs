@@ -293,7 +293,7 @@ namespace RicKit.UI
         public void ClearAll()
         {
             foreach (var uIForm in uiFormsList.Where(uIForm => !uIForm.DontDestroyOnClear))
-                Destroy(uIForm.gameObject);
+                DestroyImmediate(uIForm.gameObject);
             uiFormsList.Clear();
             showFormStack.Clear();
             StopAllCoroutines();
