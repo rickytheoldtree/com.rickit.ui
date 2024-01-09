@@ -26,7 +26,6 @@
 - 所有自己实现的UIPanel需要继承`AbstractUIPanel`，继承了`AbstractUIPanel`的窗口预制体可以在 RicKit => UI => 界面编辑器 中创建/打开 然后编辑
 - `IPanelLoader`的`Task<GameObject> LoadPrefab()` 允许异步实现, 如需要同步实现则直接返回`Task.FromResult(GameObject obj)`即可(不用添加async关键字)
 ## TO-DO
-- 解决`Task.Yield()`性能问题
 - 支持更多Ease
 - 解决创建`IPanelLoader`时遍历全程序集进行反射的问题
 - 更多的Editor脚本?
