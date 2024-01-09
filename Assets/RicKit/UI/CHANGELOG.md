@@ -1,4 +1,8 @@
 # Changelog
+## [0.1.6] - 2024-01-09
+
+- Remove `SimpleTask` Log
+
 ## [0.1.5] - 2024-01-09
 
 - fix: Fix `SimpleTask` bug

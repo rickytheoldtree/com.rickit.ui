@@ -15,7 +15,6 @@ namespace RicKit.UI.TaskExtension
 
         public void OnCompleted(Action continuation)
         {
-            Debug.Log("OnCompleted");
             TaskMono.AddContinuation(continuation);
         }
     }
