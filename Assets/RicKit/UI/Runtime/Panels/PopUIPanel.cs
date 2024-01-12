@@ -48,6 +48,7 @@ namespace RicKit.UI.Panels
         protected override async Task OnAnimationOut(CancellationToken cancellationToken)
         {
             await Task.WhenAll(
+                CanvasGroup.Fade(0, Duration, AnimEase.InBack, cancellationToken: cancellationToken),
                 panel.Scale(0.1f * Vector3.one, Duration, AnimEase.InBack, cancellationToken),
                 cgBlocker.Fade(0, Duration, cancellationToken: cancellationToken));
             OnAnimationOutEnd();

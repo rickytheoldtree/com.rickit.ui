@@ -243,8 +243,7 @@ namespace RicKit.UI
                     CurrentAbstractUIPanel = form;
                     return;
                 }
-
-                _ = CloseCurrentAsync();
+                CloseCurrentAsync().WrapErrors();
             }
         }
 
