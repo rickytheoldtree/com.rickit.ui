@@ -1,4 +1,8 @@
 # Changelog
+## [0.1.7] - 2024-01-12
+
+- fix: Fix `PopPanel` bug
+
 ## [0.1.6] - 2024-01-09
 
 - Remove `SimpleTask` Log
