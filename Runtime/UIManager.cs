@@ -20,7 +20,7 @@ namespace RicKit.UI
             get
             {
 #if UNITY_EDITOR
-                if (!Application.isPlaying) 
+                if (!Application.isPlaying)
                     return instance;
 #endif
                 if (!instance)
@@ -28,6 +28,7 @@ namespace RicKit.UI
                 return instance;
             }
         }
+
         private CanvasGroup blockerCg;
         private RectTransform defaultRoot;
         private IPanelLoader panelLoader;
@@ -43,9 +44,9 @@ namespace RicKit.UI
 
         private static void CreateInstance()
         {
-            new GameObject("UIManager",typeof(UIManager)).TryGetComponent(out instance);
+            new GameObject("UIManager", typeof(UIManager)).TryGetComponent(out instance);
             instance.Config = Resources.Load<UISettings>("UISettings");
-            
+
             new GameObject("UICam", typeof(Camera)).TryGetComponent(out instance.uiCamera);
             instance.uiCamera.transform.SetParent(instance.transform);
             instance.uiCamera.transform.localPosition = new Vector3(0, 0, -10);
@@ -56,7 +57,7 @@ namespace RicKit.UI
             instance.uiCamera.nearClipPlane = 1f;
             instance.uiCamera.farClipPlane = 10;
             instance.uiCamera.depth = 0;
-            
+
             new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster))
                 .TryGetComponent(out instance.canvas);
             instance.canvas.transform.SetParent(instance.transform);
@@ -70,7 +71,7 @@ namespace RicKit.UI
             canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             canvasScaler.referenceResolution = instance.Config.referenceResolution;
             canvasScaler.screenMatchMode = instance.Config.screenMatchMode;
-            
+
             new GameObject("Blocker", typeof(CanvasGroup), typeof(CanvasRenderer), typeof(Canvas),
                 typeof(Image), typeof(GraphicRaycaster)).TryGetComponent(out instance.blockerCg);
             instance.blockerCg.TryGetComponent<Canvas>(out var blockerCanvas);
@@ -85,17 +86,18 @@ namespace RicKit.UI
             blockerRt.anchorMax = Vector2.one;
             blockerRt.offsetMin = Vector2.zero;
             blockerRt.offsetMax = Vector2.zero;
-            
+
             new GameObject("DefaultRoot", typeof(RectTransform)).TryGetComponent(out instance.defaultRoot);
             instance.defaultRoot.SetParent(instance.canvas.transform, false);
             instance.defaultRoot.anchorMin = Vector2.zero;
             instance.defaultRoot.anchorMax = Vector2.one;
             instance.defaultRoot.offsetMin = Vector2.zero;
             instance.defaultRoot.offsetMax = Vector2.zero;
-            
+
             instance.panelLoader = Activator.CreateInstance(ReflectionHelper.GetType(instance.Config.panelLoaderType)
                                                             ?? typeof(DefaultPanelLoader)) as IPanelLoader;
         }
+
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Escape) && CurrentAbstractUIPanel && CurrentAbstractUIPanel.CanInteract)
@@ -134,6 +136,7 @@ namespace RicKit.UI
         {
             ShowUIUnmanagableAsync(onInit).WrapErrors();
         }
+
         public void Back()
         {
             BackAsync().WrapErrors();
@@ -142,6 +145,11 @@ namespace RicKit.UI
         public void CloseCurrent()
         {
             CloseCurrentAsync().WrapErrors();
+        }
+
+        public void HideCurrent()
+        {
+            HideCurrentAsync().WrapErrors();
         }
 
         public void HideUntil<T>() where T : AbstractUIPanel
@@ -202,6 +210,7 @@ namespace RicKit.UI
             form.BeforeShow();
             await form.OnShowAsync();
         }
+
         public async Task BackAsync()
         {
             await CloseCurrentAsync();
@@ -224,14 +233,14 @@ namespace RicKit.UI
         }
 
 
-        private async Task HideCurrentAsync()
+        public async Task HideCurrentAsync()
         {
             if (showFormStack.Count == 0) return;
             var form = showFormStack.Peek();
             await form.OnHideAsync();
         }
 
-        private async Task HideUntilAsync<T>() where T : AbstractUIPanel
+        public async Task HideUntilAsync<T>() where T : AbstractUIPanel
         {
             while (showFormStack.Count > 0)
             {
@@ -243,6 +252,7 @@ namespace RicKit.UI
                     CurrentAbstractUIPanel = form;
                     return;
                 }
+
                 CloseCurrentAsync().WrapErrors();
             }
         }
@@ -284,7 +294,7 @@ namespace RicKit.UI
             LockInput(true);
             var prefab = await panelLoader.LoadPrefab(typeof(T).Name);
             LockInput(false);
-            var go =  Instantiate(prefab, defaultRoot);
+            var go = Instantiate(prefab, defaultRoot);
             go.TryGetComponent(out T form);
             return form;
         }
