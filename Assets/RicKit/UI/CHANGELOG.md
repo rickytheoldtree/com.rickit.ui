@@ -1,4 +1,7 @@
 # Changelog
+## [1.0.1] - 2024-01-19
+- add: `CustomLayer`
+- mod: `CurrentAbstractUIPanel` to Public
 ## [1.0.0] - 2024-01-15
 - add: `HideCurrentAsync` `HideCurrent`
 ## [0.1.7] - 2024-01-12

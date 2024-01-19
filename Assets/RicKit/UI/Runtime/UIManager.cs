@@ -35,7 +35,7 @@ namespace RicKit.UI
         private readonly Stack<AbstractUIPanel> showFormStack = new Stack<AbstractUIPanel>();
         private readonly List<AbstractUIPanel> uiFormsList = new List<AbstractUIPanel>();
         private Canvas canvas;
-        private AbstractUIPanel CurrentAbstractUIPanel { get; set; }
+        public AbstractUIPanel CurrentAbstractUIPanel { get; private set; }
         public RectTransform RectTransform => rectTransform;
         private RectTransform rectTransform;
         public Camera UICamera => uiCamera;
@@ -283,7 +283,41 @@ namespace RicKit.UI
 
         #endregion
 
+        #region CustomLayer
 
+        private readonly Dictionary<string, RectTransform> customLayerDict = new Dictionary<string, RectTransform>();
+        public RectTransform GetCustomLayer(string name, int sortOrder)
+        {
+            if (customLayerDict.TryGetValue(name, out var layer) && layer)
+            {
+                layer.gameObject.SetActive(true);
+                if (layer.TryGetComponent(out Canvas c))
+                {
+                    c.overrideSorting = true;
+                    c.sortingOrder = sortOrder;
+                }
+                return layer;
+            }
+            var go = new GameObject(name, typeof(RectTransform), typeof(Canvas), typeof(GraphicRaycaster));
+            go.transform.SetParent(rectTransform);
+            go.transform.localPosition = Vector3.zero;
+            go.transform.localScale = Vector3.one;
+            go.transform.localRotation = Quaternion.identity;
+            go.TryGetComponent(out layer);
+            layer.anchorMin = Vector2.zero;
+            layer.anchorMax = Vector2.one;
+            layer.offsetMin = Vector2.zero;
+            layer.offsetMax = Vector2.zero;
+            layer.TryGetComponent(out Canvas customCanvas);
+            customCanvas.overrideSorting = true;
+            customCanvas.sortingOrder = sortOrder;
+            customLayerDict.Add(name, layer);
+            return layer;
+        }
+        
+
+        #endregion
+        
         public T GetUI<T>() where T : AbstractUIPanel
         {
             return uiFormsList.Where(form => form is T).Cast<T>().FirstOrDefault();
