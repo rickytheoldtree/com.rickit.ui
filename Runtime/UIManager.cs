@@ -285,36 +285,44 @@ namespace RicKit.UI
 
         #region CustomLayer
 
-        private readonly Dictionary<string, RectTransform> customLayerDict = new Dictionary<string, RectTransform>();
-        public RectTransform GetCustomLayer(string name, int sortOrder)
+        private readonly Dictionary<string, Canvas> customLayerDict = new Dictionary<string, Canvas>();
+        public Canvas GetCustomLayer(string name, int sortOrder)
         {
-            if (customLayerDict.TryGetValue(name, out var layer) && layer)
+            if (customLayerDict.TryGetValue(name, out var canvasNew) && canvasNew)
             {
-                layer.gameObject.SetActive(true);
-                if (layer.TryGetComponent(out Canvas c))
+                canvasNew.gameObject.SetActive(true);
+                if (canvasNew.TryGetComponent(out Canvas c))
                 {
                     c.overrideSorting = true;
+                    c.sortingLayerName = Config.sortingLayerName;
                     c.sortingOrder = sortOrder;
                 }
-                return layer;
+                return canvasNew;
             }
             var go = new GameObject(name, typeof(RectTransform), typeof(Canvas), typeof(GraphicRaycaster));
             go.transform.SetParent(rectTransform);
             go.transform.localPosition = Vector3.zero;
             go.transform.localScale = Vector3.one;
             go.transform.localRotation = Quaternion.identity;
-            go.TryGetComponent(out layer);
-            layer.anchorMin = Vector2.zero;
-            layer.anchorMax = Vector2.one;
-            layer.offsetMin = Vector2.zero;
-            layer.offsetMax = Vector2.zero;
-            layer.TryGetComponent(out Canvas customCanvas);
-            customCanvas.overrideSorting = true;
-            customCanvas.sortingOrder = sortOrder;
-            customLayerDict.Add(name, layer);
-            return layer;
+            go.TryGetComponent(out RectTransform rect);
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            go.TryGetComponent(out canvasNew);
+            canvasNew.overrideSorting = true;
+            canvasNew.sortingLayerName = Config.sortingLayerName;
+            canvasNew.sortingOrder = sortOrder;
+            customLayerDict.Add(name, canvasNew);
+            return canvasNew;
         }
-        
+        public void SetCustomLayerSortOrder(string name, int sortOrder)
+        {
+            if (customLayerDict.TryGetValue(name, out var canvasNew) && canvasNew)
+            {
+                canvasNew.sortingOrder = sortOrder;
+            }
+        }
 
         #endregion
         
