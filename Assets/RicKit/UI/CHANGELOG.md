@@ -1,4 +1,7 @@
 # Changelog
+## [1.0.2] - 2024-01-19
+- mod: `CustomLayer`
+- add: `SetCustomLayerSortingLayer()`
 ## [1.0.1] - 2024-01-19
 - add: `CustomLayer`
 - mod: `CurrentAbstractUIPanel` to Public
