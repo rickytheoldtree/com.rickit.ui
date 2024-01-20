@@ -10,6 +10,7 @@ namespace RicKit.UI
         public string sortingLayerName = "UI";
         public Vector2 referenceResolution = new Vector2(1080, 1920);
         public CanvasScaler.ScreenMatchMode screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
+        public CameraClearFlags cameraClearFlags = CameraClearFlags.Depth;
         [HideInInspector]
         public string panelLoaderType = typeof(DefaultPanelLoader).FullName;
     }

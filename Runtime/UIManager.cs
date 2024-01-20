@@ -50,7 +50,7 @@ namespace RicKit.UI
             new GameObject("UICam", typeof(Camera)).TryGetComponent(out instance.uiCamera);
             instance.uiCamera.transform.SetParent(instance.transform);
             instance.uiCamera.transform.localPosition = new Vector3(0, 0, -10);
-            instance.uiCamera.clearFlags = CameraClearFlags.Depth;
+            instance.uiCamera.clearFlags = instance.Config.cameraClearFlags;
             instance.uiCamera.cullingMask = instance.Config.cullingMask;
             instance.uiCamera.orthographic = true;
             instance.uiCamera.orthographicSize = 5;
