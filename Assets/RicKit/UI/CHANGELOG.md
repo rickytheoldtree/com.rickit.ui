@@ -1,4 +1,6 @@
 # Changelog
+## [1.0.3] - 2024-01-20
+- add: UICam Setting `ClearFlags`
 ## [1.0.2] - 2024-01-19
 - mod: `CustomLayer`
 - add: `SetCustomLayerSortingLayer()`
