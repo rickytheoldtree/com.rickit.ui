@@ -42,6 +42,12 @@ namespace RicKit.UI
         private Camera uiCamera;
         public UISettings Config { get; private set; }
 
+        #region Events
+        public static Action<AbstractUIPanel> OnShow { get; set; }
+        public static Action<AbstractUIPanel> OnHide { get; set; }
+        public static Action<AbstractUIPanel> OnShowEnd { get; set; }
+        public static Action<AbstractUIPanel> OnHideEnd { get; set; }
+        #endregion
         private static void CreateInstance()
         {
             new GameObject("UIManager", typeof(UIManager)).TryGetComponent(out instance);
@@ -337,6 +343,11 @@ namespace RicKit.UI
             var prefab = await panelLoader.LoadPrefab(typeof(T).Name);
             LockInput(false);
             var go = Instantiate(prefab, defaultRoot);
+            go.TryGetComponent(out RectTransform rect);
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
             go.TryGetComponent(out T form);
             return form;
         }
