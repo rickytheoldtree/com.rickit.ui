@@ -30,24 +30,23 @@ namespace RicKit.UI.Panels
         public async Task OnShowAsync()
         {
             UIManager.LockInput(true);
+            UIManager.OnShow?.Invoke(this);
             gameObject.SetActive(true);
             CanvasGroup.blocksRaycasts = true;
             CanvasGroup.interactable = false;
             await OnAnimationIn(this.GetCancellationTokenOnDestroy());
+            UIManager.OnShowEnd?.Invoke(this);
             UIManager.LockInput(false);
         }
         public async Task OnHideAsync()
         {
             UIManager.LockInput(true);
+            UIManager.OnHide?.Invoke(this);
             CanvasGroup.blocksRaycasts = true;
             CanvasGroup.interactable = false;
             await OnAnimationOut(this.GetCancellationTokenOnDestroy());
+            UIManager.OnHideEnd?.Invoke(this);
             UIManager.LockInput(false);
-        }
-
-        public void UpdateData<T>(Action<T> onUpdateData) where T : AbstractUIPanel
-        {
-            onUpdateData?.Invoke((T)this);
         }
 
         public virtual void BeforeShow()
