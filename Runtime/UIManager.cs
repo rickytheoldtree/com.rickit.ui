@@ -51,56 +51,60 @@ namespace RicKit.UI
         private static void CreateInstance()
         {
             new GameObject("UIManager", typeof(UIManager)).TryGetComponent(out instance);
-            instance.Config = Resources.Load<UISettings>("UISettings");
+            var config = instance.Config = Resources.Load<UISettings>("UISettings");
 
             new GameObject("UICam", typeof(Camera)).TryGetComponent(out instance.uiCamera);
-            instance.uiCamera.transform.SetParent(instance.transform);
-            instance.uiCamera.transform.localPosition = new Vector3(0, 0, -10);
-            instance.uiCamera.clearFlags = instance.Config.cameraClearFlags;
-            instance.uiCamera.cullingMask = instance.Config.cullingMask;
-            instance.uiCamera.orthographic = true;
-            instance.uiCamera.orthographicSize = 5;
-            instance.uiCamera.nearClipPlane = 1f;
-            instance.uiCamera.farClipPlane = 10;
-            instance.uiCamera.depth = 0;
+            var cam = instance.uiCamera;
+            cam.transform.SetParent(instance.transform);
+            cam.transform.localPosition = new Vector3(0, 0, -10);
+            cam.clearFlags = config.cameraClearFlags;
+            cam.cullingMask = config.cullingMask;
+            cam.orthographic = true;
+            cam.orthographicSize = 5;
+            cam.nearClipPlane = config.nearClipPlane;
+            cam.farClipPlane = config.farClipPlane;
+            cam.depth = 0;
 
             new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster))
                 .TryGetComponent(out instance.canvas);
-            instance.canvas.transform.SetParent(instance.transform);
-            instance.canvas.TryGetComponent(out instance.rectTransform);
-            instance.canvas.renderMode = RenderMode.ScreenSpaceCamera;
-            instance.canvas.worldCamera = instance.uiCamera;
-            instance.canvas.planeDistance = 5;
-            instance.canvas.sortingLayerName = instance.Config.sortingLayerName;
-            instance.canvas.sortingOrder = 0;
-            instance.canvas.TryGetComponent<CanvasScaler>(out var canvasScaler);
+            var canvas = instance.canvas;
+            canvas.transform.SetParent(instance.transform);
+            canvas.TryGetComponent(out instance.rectTransform);
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.worldCamera = instance.uiCamera;
+            canvas.planeDistance = 5;
+            canvas.sortingLayerName = config.sortingLayerName;
+            canvas.sortingOrder = 0;
+            canvas.TryGetComponent<CanvasScaler>(out var canvasScaler);
             canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            canvasScaler.referenceResolution = instance.Config.referenceResolution;
-            canvasScaler.screenMatchMode = instance.Config.screenMatchMode;
+            canvasScaler.referenceResolution = config.referenceResolution;
+            canvasScaler.screenMatchMode = config.screenMatchMode;
 
             new GameObject("Blocker", typeof(CanvasGroup), typeof(CanvasRenderer), typeof(Canvas),
                 typeof(Image), typeof(GraphicRaycaster)).TryGetComponent(out instance.blockerCg);
-            instance.blockerCg.TryGetComponent<Canvas>(out var blockerCanvas);
-            instance.blockerCg.transform.SetParent(instance.canvas.transform, false);
+            var blockerCg = instance.blockerCg;
+            blockerCg.TryGetComponent<Canvas>(out var blockerCanvas);
+            blockerCg.transform.SetParent(instance.canvas.transform, false);
             blockerCanvas.overrideSorting = true;
-            blockerCanvas.sortingLayerName = instance.Config.sortingLayerName;
+            blockerCanvas.sortingLayerName = config.sortingLayerName;
             blockerCanvas.sortingOrder = 1000;
-            instance.blockerCg.TryGetComponent<Image>(out var blockerImg);
+            blockerCg.TryGetComponent<Image>(out var blockerImg);
             blockerImg.color = Color.clear;
-            instance.blockerCg.TryGetComponent<RectTransform>(out var blockerRt);
+            blockerCg.TryGetComponent<RectTransform>(out var blockerRt);
             blockerRt.anchorMin = Vector2.zero;
             blockerRt.anchorMax = Vector2.one;
             blockerRt.offsetMin = Vector2.zero;
             blockerRt.offsetMax = Vector2.zero;
 
             new GameObject("DefaultRoot", typeof(RectTransform)).TryGetComponent(out instance.defaultRoot);
-            instance.defaultRoot.SetParent(instance.canvas.transform, false);
-            instance.defaultRoot.anchorMin = Vector2.zero;
-            instance.defaultRoot.anchorMax = Vector2.one;
-            instance.defaultRoot.offsetMin = Vector2.zero;
-            instance.defaultRoot.offsetMax = Vector2.zero;
+            var defaultRoot = instance.defaultRoot;
+            defaultRoot.SetParent(instance.canvas.transform, false);
+            defaultRoot.anchorMin = Vector2.zero;
+            defaultRoot.anchorMax = Vector2.one;
+            defaultRoot.offsetMin = Vector2.zero;
+            defaultRoot.offsetMax = Vector2.zero;
 
-            instance.panelLoader = Activator.CreateInstance(ReflectionHelper.GetType(instance.Config.panelLoaderType)
+            instance.panelLoader = Activator.CreateInstance(ReflectionHelper.GetType(config.panelLoaderType)
                                                             ?? typeof(DefaultPanelLoader)) as IPanelLoader;
         }
 

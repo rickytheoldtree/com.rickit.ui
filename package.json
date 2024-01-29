@@ -4,7 +4,7 @@
   "author": {
     "name": "LYQ"
   },
-  "version": "1.0.4",
+  "version": "1.0.5",
   "unity": "2018.4",
   "description": "An Async UI Manager for Unity, support custom panel loading both async and sync",
   "samples": [
@@ -15,7 +15,7 @@
     }
   ],
   "repository": {
-    "url": "https://github.com/rickytheoldtree/com.rickit.rui.git",
+    "url": "https://github.com/rickytheoldtree/com.rickit.ui.git",
     "type": "git"
   }
 }
