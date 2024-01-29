@@ -11,6 +11,8 @@ namespace RicKit.UI
         public Vector2 referenceResolution = new Vector2(1080, 1920);
         public CanvasScaler.ScreenMatchMode screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
         public CameraClearFlags cameraClearFlags = CameraClearFlags.Depth;
+        public float nearClipPlane = 1;
+        public float farClipPlane = 15;
         [HideInInspector]
         public string panelLoaderType = typeof(DefaultPanelLoader).FullName;
     }

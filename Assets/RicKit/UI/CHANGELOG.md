@@ -1,4 +1,6 @@
 # Changelog
+## [1.0.5] - 2024-01-29
+- add: Settings `nearClipPlane` `farClipPlane`
 ## [1.0.4] - 2024-01-22
 - add: events `OnShow` `OnHide` `OnShowEnd` `OnHideEnd`
 ## [1.0.3] - 2024-01-20
