@@ -1,4 +1,6 @@
 # Changelog
+## [1.0.6] - 2024-02-01
+- mod: Editor config store case
 ## [1.0.5] - 2024-01-29
 - add: Settings `nearClipPlane` `farClipPlane`
 ## [1.0.4] - 2024-01-22

@@ -19,7 +19,6 @@ namespace RicKit.UI.Editor
                     UnityEditor.AssetDatabase.CreateFolder("Assets", "Resources");
                 }
                 UnityEditor.AssetDatabase.CreateAsset(config, "Assets/Resources/UISettings.asset");
-                UnityEditor.AssetDatabase.SaveAssets();
             }
         }
     }
