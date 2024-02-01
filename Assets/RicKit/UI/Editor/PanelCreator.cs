@@ -26,7 +26,7 @@ namespace RicKit.UI.Editor
                 },
                 alignment = TextAnchor.MiddleCenter
             };
-            path = PlayerPrefs.GetString(PathKey, path);
+            path = EditorPrefs.GetString(PathKey, path);
         }
         [MenuItem("RicKit/UI/界面编辑器")]
         public static void Open()
@@ -58,7 +58,7 @@ namespace RicKit.UI.Editor
                             if (Directory.Exists(draggedObject))
                             {
                                 path = draggedObject;
-                                PlayerPrefs.SetString(PathKey, path);
+                                EditorPrefs.SetString(PathKey, path);
                                 break;
                             }
                         }
