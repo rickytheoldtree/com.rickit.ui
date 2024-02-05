@@ -106,6 +106,7 @@ namespace RicKit.UI
 
             instance.panelLoader = Activator.CreateInstance(ReflectionHelper.GetType(config.panelLoaderType)
                                                             ?? typeof(DefaultPanelLoader)) as IPanelLoader;
+            Debug.Log($"UIPanelLoader: {instance.panelLoader.GetType().Name}");
         }
 
         private void Update()
