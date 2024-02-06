@@ -10,9 +10,10 @@ namespace RicKit.UI.YooExtension
     {
         private readonly string packageName;
         private readonly bool sync;
-        public YooAssetLoader(string packageName)
+        public YooAssetLoader(string packageName, bool sync)
         {
             this.packageName = packageName;
+            this.sync = sync;
         }
 
         private ResourcePackage Package => package ??= YooAssets.GetPackage(packageName);
