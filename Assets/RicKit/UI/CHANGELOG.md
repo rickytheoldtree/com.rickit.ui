@@ -1,4 +1,6 @@
 # Changelog
+## [1.1.0] - 2024-02-06
+- support: YooAsset
 ## [1.0.8] - 2024-02-05
 ## [1.0.7] - 2024-02-05
 - add: add `IPanelLoader` create log

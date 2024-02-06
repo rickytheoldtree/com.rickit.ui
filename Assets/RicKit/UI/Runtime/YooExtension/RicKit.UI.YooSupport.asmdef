@@ -1,8 +1,8 @@
 {
-    "name": "RicKit.UI",
+    "name": "RicKit.UI.YooSupport",
     "rootNamespace": "",
     "references": [
-        "GUID:85936f0e4a5c2bc47b2ed3abe5a85f91",
+        "GUID:e34a5702dd353724aa315fb8011f08c3",
         "GUID:dab20d0850a0f5f46bc9bca6a3f24f2d"
     ],
     "includePlatforms": [],

@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using RicKit.UI.Helpers;
+using RicKit.UI.Interfaces;
 using RicKit.UI.Panels;
 using RicKit.UI.TaskExtension;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+#if YOO_SUPPORT
+using RicKit.UI.YooExtension;
+#endif
 
 namespace RicKit.UI
 {
@@ -19,12 +22,11 @@ namespace RicKit.UI
         {
             get
             {
-#if UNITY_EDITOR
-                if (!Application.isPlaying)
-                    return instance;
-#endif
                 if (!instance)
-                    CreateInstance();
+                {
+                    new GameObject("UIManager", typeof(UIManager)).TryGetComponent(out instance);
+                    instance.Init();
+                }
                 return instance;
             }
         }
@@ -48,30 +50,43 @@ namespace RicKit.UI
         public static Action<AbstractUIPanel> OnShowEnd { get; set; }
         public static Action<AbstractUIPanel> OnHideEnd { get; set; }
         #endregion
-        private static void CreateInstance()
+        
+        private void Init()
         {
-            new GameObject("UIManager", typeof(UIManager)).TryGetComponent(out instance);
-            var config = instance.Config = Resources.Load<UISettings>("UISettings");
-
-            new GameObject("UICam", typeof(Camera)).TryGetComponent(out instance.uiCamera);
-            var cam = instance.uiCamera;
-            cam.transform.SetParent(instance.transform);
-            cam.transform.localPosition = new Vector3(0, 0, -10);
-            cam.clearFlags = config.cameraClearFlags;
-            cam.cullingMask = config.cullingMask;
-            cam.orthographic = true;
-            cam.orthographicSize = 5;
-            cam.nearClipPlane = config.nearClipPlane;
-            cam.farClipPlane = config.farClipPlane;
-            cam.depth = 0;
+            var config = Config = Resources.Load<UISettings>("UISettings");
+            switch (config.loadType)
+            {
+                default:
+                    Debug.LogError($"LoadType {config.loadType} not found");
+                    throw new ArgumentOutOfRangeException();
+                case LoadType.Resources:
+                    panelLoader = new DefaultPanelLoader();
+                    break;
+#if YOO_SUPPORT
+                case LoadType.Yoo:
+                    panelLoader = new YooAssetLoader(config.packageName);
+                    break;
+#endif
+            }
+            
+            
+            new GameObject("UICam", typeof(Camera)).TryGetComponent(out uiCamera);
+            uiCamera.transform.SetParent(transform);
+            uiCamera.transform.localPosition = new Vector3(0, 0, -10);
+            uiCamera.clearFlags = config.cameraClearFlags;
+            uiCamera.cullingMask = config.cullingMask;
+            uiCamera.orthographic = true;
+            uiCamera.orthographicSize = 5;
+            uiCamera.nearClipPlane = config.nearClipPlane;
+            uiCamera.farClipPlane = config.farClipPlane;
+            uiCamera.depth = 0;
 
             new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster))
-                .TryGetComponent(out instance.canvas);
-            var canvas = instance.canvas;
-            canvas.transform.SetParent(instance.transform);
-            canvas.TryGetComponent(out instance.rectTransform);
+                .TryGetComponent(out canvas);
+            canvas.transform.SetParent(transform);
+            canvas.TryGetComponent(out rectTransform);
             canvas.renderMode = RenderMode.ScreenSpaceCamera;
-            canvas.worldCamera = instance.uiCamera;
+            canvas.worldCamera = uiCamera;
             canvas.planeDistance = 5;
             canvas.sortingLayerName = config.sortingLayerName;
             canvas.sortingOrder = 0;
@@ -81,10 +96,9 @@ namespace RicKit.UI
             canvasScaler.screenMatchMode = config.screenMatchMode;
 
             new GameObject("Blocker", typeof(CanvasGroup), typeof(CanvasRenderer), typeof(Canvas),
-                typeof(Image), typeof(GraphicRaycaster)).TryGetComponent(out instance.blockerCg);
-            var blockerCg = instance.blockerCg;
+                typeof(Image), typeof(GraphicRaycaster)).TryGetComponent(out blockerCg);
             blockerCg.TryGetComponent<Canvas>(out var blockerCanvas);
-            blockerCg.transform.SetParent(instance.canvas.transform, false);
+            blockerCg.transform.SetParent(canvas.transform, false);
             blockerCanvas.overrideSorting = true;
             blockerCanvas.sortingLayerName = config.sortingLayerName;
             blockerCanvas.sortingOrder = 1000;
@@ -96,19 +110,18 @@ namespace RicKit.UI
             blockerRt.offsetMin = Vector2.zero;
             blockerRt.offsetMax = Vector2.zero;
 
-            new GameObject("DefaultRoot", typeof(RectTransform)).TryGetComponent(out instance.defaultRoot);
-            var defaultRoot = instance.defaultRoot;
-            defaultRoot.SetParent(instance.canvas.transform, false);
+            new GameObject("DefaultRoot", typeof(RectTransform)).TryGetComponent(out defaultRoot);
+            defaultRoot.SetParent(canvas.transform, false);
             defaultRoot.anchorMin = Vector2.zero;
             defaultRoot.anchorMax = Vector2.one;
             defaultRoot.offsetMin = Vector2.zero;
             defaultRoot.offsetMax = Vector2.zero;
-
-            instance.panelLoader = Activator.CreateInstance(ReflectionHelper.GetType(config.panelLoaderType)
-                                                            ?? typeof(DefaultPanelLoader)) as IPanelLoader;
-            Debug.Log($"UIPanelLoader: Try {config.panelLoaderType} result: {instance.panelLoader.GetType().Name}");
         }
 
+        public void SetPanelLoader(IPanelLoader loader)
+        {
+            
+        }
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Escape) && CurrentAbstractUIPanel && CurrentAbstractUIPanel.CanInteract)
@@ -345,7 +358,7 @@ namespace RicKit.UI
         private async Task<T> NewUI<T>() where T : AbstractUIPanel
         {
             LockInput(true);
-            var prefab = await panelLoader.LoadPrefab(typeof(T).Name);
+            var prefab = await panelLoader.LoadPrefab($"{Config.assetPathPrefix}{typeof(T).Name}");
             LockInput(false);
             var go = Instantiate(prefab, defaultRoot);
             go.TryGetComponent(out RectTransform rect);
@@ -368,18 +381,11 @@ namespace RicKit.UI
         }
     }
 
-    public interface IPanelLoader
-    {
-        Task<GameObject> LoadPrefab(string name);
-    }
-
     public class DefaultPanelLoader : IPanelLoader
     {
-        private const string PrefabPath = "UIPanels/";
-
-        public Task<GameObject> LoadPrefab(string name)
+        public Task<GameObject> LoadPrefab(string path)
         {
-            return Task.FromResult(Resources.Load<GameObject>(PrefabPath + name));
+            return Task.FromResult(Resources.Load<GameObject>(path));
         }
     }
 }

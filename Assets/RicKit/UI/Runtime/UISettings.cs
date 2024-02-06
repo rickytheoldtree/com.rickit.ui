@@ -3,6 +3,11 @@ using UnityEngine.UI;
 
 namespace RicKit.UI
 {
+    public enum LoadType
+    {
+        Resources,
+        Yoo
+    }
     [CreateAssetMenu(menuName = "RicKit/创建UIManager配置")]
     public class UISettings : ScriptableObject
     {
@@ -13,7 +18,9 @@ namespace RicKit.UI
         public CameraClearFlags cameraClearFlags = CameraClearFlags.Depth;
         public float nearClipPlane = 1;
         public float farClipPlane = 15;
+        public LoadType loadType = LoadType.Resources;
+        public string assetPathPrefix = "UI/";
         [HideInInspector]
-        public string panelLoaderType = typeof(DefaultPanelLoader).FullName;
+        public string packageName;
     }
 }
