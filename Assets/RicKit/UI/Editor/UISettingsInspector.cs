@@ -21,6 +21,7 @@ namespace RicKit.UI.Editor
                 var serializedField = serializedObject.FindProperty("packageName");
                 UnityEditor.EditorGUILayout.PropertyField(serializedField);
             }
+            serializedObject.ApplyModifiedProperties();
         }
     }
 }
