@@ -20,14 +20,12 @@
 ## 简介
 - 支持入场动画出场动画，动画时默认无法输入
 - 对`Esc`返回默认支持
-- 支持自定义Panel加载，默认从 Resources/UIPanels 下加载; 自定义时自己实现一个`IPanelLoader`并在 Resources/UIManagerConifg 中设置
-- 使用前在 Resources/UIManagerConfig 下设置所有参数，包括`CurvingMasks`, `SortingLayerName`, 依赖分辨率等关键设置
+- 目前支持YooAssets, 和默认的Resources加载
+- 使用前在 Resources/UISettings 下设置所有参数，包括`CurvingMasks`, `SortingLayerName`, 依赖分辨率等关键设置
 - `UIManager`为懒加载，会在第一次调用时创建，包括`UICam`, `Blocker`等重要组成部分
 - 所有自己实现的UIPanel需要继承`AbstractUIPanel`，继承了`AbstractUIPanel`的窗口预制体可以在 RicKit => UI => 界面编辑器 中创建/打开 然后编辑
-- `IPanelLoader`的`Task<GameObject> LoadPrefab()` 允许异步实现, 如需要同步实现则直接返回`Task.FromResult(GameObject obj)`即可(不用添加async关键字)
 ## TO-DO
 - 支持更多Ease
-- 解决创建`IPanelLoader`时遍历全程序集进行反射的问题
 - 更多的Editor脚本?
 ## 交流与反馈
 - Q群: 851024152
