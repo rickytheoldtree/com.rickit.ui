@@ -1,26 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace RicKit.UI.Editor
 {
-    [UnityEditor.CustomEditor(typeof(UISettings))]
+    [CustomEditor(typeof(UISettings))]
     public class UISettingsInspector : UnityEditor.Editor
     {
         private UISettings settings;
         private GUIStyle titleStyle;
 
         private SerializedProperty cullingMask,
-            loadType,
-            packageName,
             sortingLayerName,
             referenceResolution,
             screenMatchMode,
             cameraClearFlags,
             nearClipPlane,
             farClipPlane,
-            assetPathPrefix;
+            assetPathPrefix,
+            loadType,
+            packageName,
+            yooSyncLoad;
 
         private void OnEnable()
         {
@@ -35,6 +34,7 @@ namespace RicKit.UI.Editor
             nearClipPlane = serializedObject.FindProperty("nearClipPlane");
             farClipPlane = serializedObject.FindProperty("farClipPlane");
             assetPathPrefix = serializedObject.FindProperty("assetPathPrefix");
+            yooSyncLoad = serializedObject.FindProperty("yooSyncLoad");
         }
 
         public override void OnInspectorGUI()
@@ -60,10 +60,23 @@ namespace RicKit.UI.Editor
             {
                 GUILayout.Label("Yoo Asset", EditorStyles.boldLabel);
                 EditorGUILayout.PropertyField(packageName);
+                EditorGUILayout.PropertyField(yooSyncLoad);
             }
             EditorGUI.indentLevel--;
             
             serializedObject.ApplyModifiedProperties();
+        }
+        
+        [MenuItem("RicKit/UI/Create UISettings")]
+        private static void CreateSettings()
+        {
+            var config = CreateInstance<UISettings>();
+            if (!AssetDatabase.IsValidFolder("Assets/Resources"))
+            {
+                AssetDatabase.CreateFolder("Assets", "Resources");
+            }
+            AssetDatabase.CreateAsset(config, "Assets/Resources/UISettings.asset");
+            Selection.activeObject = config;
         }
     }
 }
