@@ -1,4 +1,6 @@
 # Changelog
+## [1.1.0] - 2024-02-06
+- remove: auto create `UISettings` asset
 ## [1.0.9] - 2024-02-06
 - support: YooAsset
 ## [1.0.8] - 2024-02-05

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace RicKit.UI.Editor
 {
     [UnityEditor.CustomEditor(typeof(UISettings))]
-    public class UIManagerConfigInspector : UnityEditor.Editor
+    public class UISettingsInspector : UnityEditor.Editor
     {
         private string[] panelLoaderNames;
         private UISettings settings;
