@@ -61,14 +61,15 @@ namespace RicKit.UI
                     throw new ArgumentOutOfRangeException();
                 case LoadType.Resources:
                     panelLoader = new DefaultPanelLoader();
+                    Debug.Log($"UIManager use Resources, assetPathPrefix: {config.assetPathPrefix}");
                     break;
 #if YOO_SUPPORT
                 case LoadType.Yoo:
                     panelLoader = new YooAssetLoader(config.packageName);
+                    Debug.Log($"UIManager use YooAsset, assetPathPrefix: {config.assetPathPrefix}, packageName: {config.packageName}");
                     break;
 #endif
             }
-            
             
             new GameObject("UICam", typeof(Camera)).TryGetComponent(out uiCamera);
             uiCamera.transform.SetParent(transform);
@@ -117,11 +118,7 @@ namespace RicKit.UI
             defaultRoot.offsetMin = Vector2.zero;
             defaultRoot.offsetMax = Vector2.zero;
         }
-
-        public void SetPanelLoader(IPanelLoader loader)
-        {
-            
-        }
+        
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Escape) && CurrentAbstractUIPanel && CurrentAbstractUIPanel.CanInteract)
