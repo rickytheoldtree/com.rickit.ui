@@ -9,7 +9,7 @@ namespace RicKit.UI.YooExtension
     public class YooAssetLoader : IPanelLoader
     {
         private readonly string packageName;
-
+        private readonly bool sync;
         public YooAssetLoader(string packageName)
         {
             this.packageName = packageName;
@@ -20,6 +20,10 @@ namespace RicKit.UI.YooExtension
 
         public async Task<GameObject> LoadPrefab(string path)
         {
+            if (sync)
+            {
+                return Package.LoadAssetSync<GameObject>(path).AssetObject as GameObject;
+            }
             var handle = Package.LoadAssetAsync<GameObject>(path);
             await handle.Task;
             return handle.AssetObject as GameObject;

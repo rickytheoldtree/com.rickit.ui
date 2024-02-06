@@ -22,5 +22,6 @@ namespace RicKit.UI
         public string assetPathPrefix = "UI/";
         [HideInInspector]
         public string packageName;
+        [HideInInspector] public bool yooSyncLoad;
     }
 }
