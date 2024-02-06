@@ -65,7 +65,7 @@ namespace RicKit.UI
                     break;
 #if YOO_SUPPORT
                 case LoadType.Yoo:
-                    panelLoader = new YooAssetLoader(config.packageName);
+                    panelLoader = new YooAssetLoader(config.packageName, config.yooSyncLoad);
                     Debug.Log($"UIManager use YooAsset, assetPathPrefix: {config.assetPathPrefix}, packageName: {config.packageName}");
                     break;
 #endif
