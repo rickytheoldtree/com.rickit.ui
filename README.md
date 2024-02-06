@@ -22,6 +22,7 @@
 - 对`Esc`返回默认支持
 - 目前支持`YooAsset`, 和默认的`Resources`加载
 - 使用前在 Resources/UISettings 下设置所有参数，包括`CurvingMasks`, `SortingLayerName`, 依赖分辨率等关键设置
+- 通过`Rickit => UI => Create UISettings` 来创建 `UISettings`
 - `UIManager`为懒加载，会在第一次调用时创建，包括`UICam`, `Blocker`等重要组成部分
 - 所有自己实现的UIPanel需要继承`AbstractUIPanel`，继承了`AbstractUIPanel`的窗口预制体可以在 RicKit => UI => 界面编辑器 中创建/打开 然后编辑
 ## TO-DO
