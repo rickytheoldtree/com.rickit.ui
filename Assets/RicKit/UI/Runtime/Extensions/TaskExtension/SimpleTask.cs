@@ -1,7 +1,6 @@
 using System;
-using UnityEngine;
 
-namespace RicKit.UI.TaskExtension
+namespace RicKit.UI.Extensions.TaskExtension
 {
     public struct SimpleTask : System.Runtime.CompilerServices.INotifyCompletion
     {

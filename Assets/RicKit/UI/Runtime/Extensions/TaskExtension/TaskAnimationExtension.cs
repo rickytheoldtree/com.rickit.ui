@@ -1,13 +1,12 @@
 ﻿using System.Threading;
-using System.Threading.Tasks;
 using RicKit.UI.Ease;
 using UnityEngine;
 
-namespace RicKit.UI.TaskExtension
+namespace RicKit.UI.Extensions.TaskExtension
 {
     public static class TaskAnimationExtension
     {
-        public static async Task Fade(this CanvasGroup target, float targetAlpha, float duration, AnimEase ease = default, CancellationToken cancellationToken = default)
+        public static async System.Threading.Tasks.Task Fade(this CanvasGroup target, float targetAlpha, float duration, AnimEase ease = default, CancellationToken cancellationToken = default)
         {
             var startAlpha = target.alpha;
             float time = 0;
@@ -23,7 +22,7 @@ namespace RicKit.UI.TaskExtension
             }
             target.alpha = targetAlpha;
         }
-        public static async Task Scale(this Transform target, Vector3 endValue, float duration, AnimEase ease = default, CancellationToken cancellationToken = default)
+        public static async System.Threading.Tasks.Task Scale(this Transform target, Vector3 endValue, float duration, AnimEase ease = default, CancellationToken cancellationToken = default)
         {
             var startValue = target.localScale;
             float time = 0;

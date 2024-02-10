@@ -1,8 +1,7 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
-namespace RicKit.UI.TaskExtension
+namespace RicKit.UI.Extensions.TaskExtension
 {
     public class TaskMono : MonoBehaviour
     {
