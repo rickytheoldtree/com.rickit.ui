@@ -6,8 +6,14 @@ namespace RicKit.UI
     public enum LoadType
     {
         Resources,
-        Yoo
+#if YOO_SUPPORT
+        Yoo,
+#endif
+#if ADDRESSABLES_SUPPORT
+        Addressables,
+#endif
     }
+    
     [CreateAssetMenu(menuName = "RicKit/创建UIManager配置")]
     public class UISettings : ScriptableObject
     {
@@ -20,8 +26,9 @@ namespace RicKit.UI
         public float farClipPlane = 15;
         public LoadType loadType = LoadType.Resources;
         public string assetPathPrefix = "UI/";
-        [HideInInspector]
-        public string packageName;
-        [HideInInspector] public bool yooSyncLoad;
+#if YOO_SUPPORT
+        public string packageName; 
+        public bool yooSyncLoad;
+#endif
     }
 }

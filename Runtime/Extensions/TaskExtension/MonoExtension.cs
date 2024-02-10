@@ -1,8 +1,7 @@
 ﻿using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 
-namespace RicKit.UI.TaskExtension
+namespace RicKit.UI.Extensions.TaskExtension
 {
     public static class MonoExtension
     {
@@ -21,7 +20,7 @@ namespace RicKit.UI.TaskExtension
             return tokenSource.Token;
         }
 
-        public static async void WrapErrors(this Task task)
+        public static async void WrapErrors(this System.Threading.Tasks.Task task)
         {
             await task;
         }

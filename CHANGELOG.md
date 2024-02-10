@@ -1,4 +1,6 @@
 # Changelog
+## [1.1.5] - 2024-02-10
+- support: `Addressables`
 ## [1.1.4] - 2024-02-06
 - remove: auto create `UISettings` asset
 ## [1.0.9] - 2024-02-06

@@ -1,12 +1,11 @@
 {
-    "name": "RicKit.UI.Editor",
+    "name": "RicKit.UI.YooAsset",
     "rootNamespace": "",
     "references": [
-        "GUID:e6dff8b487708dd4ba70463e1ecc7971"
+        "GUID:e34a5702dd353724aa315fb8011f08c3",
+        "GUID:dab20d0850a0f5f46bc9bca6a3f24f2d"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
@@ -18,11 +17,6 @@
             "name": "com.tuyoogame.yooasset",
             "expression": "",
             "define": "YOO_SUPPORT"
-        },
-        {
-            "name": "com.unity.addressables",
-            "expression": "",
-            "define": "ADDRESSABLES_SUPPORT"
         }
     ],
     "noEngineReferences": false

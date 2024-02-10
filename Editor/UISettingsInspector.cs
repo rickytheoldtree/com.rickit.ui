@@ -16,17 +16,19 @@ namespace RicKit.UI.Editor
             cameraClearFlags,
             nearClipPlane,
             farClipPlane,
-            assetPathPrefix,
             loadType,
+            assetPathPrefix;
+#if YOO_SUPPORT
+        private SerializedProperty
             packageName,
             yooSyncLoad;
+#endif
 
         private void OnEnable()
         {
             settings = (UISettings)target;
             cullingMask = serializedObject.FindProperty("cullingMask");
             loadType = serializedObject.FindProperty("loadType");
-            packageName = serializedObject.FindProperty("packageName");
             sortingLayerName = serializedObject.FindProperty("sortingLayerName");
             referenceResolution = serializedObject.FindProperty("referenceResolution");
             screenMatchMode = serializedObject.FindProperty("screenMatchMode");
@@ -34,7 +36,10 @@ namespace RicKit.UI.Editor
             nearClipPlane = serializedObject.FindProperty("nearClipPlane");
             farClipPlane = serializedObject.FindProperty("farClipPlane");
             assetPathPrefix = serializedObject.FindProperty("assetPathPrefix");
+#if YOO_SUPPORT
+            packageName = serializedObject.FindProperty("packageName");
             yooSyncLoad = serializedObject.FindProperty("yooSyncLoad");
+#endif
         }
 
         public override void OnInspectorGUI()
@@ -56,13 +61,16 @@ namespace RicKit.UI.Editor
             EditorGUI.indentLevel++;
             EditorGUILayout.PropertyField(loadType);
             EditorGUILayout.PropertyField(assetPathPrefix);
-            if (settings.loadType == LoadType.Yoo)
+            
+#if YOO_SUPPORT
+           if (settings.loadType == LoadType.Yoo)
             {
                 GUILayout.Label("Yoo Asset", EditorStyles.boldLabel);
                 EditorGUILayout.PropertyField(packageName);
                 EditorGUILayout.PropertyField(yooSyncLoad);
             }
-            EditorGUI.indentLevel--;
+            EditorGUI.indentLevel--; 
+#endif
             
             serializedObject.ApplyModifiedProperties();
         }

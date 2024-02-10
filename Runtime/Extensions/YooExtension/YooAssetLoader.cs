@@ -4,7 +4,7 @@ using RicKit.UI.Interfaces;
 using UnityEngine;
 using YooAsset;
 
-namespace RicKit.UI.YooExtension
+namespace RicKit.UI.Extensions.YooExtension
 {
     public class YooAssetLoader : IPanelLoader
     {

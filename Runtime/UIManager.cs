@@ -2,14 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using RicKit.UI.Extensions.AddressablesExtension;
+using RicKit.UI.Extensions.TaskExtension;
+using RicKit.UI.Extensions.YooExtension;
 using RicKit.UI.Interfaces;
 using RicKit.UI.Panels;
-using RicKit.UI.TaskExtension;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 #if YOO_SUPPORT
-using RicKit.UI.YooExtension;
 #endif
 
 namespace RicKit.UI
@@ -69,11 +70,18 @@ namespace RicKit.UI
                     Debug.Log($"UIManager use YooAsset, assetPathPrefix: {config.assetPathPrefix}, packageName: {config.packageName}");
                     break;
 #endif
+#if ADDRESSABLES_SUPPORT
+                case LoadType.Addressables:
+                    panelLoader = new AddressablesLoader();
+                    Debug.Log($"UIManager use Addressables, assetPathPrefix: {config.assetPathPrefix}");
+                    break;
+#endif
             }
             
             new GameObject("UICam", typeof(Camera)).TryGetComponent(out uiCamera);
-            uiCamera.transform.SetParent(transform);
-            uiCamera.transform.localPosition = new Vector3(0, 0, -10);
+            Transform transform1;
+            (transform1 = uiCamera.transform).SetParent(transform);
+            transform1.localPosition = new Vector3(0, 0, -10);
             uiCamera.clearFlags = config.cameraClearFlags;
             uiCamera.cullingMask = config.cullingMask;
             uiCamera.orthographic = true;

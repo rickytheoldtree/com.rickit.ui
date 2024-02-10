@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using RicKit.UI.TaskExtension;
+using RicKit.UI.Extensions.TaskExtension;
 using UnityEngine;
 using UnityEngine.UI;
 

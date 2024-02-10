@@ -1,6 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
-using RicKit.UI.TaskExtension;
+using RicKit.UI.Extensions.TaskExtension;
 
 namespace RicKit.UI.Panels
 {
