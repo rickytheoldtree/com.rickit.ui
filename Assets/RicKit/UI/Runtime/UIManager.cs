@@ -2,15 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using RicKit.UI.Extensions.AddressablesExtension;
 using RicKit.UI.Extensions.TaskExtension;
-using RicKit.UI.Extensions.YooExtension;
 using RicKit.UI.Interfaces;
 using RicKit.UI.Panels;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+#if ADDRESSABLES_SUPPORT
+using RicKit.UI.Extensions.AddressablesExtension;
+#endif
 #if YOO_SUPPORT
+using RicKit.UI.Extensions.YooExtension;
 #endif
 
 namespace RicKit.UI
@@ -28,6 +30,7 @@ namespace RicKit.UI
                     new GameObject("UIManager", typeof(UIManager)).TryGetComponent(out instance);
                     instance.Init();
                 }
+
                 return instance;
             }
         }
@@ -46,12 +49,14 @@ namespace RicKit.UI
         public UISettings Config { get; private set; }
 
         #region Events
+
         public static Action<AbstractUIPanel> OnShow { get; set; }
         public static Action<AbstractUIPanel> OnHide { get; set; }
         public static Action<AbstractUIPanel> OnShowEnd { get; set; }
         public static Action<AbstractUIPanel> OnHideEnd { get; set; }
+
         #endregion
-        
+
         private void Init()
         {
             var config = Config = Resources.Load<UISettings>("UISettings");
@@ -67,7 +72,8 @@ namespace RicKit.UI
 #if YOO_SUPPORT
                 case LoadType.Yoo:
                     panelLoader = new YooAssetLoader(config.packageName, config.yooSyncLoad);
-                    Debug.Log($"UIManager use YooAsset, assetPathPrefix: {config.assetPathPrefix}, packageName: {config.packageName}");
+                    Debug.Log(
+                        $"UIManager use YooAsset, assetPathPrefix: {config.assetPathPrefix}, packageName: {config.packageName}");
                     break;
 #endif
 #if ADDRESSABLES_SUPPORT
@@ -77,7 +83,7 @@ namespace RicKit.UI
                     break;
 #endif
             }
-            
+
             new GameObject("UICam", typeof(Camera)).TryGetComponent(out uiCamera);
             Transform transform1;
             (transform1 = uiCamera.transform).SetParent(transform);
@@ -126,7 +132,7 @@ namespace RicKit.UI
             defaultRoot.offsetMin = Vector2.zero;
             defaultRoot.offsetMax = Vector2.zero;
         }
-        
+
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Escape) && CurrentAbstractUIPanel && CurrentAbstractUIPanel.CanInteract)
@@ -315,6 +321,7 @@ namespace RicKit.UI
         #region CustomLayer
 
         private readonly Dictionary<string, Canvas> customLayerDict = new Dictionary<string, Canvas>();
+
         public Canvas GetCustomLayer(string name, int sortOrder)
         {
             if (customLayerDict.TryGetValue(name, out var canvasNew) && canvasNew)
@@ -326,8 +333,10 @@ namespace RicKit.UI
                     c.sortingLayerName = Config.sortingLayerName;
                     c.sortingOrder = sortOrder;
                 }
+
                 return canvasNew;
             }
+
             var go = new GameObject(name, typeof(RectTransform), typeof(Canvas), typeof(GraphicRaycaster));
             go.transform.SetParent(rectTransform);
             go.transform.localPosition = Vector3.zero;
@@ -345,6 +354,7 @@ namespace RicKit.UI
             customLayerDict.Add(name, canvasNew);
             return canvasNew;
         }
+
         public void SetCustomLayerSortOrder(string name, int sortOrder)
         {
             if (customLayerDict.TryGetValue(name, out var canvasNew) && canvasNew)
@@ -354,7 +364,7 @@ namespace RicKit.UI
         }
 
         #endregion
-        
+
         public T GetUI<T>() where T : AbstractUIPanel
         {
             return uiFormsList.Where(form => form is T).Cast<T>().FirstOrDefault();

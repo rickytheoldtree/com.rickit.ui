@@ -1,4 +1,6 @@
 # Changelog
+## [1.1.6] - 2024-02-19
+- fix: bugs
 ## [1.1.5] - 2024-02-10
 - support: `Addressables`
 ## [1.1.4] - 2024-02-06
@@ -6,8 +8,7 @@
 ## [1.0.9] - 2024-02-06
 - support: YooAsset
 ## [1.0.8] - 2024-02-05
-## [1.0.7] - 2024-02-05
-- add: add `IPanelLoader` create log
+- add: `IPanelLoader` create log
 ## [1.0.6] - 2024-02-01
 - mod: Editor config store case
 ## [1.0.5] - 2024-01-29
