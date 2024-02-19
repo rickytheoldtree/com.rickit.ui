@@ -1,9 +1,9 @@
+#if ADDRESSABLES_SUPPORT
 using System.Threading.Tasks;
 using RicKit.UI.Interfaces;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-#if ADDRESSABLES_SUPPORT
 namespace RicKit.UI.Extensions.AddressablesExtension
 {
     public class AddressablesLoader : IPanelLoader
