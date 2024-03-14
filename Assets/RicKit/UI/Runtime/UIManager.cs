@@ -322,11 +322,12 @@ namespace RicKit.UI
 
         private readonly Dictionary<string, Canvas> customLayerDict = new Dictionary<string, Canvas>();
 
-        public Canvas GetCustomLayer(string name, int sortOrder)
+        public Canvas GetCustomLayer(string name, int sortOrder, string layerName = "UI")
         {
             if (customLayerDict.TryGetValue(name, out var canvasNew) && canvasNew)
             {
                 canvasNew.gameObject.SetActive(true);
+                canvasNew.gameObject.layer = LayerMask.NameToLayer(layerName);
                 if (canvasNew.TryGetComponent(out Canvas c))
                 {
                     c.overrideSorting = true;
