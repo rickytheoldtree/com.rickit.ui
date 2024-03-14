@@ -1,5 +1,5 @@
 # Changelog
-## [1.1.8] - 2024-03-14
+## [1.1.9] - 2024-03-14
 - add: `UIManager.CustomLayer` auto set `GameObject.layer`
 ## [1.1.7] - 2024-02-20
 - rename: LICENSE.md

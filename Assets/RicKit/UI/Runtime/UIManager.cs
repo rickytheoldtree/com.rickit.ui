@@ -338,7 +338,10 @@ namespace RicKit.UI
                 return canvasNew;
             }
 
-            var go = new GameObject(name, typeof(RectTransform), typeof(Canvas), typeof(GraphicRaycaster));
+            var go = new GameObject(name, typeof(RectTransform), typeof(Canvas), typeof(GraphicRaycaster))
+                {
+                    layer = LayerMask.NameToLayer(layerName)
+                };
             go.transform.SetParent(rectTransform);
             go.transform.localPosition = Vector3.zero;
             go.transform.localScale = Vector3.one;
