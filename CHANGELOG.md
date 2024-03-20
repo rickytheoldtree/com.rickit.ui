@@ -1,4 +1,6 @@
 # Changelog
+## [1.2.0] - 2024-03-20
+- fix: `UIManager.CloseAsync` bug
 ## [1.1.9] - 2024-03-14
 - add: `UIManager.CustomLayer` auto set `GameObject.layer`
 ## [1.1.7] - 2024-02-20

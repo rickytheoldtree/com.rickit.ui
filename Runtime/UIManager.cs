@@ -263,7 +263,7 @@ namespace RicKit.UI
         {
             if (showFormStack.Count == 0) return;
             var form = showFormStack.Pop();
-            CurrentAbstractUIPanel = null;
+            CurrentAbstractUIPanel = showFormStack.Count == 0 ? null : showFormStack.Peek();
             await form.OnHideAsync();
         }
 
