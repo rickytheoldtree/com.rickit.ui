@@ -7,6 +7,7 @@ namespace RicKit.UIExample.Scripts
     {
         private void Start()
         {
+            UIManager.Init();
             UIManager.I.ShowUI<UIOne>();
         }
     }

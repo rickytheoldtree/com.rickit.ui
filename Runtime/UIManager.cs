@@ -20,17 +20,14 @@ namespace RicKit.UI
     public class UIManager : MonoBehaviour
     {
         private static UIManager instance;
-
         public static UIManager I
         {
             get
             {
                 if (!instance)
                 {
-                    new GameObject("UIManager", typeof(UIManager)).TryGetComponent(out instance);
-                    instance.Init();
+                    Debug.LogError("UIManager not initialized, please call UIManager.Init() first.");
                 }
-
                 return instance;
             }
         }
@@ -57,80 +54,84 @@ namespace RicKit.UI
 
         #endregion
 
-        private void Init()
+        /// <summary>
+        /// 需要在任何UI操作之前调用
+        /// </summary>
+        public static void Init()
         {
-            var config = Config = Resources.Load<UISettings>("UISettings");
+            new GameObject("UIManager", typeof(UIManager)).TryGetComponent(out instance);
+            var config = instance.Config = Resources.Load<UISettings>("UISettings");
             switch (config.loadType)
             {
                 default:
                     Debug.LogError($"LoadType {config.loadType} not found");
                     throw new ArgumentOutOfRangeException();
                 case LoadType.Resources:
-                    panelLoader = new DefaultPanelLoader();
+                    instance.panelLoader = new DefaultPanelLoader();
                     Debug.Log($"UIManager use Resources, assetPathPrefix: {config.assetPathPrefix}");
                     break;
 #if YOO_SUPPORT
                 case LoadType.Yoo:
-                    panelLoader = new YooAssetLoader(config.packageName, config.yooSyncLoad);
+                    instance.panelLoader = new YooAssetLoader(config.packageName, config.yooSyncLoad);
                     Debug.Log(
                         $"UIManager use YooAsset, assetPathPrefix: {config.assetPathPrefix}, packageName: {config.packageName}");
                     break;
 #endif
 #if ADDRESSABLES_SUPPORT
                 case LoadType.Addressables:
-                    panelLoader = new AddressablesLoader();
+                    instance.panelLoader = new AddressablesLoader();
                     Debug.Log($"UIManager use Addressables, assetPathPrefix: {config.assetPathPrefix}");
                     break;
 #endif
             }
 
-            new GameObject("UICam", typeof(Camera)).TryGetComponent(out uiCamera);
+            new GameObject("UICam", typeof(Camera)).TryGetComponent(out instance.uiCamera);
             Transform transform1;
-            (transform1 = uiCamera.transform).SetParent(transform);
+            (transform1 = instance.uiCamera.transform).SetParent(instance.transform);
             transform1.localPosition = new Vector3(0, 0, -10);
-            uiCamera.clearFlags = config.cameraClearFlags;
-            uiCamera.cullingMask = config.cullingMask;
-            uiCamera.orthographic = true;
-            uiCamera.orthographicSize = 5;
-            uiCamera.nearClipPlane = config.nearClipPlane;
-            uiCamera.farClipPlane = config.farClipPlane;
-            uiCamera.depth = 0;
+            instance.uiCamera.clearFlags = config.cameraClearFlags;
+            instance.uiCamera.cullingMask = config.cullingMask;
+            instance.uiCamera.orthographic = true;
+            instance.uiCamera.orthographicSize = 5;
+            instance.uiCamera.nearClipPlane = config.nearClipPlane;
+            instance.uiCamera.farClipPlane = config.farClipPlane;
+            instance.uiCamera.depth = 0;
 
             new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster))
-                .TryGetComponent(out canvas);
-            canvas.transform.SetParent(transform);
-            canvas.TryGetComponent(out rectTransform);
-            canvas.renderMode = RenderMode.ScreenSpaceCamera;
-            canvas.worldCamera = uiCamera;
-            canvas.planeDistance = 5;
-            canvas.sortingLayerName = config.sortingLayerName;
-            canvas.sortingOrder = 0;
-            canvas.TryGetComponent<CanvasScaler>(out var canvasScaler);
+                .TryGetComponent(out instance.canvas);
+            instance.canvas.transform.SetParent(instance.transform);
+            instance.canvas.TryGetComponent(out instance.rectTransform);
+            instance.canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            instance.canvas.worldCamera = instance.uiCamera;
+            instance.canvas.planeDistance = 5;
+            instance.canvas.sortingLayerName = config.sortingLayerName;
+            instance.canvas.sortingOrder = 0;
+            instance.canvas.TryGetComponent<CanvasScaler>(out var canvasScaler);
             canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             canvasScaler.referenceResolution = config.referenceResolution;
             canvasScaler.screenMatchMode = config.screenMatchMode;
 
             new GameObject("Blocker", typeof(CanvasGroup), typeof(CanvasRenderer), typeof(Canvas),
-                typeof(Image), typeof(GraphicRaycaster)).TryGetComponent(out blockerCg);
-            blockerCg.TryGetComponent<Canvas>(out var blockerCanvas);
-            blockerCg.transform.SetParent(canvas.transform, false);
+                typeof(Image), typeof(GraphicRaycaster)).TryGetComponent(out instance.blockerCg);
+            instance.blockerCg.TryGetComponent<Canvas>(out var blockerCanvas);
+            instance.blockerCg.transform.SetParent(instance.canvas.transform, false);
             blockerCanvas.overrideSorting = true;
             blockerCanvas.sortingLayerName = config.sortingLayerName;
             blockerCanvas.sortingOrder = 1000;
-            blockerCg.TryGetComponent<Image>(out var blockerImg);
+            instance.blockerCg.TryGetComponent<Image>(out var blockerImg);
             blockerImg.color = Color.clear;
-            blockerCg.TryGetComponent<RectTransform>(out var blockerRt);
+            instance.blockerCg.TryGetComponent<RectTransform>(out var blockerRt);
             blockerRt.anchorMin = Vector2.zero;
             blockerRt.anchorMax = Vector2.one;
             blockerRt.offsetMin = Vector2.zero;
             blockerRt.offsetMax = Vector2.zero;
 
-            new GameObject("DefaultRoot", typeof(RectTransform)).TryGetComponent(out defaultRoot);
-            defaultRoot.SetParent(canvas.transform, false);
-            defaultRoot.anchorMin = Vector2.zero;
-            defaultRoot.anchorMax = Vector2.one;
-            defaultRoot.offsetMin = Vector2.zero;
-            defaultRoot.offsetMax = Vector2.zero;
+            new GameObject("DefaultRoot", typeof(RectTransform)).TryGetComponent(out instance.defaultRoot);
+            instance.defaultRoot.SetParent(instance.canvas.transform, false);
+            instance.defaultRoot.anchorMin = Vector2.zero;
+            instance.defaultRoot.anchorMax = Vector2.one;
+            instance.defaultRoot.offsetMin = Vector2.zero;
+            instance.defaultRoot.offsetMax = Vector2.zero;
         }
 
         private void Update()
