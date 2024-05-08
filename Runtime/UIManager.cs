@@ -109,7 +109,8 @@ namespace RicKit.UI
             instance.canvas.TryGetComponent<CanvasScaler>(out var canvasScaler);
             canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             canvasScaler.referenceResolution = config.referenceResolution;
-            canvasScaler.screenMatchMode = config.screenMatchMode;
+            canvasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            canvasScaler.matchWidthOrHeight = config.matchWidthOrHeight;
 
             new GameObject("Blocker", typeof(CanvasGroup), typeof(CanvasRenderer), typeof(Canvas),
                 typeof(Image), typeof(GraphicRaycaster)).TryGetComponent(out instance.blockerCg);

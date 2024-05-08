@@ -12,7 +12,7 @@ namespace RicKit.UI.Editor
         private SerializedProperty cullingMask,
             sortingLayerName,
             referenceResolution,
-            screenMatchMode,
+            matchWidthOrHeight,
             cameraClearFlags,
             nearClipPlane,
             farClipPlane,
@@ -31,7 +31,7 @@ namespace RicKit.UI.Editor
             loadType = serializedObject.FindProperty("loadType");
             sortingLayerName = serializedObject.FindProperty("sortingLayerName");
             referenceResolution = serializedObject.FindProperty("referenceResolution");
-            screenMatchMode = serializedObject.FindProperty("screenMatchMode");
+            matchWidthOrHeight = serializedObject.FindProperty("matchWidthOrHeight");
             cameraClearFlags = serializedObject.FindProperty("cameraClearFlags");
             nearClipPlane = serializedObject.FindProperty("nearClipPlane");
             farClipPlane = serializedObject.FindProperty("farClipPlane");
@@ -50,7 +50,7 @@ namespace RicKit.UI.Editor
             EditorGUILayout.PropertyField(cullingMask);
             EditorGUILayout.PropertyField(sortingLayerName);
             EditorGUILayout.PropertyField(referenceResolution);
-            EditorGUILayout.PropertyField(screenMatchMode);
+            EditorGUILayout.PropertyField(matchWidthOrHeight);
             EditorGUILayout.PropertyField(cameraClearFlags);
             EditorGUILayout.PropertyField(nearClipPlane);
             EditorGUILayout.PropertyField(farClipPlane);
