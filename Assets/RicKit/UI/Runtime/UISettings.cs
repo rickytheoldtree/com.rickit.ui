@@ -20,7 +20,8 @@ namespace RicKit.UI
         public int cullingMask = 32;
         public string sortingLayerName = "UI";
         public Vector2 referenceResolution = new Vector2(1080, 1920);
-        public CanvasScaler.ScreenMatchMode screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
+        [Range(0, 1)]
+        public float matchWidthOrHeight = 1f;
         public CameraClearFlags cameraClearFlags = CameraClearFlags.Depth;
         public float nearClipPlane = 1;
         public float farClipPlane = 15;

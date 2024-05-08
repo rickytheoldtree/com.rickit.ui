@@ -1,4 +1,6 @@
 # Changelog
+## [1.2.2] - 2024-05-08
+- add: `UISettings.matchWidthOrHeight`
 ## [1.2.1] - 2024-04-29
 - mod: `UIManager` require self init before use
 ## [1.2.0] - 2024-03-20
