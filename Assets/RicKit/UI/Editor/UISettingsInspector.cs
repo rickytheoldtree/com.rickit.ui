@@ -1,5 +1,6 @@
 ﻿using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace RicKit.UI.Editor
 {
@@ -12,6 +13,7 @@ namespace RicKit.UI.Editor
         private SerializedProperty cullingMask,
             sortingLayerName,
             referenceResolution,
+            screenMatchMode,
             matchWidthOrHeight,
             cameraClearFlags,
             nearClipPlane,
@@ -31,6 +33,7 @@ namespace RicKit.UI.Editor
             loadType = serializedObject.FindProperty("loadType");
             sortingLayerName = serializedObject.FindProperty("sortingLayerName");
             referenceResolution = serializedObject.FindProperty("referenceResolution");
+            screenMatchMode = serializedObject.FindProperty("screenMatchMode");
             matchWidthOrHeight = serializedObject.FindProperty("matchWidthOrHeight");
             cameraClearFlags = serializedObject.FindProperty("cameraClearFlags");
             nearClipPlane = serializedObject.FindProperty("nearClipPlane");
@@ -50,7 +53,13 @@ namespace RicKit.UI.Editor
             EditorGUILayout.PropertyField(cullingMask);
             EditorGUILayout.PropertyField(sortingLayerName);
             EditorGUILayout.PropertyField(referenceResolution);
-            EditorGUILayout.PropertyField(matchWidthOrHeight);
+            EditorGUILayout.PropertyField(screenMatchMode);
+            if (settings.screenMatchMode == CanvasScaler.ScreenMatchMode.MatchWidthOrHeight)
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(matchWidthOrHeight);
+                EditorGUI.indentLevel--;
+            }
             EditorGUILayout.PropertyField(cameraClearFlags);
             EditorGUILayout.PropertyField(nearClipPlane);
             EditorGUILayout.PropertyField(farClipPlane);
