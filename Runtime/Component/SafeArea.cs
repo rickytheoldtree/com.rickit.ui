@@ -6,12 +6,8 @@ namespace RicKit.UI.Component
     public class SafeArea : MonoBehaviour
     {
         private RectTransform rectTrans;
+
         private void Awake()
-        {
-            Init();
-            AdaptAnchorsValue();
-        }
-        private void Init()
         {
             rectTrans = GetComponent<RectTransform>();
 
@@ -19,6 +15,7 @@ namespace RicKit.UI.Component
             rectTrans.anchorMax = Vector2.one;
             rectTrans.anchoredPosition = Vector2.zero;
             rectTrans.sizeDelta = Vector2.zero;
+            AdaptAnchorsValue();
         }
 
         private void AdaptAnchorsValue()
