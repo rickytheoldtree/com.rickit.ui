@@ -1,5 +1,5 @@
 # Changelog
-## [1.3.2] - 2024-06-01
+## [1.3.3] - 2024-05-15
 - add: `SafeArea` support
 ## [1.2.3] - 2024-05-14
 - add: full `UISettings.matchWidthOrHeight`
