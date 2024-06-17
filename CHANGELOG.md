@@ -1,4 +1,6 @@
 # Changelog
+## [1.3.4] - 2024-06-17
+- `SafeArea` auto update
 ## [1.3.3] - 2024-05-15
 - add: `SafeArea` support
 ## [1.2.3] - 2024-05-14

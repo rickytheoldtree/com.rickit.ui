@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace RicKit.UI.Component
 {
@@ -6,15 +7,24 @@ namespace RicKit.UI.Component
     public class SafeArea : MonoBehaviour
     {
         private RectTransform rectTrans;
-
+        private ScreenOrientation lastOrientation;
         private void Awake()
         {
             rectTrans = GetComponent<RectTransform>();
-
+            lastOrientation = Screen.orientation;
+            
+            
             rectTrans.anchorMin = Vector2.zero;
             rectTrans.anchorMax = Vector2.one;
             rectTrans.anchoredPosition = Vector2.zero;
             rectTrans.sizeDelta = Vector2.zero;
+            AdaptAnchorsValue();
+        }
+
+        private void Update()
+        {
+            if (lastOrientation == Screen.orientation) return;
+            lastOrientation = Screen.orientation;
             AdaptAnchorsValue();
         }
 
