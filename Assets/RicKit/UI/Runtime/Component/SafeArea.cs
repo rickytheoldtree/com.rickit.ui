@@ -7,13 +7,10 @@ namespace RicKit.UI.Component
     public class SafeArea : MonoBehaviour
     {
         private RectTransform rectTrans;
-        private ScreenOrientation lastOrientation;
+        private Rect safeArea;
         private void Awake()
         {
             rectTrans = GetComponent<RectTransform>();
-            lastOrientation = Screen.orientation;
-            
-            
             rectTrans.anchorMin = Vector2.zero;
             rectTrans.anchorMax = Vector2.one;
             rectTrans.anchoredPosition = Vector2.zero;
@@ -23,16 +20,15 @@ namespace RicKit.UI.Component
 
         private void LateUpdate()
         {
-            if (lastOrientation == Screen.orientation) return;
-            lastOrientation = Screen.orientation;
+            if(safeArea == Screen.safeArea) return;
             AdaptAnchorsValue();
         }
 
         private void AdaptAnchorsValue()
         {
+            safeArea = Screen.safeArea;
             var maxWidth = Display.main.systemWidth;
             var maxHeight = Display.main.systemHeight;
-            var safeArea = UnityEngine.Screen.safeArea;
             var anchorMin = safeArea.position;
             var anchorMax = safeArea.position + safeArea.size;
             anchorMin.x /= maxWidth;
