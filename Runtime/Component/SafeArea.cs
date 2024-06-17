@@ -21,7 +21,7 @@ namespace RicKit.UI.Component
             AdaptAnchorsValue();
         }
 
-        private void Update()
+        private void LateUpdate()
         {
             if (lastOrientation == Screen.orientation) return;
             lastOrientation = Screen.orientation;
