@@ -114,6 +114,7 @@ namespace RicKit.UI
 
             new GameObject("Blocker", typeof(CanvasGroup), typeof(CanvasRenderer), typeof(Canvas),
                 typeof(Image), typeof(GraphicRaycaster)).TryGetComponent(out instance.blockerCg);
+            instance.blockerCg.blocksRaycasts = false;
             instance.blockerCg.TryGetComponent<Canvas>(out var blockerCanvas);
             instance.blockerCg.transform.SetParent(instance.canvas.transform, false);
             blockerCanvas.overrideSorting = true;
