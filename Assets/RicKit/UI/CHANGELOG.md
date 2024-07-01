@@ -1,4 +1,6 @@
 # Changelog
+## [1.4.0] - 2024-07-01
+- fix blocker bug
 ## [1.3.6] - 2024-06-17
 - `SafeArea` auto update
 ## [1.3.3] - 2024-05-15
