@@ -153,7 +153,7 @@ namespace RicKit.UI
             DontDestroyOnLoad(eventSystem);
         }
 
-        #region 同步
+        #region 同步（只是同步调用，并不保证任务同帧开始或者完成）
 
         public void ShowUI<T>(Action<T> onInit = null) where T : AbstractUIPanel
         {
@@ -165,9 +165,9 @@ namespace RicKit.UI
             HideThenShowUIAsync(onInit).WrapErrors();
         }
 
-        public void CloseThenShowUI<T>(Action<T> onInit = null) where T : AbstractUIPanel
+        public void CloseThenShowUI<T>(Action<T> onInit = null, bool destroy = false) where T : AbstractUIPanel
         {
-            CloseThenShowUIAsync(onInit).WrapErrors();
+            CloseThenShowUIAsync(onInit, destroy).WrapErrors();
         }
 
         public void ShowUIUnmanagable<T>(Action<T> onInit = null) where T : AbstractUIPanel
@@ -175,31 +175,37 @@ namespace RicKit.UI
             ShowUIUnmanagableAsync(onInit).WrapErrors();
         }
 
-        public void Back()
+        public void Back(bool destroy = false)
         {
-            BackAsync().WrapErrors();
+            BackAsync(destroy).WrapErrors();
         }
 
-        public void CloseCurrent()
+        /// <summary>
+        /// Close 会出栈，且可销毁
+        /// </summary>
+        /// <param name="destroy">是否在退出动画后销毁</param>
+        public void CloseCurrent(bool destroy = false)
         {
-            CloseCurrentAsync().WrapErrors();
+            CloseCurrentAsync(destroy).WrapErrors();
         }
-
+        /// <summary>
+        /// Hide 不会出栈，且不可销毁
+        /// </summary>
         public void HideCurrent()
         {
             HideCurrentAsync().WrapErrors();
         }
 
-        public void HideUntil<T>() where T : AbstractUIPanel
+        public void CloseUntil<T>(bool destroy = false) where T : AbstractUIPanel
         {
-            HideUntilAsync<T>().WrapErrors();
+            CloseUntilAsync<T>(destroy).WrapErrors();
         }
 
-        public void BackThenShow<T>(Action<T> onInit = null) where T : AbstractUIPanel
+        public void BackThenShow<T>(Action<T> onInit = null, bool destroy = false) where T : AbstractUIPanel
         {
-            BackThenShowAsync(onInit).WrapErrors();
+            BackThenShowAsync(onInit, destroy).WrapErrors();
         }
-
+        
         #endregion
 
 
@@ -229,9 +235,9 @@ namespace RicKit.UI
             await ShowUIAsync(onInit);
         }
 
-        public async Task CloseThenShowUIAsync<T>(Action<T> onInit = null) where T : AbstractUIPanel
+        public async Task CloseThenShowUIAsync<T>(Action<T> onInit = null, bool destroy = false) where T : AbstractUIPanel
         {
-            await CloseCurrentAsync();
+            await CloseCurrentAsync(destroy);
             await ShowUIAsync(onInit);
         }
 
@@ -249,9 +255,9 @@ namespace RicKit.UI
             await form.OnShowAsync();
         }
 
-        public async Task BackAsync()
+        public async Task BackAsync(bool destroy = false)
         {
-            await CloseCurrentAsync();
+            await CloseCurrentAsync(destroy);
             if (showFormStack.Count == 0) return;
             var form = showFormStack.Peek();
             CurrentAbstractUIPanel = form;
@@ -262,12 +268,17 @@ namespace RicKit.UI
         }
 
 
-        public async Task CloseCurrentAsync()
+        public async Task CloseCurrentAsync(bool destroy = false)
         {
             if (showFormStack.Count == 0) return;
             var form = showFormStack.Pop();
             CurrentAbstractUIPanel = showFormStack.Count == 0 ? null : showFormStack.Peek();
             await form.OnHideAsync();
+            if (destroy)
+            {
+                uiFormsList.Remove(form);
+                Destroy(form.gameObject);
+            }
         }
 
 
@@ -278,7 +289,7 @@ namespace RicKit.UI
             await form.OnHideAsync();
         }
 
-        public async Task HideUntilAsync<T>() where T : AbstractUIPanel
+        public async Task CloseUntilAsync<T>(bool destroy = false) where T : AbstractUIPanel
         {
             while (showFormStack.Count > 0)
             {
@@ -291,13 +302,13 @@ namespace RicKit.UI
                     return;
                 }
 
-                CloseCurrentAsync().WrapErrors();
+                CloseCurrentAsync(destroy).WrapErrors();
             }
         }
 
-        public async Task BackThenShowAsync<T>(Action<T> onInit) where T : AbstractUIPanel
+        public async Task BackThenShowAsync<T>(Action<T> onInit, bool destroy = false) where T : AbstractUIPanel
         {
-            await BackAsync();
+            await BackAsync(destroy);
             await ShowUIAsync(onInit);
         }
 
