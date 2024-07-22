@@ -1,5 +1,5 @@
 # Changelog
-## [1.4.2] - 2024-07-19
+## [1.4.3] - 2024-07-19
 - `CloseAsync` add `bool` `destroy` param
 ## [1.4.1] - 2024-07-15
 - fix: `PopUIPanel` `cgBlocker` to protected
