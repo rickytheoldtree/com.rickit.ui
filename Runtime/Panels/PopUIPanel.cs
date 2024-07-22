@@ -11,7 +11,7 @@ namespace RicKit.UI.Panels
     {
         protected const float Duration = 0.3f;
 
-        [SerializeField] private CanvasGroup cgBlocker;
+        [SerializeField] protected CanvasGroup cgBlocker;
 
         [SerializeField] protected Transform panel;
 
