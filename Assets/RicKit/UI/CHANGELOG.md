@@ -1,4 +1,6 @@
 # Changelog
+## [1.4.1] - 2024-07-22
+- fix: `PopUIPanel` `cgBlocker` to protected
 ## [1.4.0] - 2024-07-01
 - fix blocker bug
 ## [1.3.6] - 2024-06-17
