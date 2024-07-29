@@ -16,10 +16,11 @@ MonoBehaviour:
   sortingLayerName: UI
   referenceResolution: {x: 1080, y: 1920}
   screenMatchMode: 1
+  matchWidthOrHeight: 1
   cameraClearFlags: 3
   nearClipPlane: 1
   farClipPlane: 15
-  loadType: 2
+  loadType: 0
   assetPathPrefix: UI/
   packageName: 
   yooSyncLoad: 0

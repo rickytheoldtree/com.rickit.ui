@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using RicKit.UI.Ease;
 using RicKit.UI.Extensions.TaskExtension;
 using UnityEngine;
@@ -38,7 +39,7 @@ namespace RicKit.UI.Panels
             panel.localScale = 0.1f * Vector3.one;
             cgBlocker.alpha = 0;
             CanvasGroup.alpha = 0;
-            await Task.WhenAll(
+            await UniTask.WhenAll(
                 CanvasGroup.Fade(1, Duration, cancellationToken: cancellationToken),
                 panel.Scale(Vector3.one, Duration, AnimEase.OutBack, cancellationToken),
                 cgBlocker.Fade(1, Duration, cancellationToken: cancellationToken));
@@ -47,7 +48,7 @@ namespace RicKit.UI.Panels
 
         protected override async Task OnAnimationOut(CancellationToken cancellationToken)
         {
-            await Task.WhenAll(
+            await UniTask.WhenAll(
                 CanvasGroup.Fade(0, Duration, AnimEase.InBack, cancellationToken: cancellationToken),
                 panel.Scale(0.1f * Vector3.one, Duration, AnimEase.InBack, cancellationToken),
                 cgBlocker.Fade(0, Duration, cancellationToken: cancellationToken));
