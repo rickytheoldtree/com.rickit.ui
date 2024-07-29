@@ -1,5 +1,4 @@
 ﻿using System.Threading;
-using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using RicKit.UI.Ease;
 using RicKit.UI.Extensions.TaskExtension;
@@ -34,7 +33,7 @@ namespace RicKit.UI.Panels
             OnBackClick();
         }
 
-        protected override async Task OnAnimationIn(CancellationToken cancellationToken)
+        protected override async UniTask OnAnimationIn(CancellationToken cancellationToken)
         {
             panel.localScale = 0.1f * Vector3.one;
             cgBlocker.alpha = 0;
@@ -46,7 +45,7 @@ namespace RicKit.UI.Panels
             OnAnimationInEnd();
         }
 
-        protected override async Task OnAnimationOut(CancellationToken cancellationToken)
+        protected override async UniTask OnAnimationOut(CancellationToken cancellationToken)
         {
             await UniTask.WhenAll(
                 CanvasGroup.Fade(0, Duration, AnimEase.InBack, cancellationToken: cancellationToken),
