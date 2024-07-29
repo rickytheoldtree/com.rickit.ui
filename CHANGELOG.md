@@ -1,5 +1,5 @@
 # Changelog
-## [1.4.4] - 2024-07-29
+## [1.4.5] - 2024-07-29
 - use UniTask
 ## [1.4.3] - 2024-07-19
 - `CloseAsync` add `bool` `destroy` param

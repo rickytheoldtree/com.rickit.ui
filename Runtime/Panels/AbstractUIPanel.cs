@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using RicKit.UI.Extensions.TaskExtension;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,7 +28,7 @@ namespace RicKit.UI.Panels
             CanvasGroup = GetComponent<CanvasGroup>();
             CanvasRect = Canvas.GetComponent<RectTransform>();
         }
-        public async Task OnShowAsync()
+        public async UniTask OnShowAsync()
         {
             UIManager.LockInput(true);
             UIManager.OnShow?.Invoke(this);
@@ -38,7 +39,7 @@ namespace RicKit.UI.Panels
             UIManager.OnShowEnd?.Invoke(this);
             UIManager.LockInput(false);
         }
-        public async Task OnHideAsync()
+        public async UniTask OnHideAsync()
         {
             UIManager.LockInput(true);
             UIManager.OnHide?.Invoke(this);
@@ -54,9 +55,9 @@ namespace RicKit.UI.Panels
         }
 
         public abstract void OnESCClick();
-        protected abstract Task OnAnimationIn(CancellationToken cancellationToken);
+        protected abstract UniTask OnAnimationIn(CancellationToken cancellationToken);
 
-        protected abstract Task OnAnimationOut(CancellationToken cancellationToken);
+        protected abstract UniTask OnAnimationOut(CancellationToken cancellationToken);
 
         protected virtual void OnAnimationInEnd()
         {

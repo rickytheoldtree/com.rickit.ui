@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using RicKit.UI.Extensions.TaskExtension;
+using Cysharp.Threading.Tasks;
 using RicKit.UI.Interfaces;
 using RicKit.UI.Panels;
 using UnityEngine;
@@ -157,27 +156,27 @@ namespace RicKit.UI
 
         public void ShowUI<T>(Action<T> onInit = null) where T : AbstractUIPanel
         {
-            ShowUIAsync(onInit).WrapErrors();
+            ShowUIAsync(onInit).Forget();
         }
 
         public void HideThenShowUI<T>(Action<T> onInit = null) where T : AbstractUIPanel
         {
-            HideThenShowUIAsync(onInit).WrapErrors();
+            HideThenShowUIAsync(onInit).Forget();
         }
 
         public void CloseThenShowUI<T>(Action<T> onInit = null, bool destroy = false) where T : AbstractUIPanel
         {
-            CloseThenShowUIAsync(onInit, destroy).WrapErrors();
+            CloseThenShowUIAsync(onInit, destroy).Forget();
         }
 
         public void ShowUIUnmanagable<T>(Action<T> onInit = null) where T : AbstractUIPanel
         {
-            ShowUIUnmanagableAsync(onInit).WrapErrors();
+            ShowUIUnmanagableAsync(onInit).Forget();
         }
 
         public void Back(bool destroy = false)
         {
-            BackAsync(destroy).WrapErrors();
+            BackAsync(destroy).Forget();
         }
 
         /// <summary>
@@ -186,24 +185,24 @@ namespace RicKit.UI
         /// <param name="destroy">是否在退出动画后销毁</param>
         public void CloseCurrent(bool destroy = false)
         {
-            CloseCurrentAsync(destroy).WrapErrors();
+            CloseCurrentAsync(destroy).Forget();
         }
         /// <summary>
         /// Hide 不会出栈，且不可销毁
         /// </summary>
         public void HideCurrent()
         {
-            HideCurrentAsync().WrapErrors();
+            HideCurrentAsync().Forget();
         }
 
         public void CloseUntil<T>(bool destroy = false) where T : AbstractUIPanel
         {
-            CloseUntilAsync<T>(destroy).WrapErrors();
+            CloseUntilAsync<T>(destroy).Forget();
         }
 
         public void BackThenShow<T>(Action<T> onInit = null, bool destroy = false) where T : AbstractUIPanel
         {
-            BackThenShowAsync(onInit, destroy).WrapErrors();
+            BackThenShowAsync(onInit, destroy).Forget();
         }
         
         #endregion
@@ -211,7 +210,7 @@ namespace RicKit.UI
 
         #region 异步
 
-        public async Task ShowUIAsync<T>(Action<T> onInit = null) where T : AbstractUIPanel
+        public async UniTask ShowUIAsync<T>(Action<T> onInit = null) where T : AbstractUIPanel
         {
             var sortOrder = showFormStack.Count == 0 ? 1 : showFormStack.Peek().SortOrder + 5;
             var form = GetUI<T>();
@@ -229,19 +228,19 @@ namespace RicKit.UI
         }
 
 
-        public async Task HideThenShowUIAsync<T>(Action<T> onInit = null) where T : AbstractUIPanel
+        public async UniTask HideThenShowUIAsync<T>(Action<T> onInit = null) where T : AbstractUIPanel
         {
             await HideCurrentAsync();
             await ShowUIAsync(onInit);
         }
 
-        public async Task CloseThenShowUIAsync<T>(Action<T> onInit = null, bool destroy = false) where T : AbstractUIPanel
+        public async UniTask CloseThenShowUIAsync<T>(Action<T> onInit = null, bool destroy = false) where T : AbstractUIPanel
         {
             await CloseCurrentAsync(destroy);
             await ShowUIAsync(onInit);
         }
 
-        public async Task ShowUIUnmanagableAsync<T>(Action<T> onInit = null) where T : AbstractUIPanel
+        public async UniTask ShowUIUnmanagableAsync<T>(Action<T> onInit = null) where T : AbstractUIPanel
         {
             const int sortOrder = 900;
             var form = GetUI<T>();
@@ -255,7 +254,7 @@ namespace RicKit.UI
             await form.OnShowAsync();
         }
 
-        public async Task BackAsync(bool destroy = false)
+        public async UniTask BackAsync(bool destroy = false)
         {
             await CloseCurrentAsync(destroy);
             if (showFormStack.Count == 0) return;
@@ -268,7 +267,7 @@ namespace RicKit.UI
         }
 
 
-        public async Task CloseCurrentAsync(bool destroy = false)
+        public async UniTask CloseCurrentAsync(bool destroy = false)
         {
             if (showFormStack.Count == 0) return;
             var form = showFormStack.Pop();
@@ -282,14 +281,14 @@ namespace RicKit.UI
         }
 
 
-        public async Task HideCurrentAsync()
+        public async UniTask HideCurrentAsync()
         {
             if (showFormStack.Count == 0) return;
             var form = showFormStack.Peek();
             await form.OnHideAsync();
         }
 
-        public async Task CloseUntilAsync<T>(bool destroy = false) where T : AbstractUIPanel
+        public async UniTask CloseUntilAsync<T>(bool destroy = false) where T : AbstractUIPanel
         {
             while (showFormStack.Count > 0)
             {
@@ -302,11 +301,11 @@ namespace RicKit.UI
                     return;
                 }
 
-                CloseCurrentAsync(destroy).WrapErrors();
+                CloseCurrentAsync(destroy).Forget();
             }
         }
 
-        public async Task BackThenShowAsync<T>(Action<T> onInit, bool destroy = false) where T : AbstractUIPanel
+        public async UniTask BackThenShowAsync<T>(Action<T> onInit, bool destroy = false) where T : AbstractUIPanel
         {
             await BackAsync(destroy);
             await ShowUIAsync(onInit);
@@ -388,7 +387,7 @@ namespace RicKit.UI
             return uiFormsList.Where(form => form is T).Cast<T>().FirstOrDefault();
         }
 
-        private async Task<T> NewUI<T>() where T : AbstractUIPanel
+        private async UniTask<T> NewUI<T>() where T : AbstractUIPanel
         {
             LockInput(true);
             var prefab = await panelLoader.LoadPrefab($"{Config.assetPathPrefix}{typeof(T).Name}");
@@ -416,9 +415,9 @@ namespace RicKit.UI
 
     public class DefaultPanelLoader : IPanelLoader
     {
-        public Task<GameObject> LoadPrefab(string path)
+        public System.Threading.Tasks.Task<GameObject> LoadPrefab(string path)
         {
-            return Task.FromResult(Resources.Load<GameObject>(path));
+            return System.Threading.Tasks.Task.FromResult(Resources.Load<GameObject>(path));
         }
     }
 }
