@@ -1,5 +1,6 @@
 ﻿#if YOO_SUPPORT
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using RicKit.UI.Interfaces;
 using UnityEngine;
 using YooAsset;
@@ -19,7 +20,7 @@ namespace RicKit.UI.Extensions.YooExtension
         private ResourcePackage Package => package ??= YooAssets.GetPackage(packageName);
         private ResourcePackage package;
 
-        public async Task<GameObject> LoadPrefab(string path)
+        public async UniTask<GameObject> LoadPrefab(string path)
         {
             if (sync)
             {
