@@ -88,8 +88,17 @@ namespace RicKit.UI
         /// </summary>
         public static void Init()
         {
-            instance = new UIManager();
-            instance.CreateUIManager();
+            if (instance != null)
+            {
+                Debug.LogError("UIManager already initialized.");
+                return;
+            }
+            new UIManager().Initiate();
+        }
+        public void Initiate()
+        {
+            instance = this;
+            CreateUIManager();
         }
 
         private void CreateUIManager()
