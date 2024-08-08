@@ -16,7 +16,36 @@ using RicKit.UI.Extensions.YooExtension;
 
 namespace RicKit.UI
 {
-    public class UIManager : MonoBehaviour
+    public interface IUIManager
+    {
+        AbstractUIPanel CurrentAbstractUIPanel { get; }
+        RectTransform RectTransform { get; }
+        Camera UICamera { get; }
+        UISettings Config { get; }
+        void ShowUI<T>(Action<T> onInit = null) where T : AbstractUIPanel;
+        void HideThenShowUI<T>(Action<T> onInit = null) where T : AbstractUIPanel;
+        void CloseThenShowUI<T>(Action<T> onInit = null, bool destroy = false) where T : AbstractUIPanel;
+        void ShowUIUnmanagable<T>(Action<T> onInit = null) where T : AbstractUIPanel;
+        void Back(bool destroy = false);
+        void CloseCurrent(bool destroy = false);
+        void HideCurrent();
+        void CloseUntil<T>(bool destroy = false) where T : AbstractUIPanel;
+        void BackThenShow<T>(Action<T> onInit = null, bool destroy = false) where T : AbstractUIPanel;
+        UniTask ShowUIAsync<T>(Action<T> onInit = null) where T : AbstractUIPanel;
+        UniTask HideThenShowUIAsync<T>(Action<T> onInit = null) where T : AbstractUIPanel;
+        UniTask CloseThenShowUIAsync<T>(Action<T> onInit = null, bool destroy = false) where T : AbstractUIPanel;
+        UniTask ShowUIUnmanagableAsync<T>(Action<T> onInit = null) where T : AbstractUIPanel;
+        UniTask BackAsync(bool destroy = false);
+        UniTask CloseCurrentAsync(bool destroy = false);
+        UniTask HideCurrentAsync();
+        UniTask CloseUntilAsync<T>(bool destroy = false) where T : AbstractUIPanel;
+        UniTask BackThenShowAsync<T>(Action<T> onInit, bool destroy = false) where T : AbstractUIPanel;
+        void ClearAll();
+        T GetUI<T>() where T : AbstractUIPanel;
+        Canvas GetCustomLayer(string name, int sortOrder, string layerName = "UI");
+        void SetCustomLayerSortOrder(string name, int sortOrder);
+    }
+    public class UIManager : MonoBehaviour, IUIManager
     {
         private static UIManager instance;
         public static UIManager I
@@ -38,10 +67,8 @@ namespace RicKit.UI
         private readonly List<AbstractUIPanel> uiFormsList = new List<AbstractUIPanel>();
         private Canvas canvas;
         public AbstractUIPanel CurrentAbstractUIPanel { get; private set; }
-        public RectTransform RectTransform => rectTransform;
-        private RectTransform rectTransform;
-        public Camera UICamera => uiCamera;
-        private Camera uiCamera;
+        public RectTransform RectTransform { get; private set; }
+        public Camera UICamera {get; private set;}
         public UISettings Config { get; private set; }
 
         #region Events
@@ -59,82 +86,88 @@ namespace RicKit.UI
         public static void Init()
         {
             new GameObject("UIManager", typeof(UIManager)).TryGetComponent(out instance);
-            var config = instance.Config = Resources.Load<UISettings>("UISettings");
+            instance.CreateUIManager();
+        }
+
+        private void CreateUIManager()
+        {
+            var config = Config = Resources.Load<UISettings>("UISettings");
             switch (config.loadType)
             {
                 default:
                     Debug.LogError($"LoadType {config.loadType} not found");
                     throw new ArgumentOutOfRangeException();
                 case LoadType.Resources:
-                    instance.panelLoader = new DefaultPanelLoader();
+                    panelLoader = new DefaultPanelLoader();
                     Debug.Log($"UIManager use Resources, assetPathPrefix: {config.assetPathPrefix}");
                     break;
 #if YOO_SUPPORT
                 case LoadType.Yoo:
-                    instance.panelLoader = new YooAssetLoader(config.packageName, config.yooSyncLoad);
+                    panelLoader = new YooAssetLoader(config.packageName, config.yooSyncLoad);
                     Debug.Log(
                         $"UIManager use YooAsset, assetPathPrefix: {config.assetPathPrefix}, packageName: {config.packageName}");
                     break;
 #endif
 #if ADDRESSABLES_SUPPORT
                 case LoadType.Addressables:
-                    instance.panelLoader = new AddressablesLoader();
+                    panelLoader = new AddressablesLoader();
                     Debug.Log($"UIManager use Addressables, assetPathPrefix: {config.assetPathPrefix}");
                     break;
 #endif
             }
 
-            new GameObject("UICam", typeof(Camera)).TryGetComponent(out instance.uiCamera);
+            new GameObject("UICam", typeof(Camera)).TryGetComponent(out Camera cam);
+            UICamera = cam;
             Transform transform1;
-            (transform1 = instance.uiCamera.transform).SetParent(instance.transform);
+            (transform1 = UICamera.transform).SetParent(transform);
             transform1.localPosition = new Vector3(0, 0, -10);
-            instance.uiCamera.clearFlags = config.cameraClearFlags;
-            instance.uiCamera.cullingMask = config.cullingMask;
-            instance.uiCamera.orthographic = true;
-            instance.uiCamera.orthographicSize = 5;
-            instance.uiCamera.nearClipPlane = config.nearClipPlane;
-            instance.uiCamera.farClipPlane = config.farClipPlane;
-            instance.uiCamera.depth = 0;
+            UICamera.clearFlags = config.cameraClearFlags;
+            UICamera.cullingMask = config.cullingMask;
+            UICamera.orthographic = true;
+            UICamera.orthographicSize = 5;
+            UICamera.nearClipPlane = config.nearClipPlane;
+            UICamera.farClipPlane = config.farClipPlane;
+            UICamera.depth = 0;
 
             new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster))
-                .TryGetComponent(out instance.canvas);
-            instance.canvas.transform.SetParent(instance.transform);
-            instance.canvas.TryGetComponent(out instance.rectTransform);
-            instance.canvas.renderMode = RenderMode.ScreenSpaceCamera;
-            instance.canvas.worldCamera = instance.uiCamera;
-            instance.canvas.planeDistance = 5;
-            instance.canvas.sortingLayerName = config.sortingLayerName;
-            instance.canvas.sortingOrder = 0;
-            instance.canvas.TryGetComponent<CanvasScaler>(out var canvasScaler);
+                .TryGetComponent(out canvas);
+            canvas.transform.SetParent(transform);
+            canvas.TryGetComponent(out RectTransform rect);
+            RectTransform = rect;
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.worldCamera = UICamera;
+            canvas.planeDistance = 5;
+            canvas.sortingLayerName = config.sortingLayerName;
+            canvas.sortingOrder = 0;
+            canvas.TryGetComponent<CanvasScaler>(out var canvasScaler);
             canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             canvasScaler.referenceResolution = config.referenceResolution;
             canvasScaler.screenMatchMode = config.screenMatchMode;
             canvasScaler.matchWidthOrHeight = config.matchWidthOrHeight;
 
             new GameObject("Blocker", typeof(CanvasGroup), typeof(CanvasRenderer), typeof(Canvas),
-                typeof(Image), typeof(GraphicRaycaster)).TryGetComponent(out instance.blockerCg);
-            instance.blockerCg.blocksRaycasts = false;
-            instance.blockerCg.TryGetComponent<Canvas>(out var blockerCanvas);
-            instance.blockerCg.transform.SetParent(instance.canvas.transform, false);
+                typeof(Image), typeof(GraphicRaycaster)).TryGetComponent(out blockerCg);
+            blockerCg.blocksRaycasts = false;
+            blockerCg.TryGetComponent<Canvas>(out var blockerCanvas);
+            blockerCg.transform.SetParent(canvas.transform, false);
             blockerCanvas.overrideSorting = true;
             blockerCanvas.sortingLayerName = config.sortingLayerName;
             blockerCanvas.sortingOrder = 1000;
-            instance.blockerCg.TryGetComponent<Image>(out var blockerImg);
+            blockerCg.TryGetComponent<Image>(out var blockerImg);
             blockerImg.color = Color.clear;
-            instance.blockerCg.TryGetComponent<RectTransform>(out var blockerRt);
+            blockerCg.TryGetComponent<RectTransform>(out var blockerRt);
             blockerRt.anchorMin = Vector2.zero;
             blockerRt.anchorMax = Vector2.one;
             blockerRt.offsetMin = Vector2.zero;
             blockerRt.offsetMax = Vector2.zero;
 
-            new GameObject("DefaultRoot", typeof(RectTransform)).TryGetComponent(out instance.defaultRoot);
-            instance.defaultRoot.SetParent(instance.canvas.transform, false);
-            instance.defaultRoot.anchorMin = Vector2.zero;
-            instance.defaultRoot.anchorMax = Vector2.one;
-            instance.defaultRoot.offsetMin = Vector2.zero;
-            instance.defaultRoot.offsetMax = Vector2.zero;
+            new GameObject("DefaultRoot", typeof(RectTransform)).TryGetComponent(out defaultRoot);
+            defaultRoot.SetParent(canvas.transform, false);
+            defaultRoot.anchorMin = Vector2.zero;
+            defaultRoot.anchorMax = Vector2.one;
+            defaultRoot.offsetMin = Vector2.zero;
+            defaultRoot.offsetMax = Vector2.zero;
         }
-
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Escape) && CurrentAbstractUIPanel && CurrentAbstractUIPanel.CanInteract)
@@ -355,7 +388,7 @@ namespace RicKit.UI
                 {
                     layer = LayerMask.NameToLayer(layerName)
                 };
-            go.transform.SetParent(rectTransform);
+            go.transform.SetParent(RectTransform);
             go.transform.localPosition = Vector3.zero;
             go.transform.localScale = Vector3.one;
             go.transform.localRotation = Quaternion.identity;
@@ -415,9 +448,9 @@ namespace RicKit.UI
 
     public class DefaultPanelLoader : IPanelLoader
     {
-        public System.Threading.Tasks.Task<GameObject> LoadPrefab(string path)
+        public UniTask<GameObject> LoadPrefab(string path)
         {
-            return System.Threading.Tasks.Task.FromResult(Resources.Load<GameObject>(path));
+            return UniTask.FromResult(Resources.Load<GameObject>(path));
         }
     }
 }
