@@ -1,5 +1,5 @@
 # Changelog
-## [1.5.0] - 2024-08-08
+## [1.5.1] - 2024-08-08
 - provide `IUIManager` interface
 ## [1.4.5] - 2024-07-29
 - use UniTask
