@@ -10,7 +10,7 @@
     - 添加scope(国际, 实时更新)
       - Name: package.openupm.com
       - URL: https://package.openupm.com
-      - Scope(s): com.rickit.ui
+      - Scope(s): `com.rickit.ui`, `com.cysharp.unitask`(依赖)
 
     - 在 Window/PackageManger 左上角选择 `My Registries` 刷新列表后, 找到`RicKit UI`下载
 ## 简介
