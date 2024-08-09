@@ -1,8 +1,5 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading;
 using Cysharp.Threading.Tasks;
-using RicKit.UI.Extensions.TaskExtension;
 using UnityEngine;
 using UnityEngine.UI;
 
