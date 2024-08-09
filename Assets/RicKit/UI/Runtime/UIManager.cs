@@ -24,6 +24,7 @@ namespace RicKit.UI
         RectTransform CanvasRectTransform { get; }
         Camera UICamera { get; }
         UISettings Settings { get; }
+        void Initiate();
         void ShowUI<T>(Action<T> onInit = null) where T : AbstractUIPanel;
         void HideThenShowUI<T>(Action<T> onInit = null) where T : AbstractUIPanel;
         void CloseThenShowUI<T>(Action<T> onInit = null, bool destroy = false) where T : AbstractUIPanel;
@@ -358,17 +359,17 @@ namespace RicKit.UI
 
         #region LockInput
 
-        private int lockCount;
+        private static int lockCount;
 
         public static void LockInput(bool on)
         {
             if (instance == null) return;
-            instance.lockCount += on ? 1 : -1;
-            instance.lockCount = instance.lockCount < 0 ? 0 : instance.lockCount;
+            lockCount += on ? 1 : -1;
+            lockCount = lockCount < 0 ? 0 : lockCount;
 #if UNITY_EDITOR
-            instance.blockerCg.name = $"Blocker {instance.lockCount}";
+            instance.blockerCg.name = $"Blocker {lockCount}";
 #endif
-            instance.blockerCg.blocksRaycasts = instance.lockCount > 0;
+            instance.blockerCg.blocksRaycasts = lockCount > 0;
         }
 
         #endregion
