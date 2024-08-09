@@ -1,4 +1,7 @@
 # Changelog
+## [1.6.0] - 2024-08-09
+- fix: `UIManager.LockInput` bug
+- remove `SimpleTask`
 ## [1.5.2] - 2024-08-08
 - provide `IUIManager` interface
 ## [1.4.5] - 2024-07-29

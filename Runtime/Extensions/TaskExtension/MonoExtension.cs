@@ -19,10 +19,5 @@ namespace RicKit.UI.Extensions.TaskExtension
             }
             return tokenSource.Token;
         }
-
-        public static async void WrapErrors(this System.Threading.Tasks.Task task)
-        {
-            await task;
-        }
     }
 }
