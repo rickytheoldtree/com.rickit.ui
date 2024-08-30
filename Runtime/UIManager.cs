@@ -43,6 +43,7 @@ namespace RicKit.UI
         UniTask HideCurrentAsync();
         UniTask CloseUntilAsync<T>(bool destroy = false) where T : AbstractUIPanel;
         UniTask BackThenShowAsync<T>(Action<T> onInit, bool destroy = false) where T : AbstractUIPanel;
+        UniTask WaitUntilUIHideEnd<T>() where T : AbstractUIPanel;
         void ClearAll();
         T GetUI<T>() where T : AbstractUIPanel;
         Canvas GetCustomLayer(string name, int sortOrder, string layerName = "UI");
@@ -352,6 +353,12 @@ namespace RicKit.UI
         {
             await BackAsync(destroy);
             await ShowUIAsync(onInit);
+        }
+
+        public UniTask WaitUntilUIHideEnd<T>() where T : AbstractUIPanel
+        {
+            var panel = GetUI<T>();
+            return UniTask.WaitUntil(() => panel.gameObject.activeSelf == false);
         }
 
         #endregion
