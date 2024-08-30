@@ -1,4 +1,6 @@
 # Changelog
+## [1.6.2] - 2024-08-30
+- add: `IUIManager.WaitUntilUIHideEnd<T>`
 ## [1.6.1] - 2024-08-09
 - fix: `UIManager.LockInput` bug
 - remove `SimpleTask`
