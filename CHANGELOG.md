@@ -1,4 +1,6 @@
 # Changelog
+## [1.6.4] - 2024-10-08
+- fix: `PanelCreator` open Panel bug
 ## [1.6.3] - 2024-10-08
 - mod: PanelCreator Editor Save Key
 - add: `UISettings.depth` `UISettings.backgroundColor`

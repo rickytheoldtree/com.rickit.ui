@@ -77,13 +77,18 @@ namespace RicKit.UI.Editor
             {
                 if (GUILayout.Button(type.Name))
                 {
+                    //检查路径是否存在
+                    if (!Directory.Exists(path))
+                    {
+                        Debug.LogError($"{path} 不存在");
+                        return;
+                    }
                     //如果路径存在则跳出
-                    var path = $"{PanelCreator.path}/{type.Name}.prefab";
-                    //如果存在则打开
-                    var asset = AssetDatabase.LoadAssetAtPath(path, typeof(GameObject));
+                    var assetPath = $"{path}/{type.Name}.prefab";
+                    var asset = AssetDatabase.LoadAssetAtPath(assetPath, typeof(GameObject));
                     if (asset)
                     {
-                        Debug.Log($"{path} 已存在");
+                        Debug.Log($"{assetPath} 已存在");
                         AssetDatabase.OpenAsset(asset);
                         continue;
                     }
@@ -99,9 +104,9 @@ namespace RicKit.UI.Editor
                     rect.offsetMin = Vector2.zero;
                     rect.offsetMax = Vector2.zero;
                     //保存
-                    PrefabUtility.SaveAsPrefabAsset(go, path);
+                    PrefabUtility.SaveAsPrefabAsset(go, assetPath);
                     //打开
-                    AssetDatabase.OpenAsset(AssetDatabase.LoadAssetAtPath(path, typeof(GameObject)));
+                    AssetDatabase.OpenAsset(AssetDatabase.LoadAssetAtPath(assetPath, typeof(GameObject)));
                     //销毁
                     DestroyImmediate(go);
                 }
