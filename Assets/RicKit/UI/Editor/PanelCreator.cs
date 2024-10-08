@@ -73,42 +73,49 @@ namespace RicKit.UI.Editor
             EditorGUILayout.TextField("预制体目录", path);
             GUI.enabled = true;
             DropFolder();
+            //检查路径是否存在
+            if (!Directory.Exists(path))
+            {
+                EditorGUILayout.HelpBox("文件夹路径不存在", MessageType.Error);
+                return;
+            }
             foreach (var type in types)
             {
-                if (GUILayout.Button(type.Name))
+                using (new EditorGUILayout.HorizontalScope())
                 {
-                    //检查路径是否存在
-                    if (!Directory.Exists(path))
-                    {
-                        Debug.LogError($"{path} 不存在");
-                        return;
-                    }
-                    //如果路径存在则跳出
                     var assetPath = $"{path}/{type.Name}.prefab";
+                    GUILayout.Label(type.Name);
                     var asset = AssetDatabase.LoadAssetAtPath(assetPath, typeof(GameObject));
                     if (asset)
                     {
-                        Debug.Log($"{assetPath} 已存在");
-                        AssetDatabase.OpenAsset(asset);
-                        continue;
+                        if (GUILayout.Button("Open", GUILayout.Width(100)))
+                        {
+                            AssetDatabase.OpenAsset(asset);
+                        }
                     }
-                    //创建GameObject
-                    var go = new GameObject(type.Name, typeof(RectTransform), type);
-                    //设置锚点
-                    var rect = go.GetComponent<RectTransform>();
-                    //设置层
-                    go.layer = LayerMask.NameToLayer("UI");
-                    //全屏
-                    rect.anchorMin = Vector2.zero;
-                    rect.anchorMax = Vector2.one;
-                    rect.offsetMin = Vector2.zero;
-                    rect.offsetMax = Vector2.zero;
-                    //保存
-                    PrefabUtility.SaveAsPrefabAsset(go, assetPath);
-                    //打开
-                    AssetDatabase.OpenAsset(AssetDatabase.LoadAssetAtPath(assetPath, typeof(GameObject)));
-                    //销毁
-                    DestroyImmediate(go);
+                    else
+                    {
+                        if (GUILayout.Button("Create", GUILayout.Width(100)))
+                        {
+                            //创建GameObject
+                            var go = new GameObject(type.Name, typeof(RectTransform), type);
+                            //设置锚点
+                            var rect = go.GetComponent<RectTransform>();
+                            //设置层
+                            go.layer = LayerMask.NameToLayer("UI");
+                            //全屏
+                            rect.anchorMin = Vector2.zero;
+                            rect.anchorMax = Vector2.one;
+                            rect.offsetMin = Vector2.zero;
+                            rect.offsetMax = Vector2.zero;
+                            //保存
+                            PrefabUtility.SaveAsPrefabAsset(go, assetPath);
+                            //打开
+                            AssetDatabase.OpenAsset(AssetDatabase.LoadAssetAtPath(assetPath, typeof(GameObject)));
+                            //销毁
+                            DestroyImmediate(go);
+                        }
+                    }
                 }
             }
         }
