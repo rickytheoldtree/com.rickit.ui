@@ -145,12 +145,14 @@ namespace RicKit.UI
             UICamera.transform.SetParent(Mono.transform);
             UICamera.transform.localPosition = new Vector3(0, 0, -10);
             UICamera.clearFlags = settings.cameraClearFlags;
+            if(UICamera.clearFlags == CameraClearFlags.SolidColor || UICamera.clearFlags == CameraClearFlags.Skybox)
+                UICamera.backgroundColor = settings.backgroundColor;
             UICamera.cullingMask = settings.cullingMask;
+            UICamera.depth = settings.depth;
             UICamera.orthographic = true;
             UICamera.orthographicSize = 5;
             UICamera.nearClipPlane = settings.nearClipPlane;
             UICamera.farClipPlane = settings.farClipPlane;
-            UICamera.depth = 0;
 
             new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster))
                 .TryGetComponent(out canvas);

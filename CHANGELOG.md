@@ -1,4 +1,7 @@
 # Changelog
+## [1.6.3] - 2024-10-08
+- mod: PanelCreator Editor Save Key
+- add: `UISettings.depth` `UISettings.backgroundColor`
 ## [1.6.2] - 2024-08-30
 - add: `IUIManager.WaitUntilUIHideEnd<T>`
 ## [1.6.1] - 2024-08-09

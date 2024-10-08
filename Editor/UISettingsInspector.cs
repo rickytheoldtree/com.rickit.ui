@@ -10,14 +10,16 @@ namespace RicKit.UI.Editor
         private UISettings settings;
         private GUIStyle titleStyle;
 
-        private SerializedProperty cullingMask,
+        private SerializedProperty cameraClearFlags,
+            backgroundColor,
+            cullingMask,
+            depth,
+            nearClipPlane,
+            farClipPlane,
             sortingLayerName,
             referenceResolution,
             screenMatchMode,
             matchWidthOrHeight,
-            cameraClearFlags,
-            nearClipPlane,
-            farClipPlane,
             loadType,
             assetPathPrefix;
 #if YOO_SUPPORT
@@ -29,15 +31,17 @@ namespace RicKit.UI.Editor
         private void OnEnable()
         {
             settings = (UISettings)target;
+            cameraClearFlags = serializedObject.FindProperty("cameraClearFlags");
+            backgroundColor = serializedObject.FindProperty("backgroundColor");
             cullingMask = serializedObject.FindProperty("cullingMask");
+            depth = serializedObject.FindProperty("depth");
+            nearClipPlane = serializedObject.FindProperty("nearClipPlane");
+            farClipPlane = serializedObject.FindProperty("farClipPlane");
             loadType = serializedObject.FindProperty("loadType");
             sortingLayerName = serializedObject.FindProperty("sortingLayerName");
             referenceResolution = serializedObject.FindProperty("referenceResolution");
             screenMatchMode = serializedObject.FindProperty("screenMatchMode");
             matchWidthOrHeight = serializedObject.FindProperty("matchWidthOrHeight");
-            cameraClearFlags = serializedObject.FindProperty("cameraClearFlags");
-            nearClipPlane = serializedObject.FindProperty("nearClipPlane");
-            farClipPlane = serializedObject.FindProperty("farClipPlane");
             assetPathPrefix = serializedObject.FindProperty("assetPathPrefix");
 #if YOO_SUPPORT
             packageName = serializedObject.FindProperty("packageName");
@@ -48,9 +52,19 @@ namespace RicKit.UI.Editor
         public override void OnInspectorGUI()
         {
             GUILayout.Label("Camera", EditorStyles.boldLabel);
-
             EditorGUI.indentLevel++;
+            EditorGUILayout.PropertyField(cameraClearFlags);
+            if (settings.cameraClearFlags == CameraClearFlags.SolidColor || settings.cameraClearFlags == CameraClearFlags.Skybox)
+            {
+                EditorGUILayout.PropertyField(backgroundColor);
+            }
             EditorGUILayout.PropertyField(cullingMask);
+            EditorGUILayout.PropertyField(depth);
+            EditorGUILayout.PropertyField(nearClipPlane);
+            EditorGUILayout.PropertyField(farClipPlane);
+            EditorGUI.indentLevel--;
+            GUILayout.Label("Canvas", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
             EditorGUILayout.PropertyField(sortingLayerName);
             EditorGUILayout.PropertyField(referenceResolution);
             EditorGUILayout.PropertyField(screenMatchMode);
@@ -60,13 +74,8 @@ namespace RicKit.UI.Editor
                 EditorGUILayout.PropertyField(matchWidthOrHeight);
                 EditorGUI.indentLevel--;
             }
-            EditorGUILayout.PropertyField(cameraClearFlags);
-            EditorGUILayout.PropertyField(nearClipPlane);
-            EditorGUILayout.PropertyField(farClipPlane);
             EditorGUI.indentLevel--;
-
             GUILayout.Label("Asset", EditorStyles.boldLabel);
-            
             EditorGUI.indentLevel++;
             EditorGUILayout.PropertyField(loadType);
             EditorGUILayout.PropertyField(assetPathPrefix);

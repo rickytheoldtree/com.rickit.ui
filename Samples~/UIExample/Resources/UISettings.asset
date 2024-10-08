@@ -12,14 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d90026a0c9744e78bb4d1b8a56ed704, type: 3}
   m_Name: UISettings
   m_EditorClassIdentifier: 
+  cameraClearFlags: 2
+  backgroundColor: {r: 0.1921569, g: 0.1921569, b: 0.1921569, a: 1}
   cullingMask: 32
+  depth: 0
+  nearClipPlane: 1
+  farClipPlane: 15
   sortingLayerName: UI
   referenceResolution: {x: 1080, y: 1920}
   screenMatchMode: 1
   matchWidthOrHeight: 1
-  cameraClearFlags: 3
-  nearClipPlane: 1
-  farClipPlane: 15
   loadType: 0
   assetPathPrefix: UI/
   packageName: 
