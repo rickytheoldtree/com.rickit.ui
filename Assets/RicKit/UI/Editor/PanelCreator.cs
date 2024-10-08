@@ -10,7 +10,7 @@ namespace RicKit.UI.Editor
 {
     public class PanelCreator : EditorWindow
     {
-        private const string PathKey = "PanelCreatorEditorPath";
+        private static string PathKey => $"PanelCreatorEditorPath_{Application.identifier}";
         private static string path = "Assets/Resources/UIPanels";
         private List<Type> types;
         private GUIStyle dropAreaStyle;
