@@ -1,4 +1,6 @@
 # Changelog
+## [1.6.6] - 2024-10-14
+- fix: `PanelCreator` panel can't show all items
 ## [1.6.5] - 2024-10-08
 - fix: `PanelCreator` open Panel bug
 ## [1.6.3] - 2024-10-08
