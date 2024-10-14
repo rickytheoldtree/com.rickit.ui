@@ -16,7 +16,7 @@ namespace RicKit.UI.Panels
         protected RectTransform CanvasRect { get; private set; }
         private Canvas Canvas { get; set; }
         public virtual bool DontDestroyOnClear => false;
-        protected static UIManager UI => UIManager.I;
+        protected static IUIManager UI => UIManager.I;
         protected virtual void Awake()
         {
             Canvas = GetComponent<Canvas>();
@@ -27,24 +27,24 @@ namespace RicKit.UI.Panels
         }
         public async UniTask OnShowAsync()
         {
-            UIManager.LockInput(true);
-            UIManager.OnShow?.Invoke(this);
+            UI.SetLockInput(true);
+            UI.OnShow?.Invoke(this);
             gameObject.SetActive(true);
             CanvasGroup.blocksRaycasts = true;
             CanvasGroup.interactable = false;
             await OnAnimationIn(this.GetCancellationTokenOnDestroy());
-            UIManager.OnShowEnd?.Invoke(this);
-            UIManager.LockInput(false);
+            UI.OnShowEnd?.Invoke(this);
+            UI.SetLockInput(false);
         }
         public async UniTask OnHideAsync()
         {
-            UIManager.LockInput(true);
-            UIManager.OnHide?.Invoke(this);
+            UI.SetLockInput(true);
+            UI.OnHide?.Invoke(this);
             CanvasGroup.blocksRaycasts = true;
             CanvasGroup.interactable = false;
             await OnAnimationOut(this.GetCancellationTokenOnDestroy());
-            UIManager.OnHideEnd?.Invoke(this);
-            UIManager.LockInput(false);
+            UI.OnHideEnd?.Invoke(this);
+            UI.SetLockInput(false);
         }
 
         public virtual void BeforeShow()

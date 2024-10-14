@@ -9,7 +9,7 @@ namespace RicKit.UI.SubUI
         public bool IsShow { get; private set; }
         public bool CanInteract => IsShow && CanvasGroup.interactable;
         protected CanvasGroup CanvasGroup { get; private set; }
-        protected static UIManager UI => UIManager.I;
+        protected static IUIManager UI => UIManager.I;
         public SubUICtrl SubUICtrl { get; set; }
 
         protected virtual void Awake()
