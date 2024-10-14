@@ -24,6 +24,10 @@ namespace RicKit.UI
         RectTransform CanvasRectTransform { get; }
         Camera UICamera { get; }
         UISettings Settings { get; }
+        Action<AbstractUIPanel> OnShow { get; set; }
+        Action<AbstractUIPanel> OnHide { get; set; }
+        Action<AbstractUIPanel> OnShowEnd { get; set; }
+        Action<AbstractUIPanel> OnHideEnd { get; set; }
         void Initiate();
         void ShowUI<T>(Action<T> onInit = null) where T : AbstractUIPanel;
         void HideThenShowUI<T>(Action<T> onInit = null) where T : AbstractUIPanel;
@@ -45,14 +49,15 @@ namespace RicKit.UI
         UniTask BackThenShowAsync<T>(Action<T> onInit, bool destroy = false) where T : AbstractUIPanel;
         UniTask WaitUntilUIHideEnd<T>() where T : AbstractUIPanel;
         void ClearAll();
+        void SetLockInput(bool on);
         T GetUI<T>() where T : AbstractUIPanel;
         Canvas GetCustomLayer(string name, int sortOrder, string layerName = "UI");
         void SetCustomLayerSortOrder(string name, int sortOrder);
     }
     public class UIManager : IUIManager
     {
-        private static UIManager instance;
-        public static UIManager I
+        private static IUIManager instance;
+        public static IUIManager I
         {
             get
             {
@@ -78,10 +83,10 @@ namespace RicKit.UI
 
         #region Events
 
-        public static Action<AbstractUIPanel> OnShow { get; set; }
-        public static Action<AbstractUIPanel> OnHide { get; set; }
-        public static Action<AbstractUIPanel> OnShowEnd { get; set; }
-        public static Action<AbstractUIPanel> OnHideEnd { get; set; }
+        public Action<AbstractUIPanel> OnShow { get; set; }
+        public Action<AbstractUIPanel> OnHide { get; set; }
+        public Action<AbstractUIPanel> OnShowEnd { get; set; }
+        public Action<AbstractUIPanel> OnHideEnd { get; set; }
 
         #endregion
 
@@ -368,17 +373,20 @@ namespace RicKit.UI
 
         #region LockInput
 
-        private static int lockCount;
-
-        public static void LockInput(bool on)
+        private int lockCount;
+        public void SetLockInput(bool on)
         {
             if (instance == null) return;
             lockCount += on ? 1 : -1;
             lockCount = lockCount < 0 ? 0 : lockCount;
 #if UNITY_EDITOR
-            instance.blockerCg.name = $"Blocker {lockCount}";
+            blockerCg.name = $"Blocker {lockCount}";
 #endif
-            instance.blockerCg.blocksRaycasts = lockCount > 0;
+            blockerCg.blocksRaycasts = lockCount > 0;
+        }
+        public static void LockInput(bool on)
+        {
+            I?.SetLockInput(on);
         }
 
         #endregion

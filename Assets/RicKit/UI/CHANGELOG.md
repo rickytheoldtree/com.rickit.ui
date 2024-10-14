@@ -1,4 +1,7 @@
 # Changelog
+## [1.7.0] - 2024-10-14
+- mod: 'IUIManager' events to Non-Static
+- mod: panel's UI property to 'IUIManager'
 ## [1.6.6] - 2024-10-14
 - fix: `PanelCreator` panel can't show all items
 ## [1.6.5] - 2024-10-08

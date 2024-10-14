@@ -16,7 +16,7 @@
 ## 简介
 - 支持入场动画出场动画，动画时默认无法输入
 - 对`Esc`返回默认支持
-- 目前支持`YooAsset``Addressables`, 和默认的`Resources`加载
+- 目前支持`YooAsset`,`Addressables`, 和默认的`Resources`加载
 - 使用前在 Resources/UISettings 下设置所有参数，包括`CurvingMasks`, `SortingLayerName`, 依赖分辨率等关键设置
 - 通过`Rickit => UI => Create UISettings` 来创建 `UISettings`
 - `UIManager`必须手动Init，会在第一次调用时创建，包括`UICam`, `Blocker`等重要组成部分
