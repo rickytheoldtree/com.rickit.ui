@@ -14,6 +14,7 @@ namespace RicKit.UI.Editor
         private static string path = "Assets/Resources/UIPanels";
         private List<Type> types;
         private GUIStyle dropAreaStyle;
+        private Vector2 scrollPosition;
         private void OnEnable()
         {
             titleContent = new GUIContent("界面编辑器");
@@ -79,6 +80,7 @@ namespace RicKit.UI.Editor
                 EditorGUILayout.HelpBox("文件夹路径不存在", MessageType.Error);
                 return;
             }
+            scrollPosition = GUILayout.BeginScrollView(scrollPosition);
             foreach (var type in types)
             {
                 using (new EditorGUILayout.HorizontalScope())
@@ -118,6 +120,7 @@ namespace RicKit.UI.Editor
                     }
                 }
             }
+            GUILayout.EndScrollView();
         }
 
         private List<Type> GetAllTypes()
