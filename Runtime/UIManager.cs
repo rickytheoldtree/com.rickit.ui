@@ -38,6 +38,7 @@ namespace RicKit.UI
         void HideCurrent();
         void CloseUntil<T>(bool destroy = false) where T : AbstractUIPanel;
         void BackThenShow<T>(Action<T> onInit = null, bool destroy = false) where T : AbstractUIPanel;
+        void PreloadUI<T>() where T : AbstractUIPanel;
         UniTask ShowUIAsync<T>(Action<T> onInit = null) where T : AbstractUIPanel;
         UniTask HideThenShowUIAsync<T>(Action<T> onInit = null) where T : AbstractUIPanel;
         UniTask CloseThenShowUIAsync<T>(Action<T> onInit = null, bool destroy = false) where T : AbstractUIPanel;
@@ -48,6 +49,7 @@ namespace RicKit.UI
         UniTask CloseUntilAsync<T>(bool destroy = false) where T : AbstractUIPanel;
         UniTask BackThenShowAsync<T>(Action<T> onInit, bool destroy = false) where T : AbstractUIPanel;
         UniTask WaitUntilUIHideEnd<T>() where T : AbstractUIPanel;
+        UniTask PreloadUIAsync<T>() where T : AbstractUIPanel;
         void ClearAll();
         void SetLockInput(bool on);
         T GetUI<T>() where T : AbstractUIPanel;
@@ -255,7 +257,12 @@ namespace RicKit.UI
         {
             BackThenShowAsync(onInit, destroy).Forget();
         }
-        
+
+        public void PreloadUI<T>() where T : AbstractUIPanel
+        {
+            PreloadUIAsync<T>().Forget();
+        }
+
         #endregion
 
 
@@ -366,6 +373,17 @@ namespace RicKit.UI
         {
             var panel = GetUI<T>();
             return UniTask.WaitUntil(() => panel.gameObject.activeSelf == false);
+        }
+
+        public async UniTask PreloadUIAsync<T>() where T : AbstractUIPanel
+        {
+            var form = GetUI<T>();
+            if (!form)
+                form = await NewUI<T>();
+            form.gameObject.SetActive(false);
+            form.SetSortOrder(-1);
+            if (!uiFormsList.Contains(form))
+                uiFormsList.Add(form);
         }
 
         #endregion
