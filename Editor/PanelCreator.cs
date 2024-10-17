@@ -86,8 +86,9 @@ namespace RicKit.UI.Editor
             {
                 using (new EditorGUILayout.HorizontalScope())
                 {
-                    var assetPath = $"{path}/{script.name}.prefab";
-                    GUILayout.Label(script.name);
+                    var type = script.GetClass();
+                    var assetPath = $"{path}/{type.Name}.prefab";
+                    GUILayout.Label(type.Name);
                     var asset = AssetDatabase.LoadAssetAtPath(assetPath, typeof(GameObject));
                     if (asset)
                     {
@@ -101,7 +102,7 @@ namespace RicKit.UI.Editor
                         if (GUILayout.Button("Create", GUILayout.Width(80)))
                         {
                             //创建GameObject
-                            var go = new GameObject(script.name, typeof(RectTransform), script.GetClass());
+                            var go = new GameObject(type.Name, typeof(RectTransform), type);
                             //设置锚点
                             var rect = go.GetComponent<RectTransform>();
                             //设置层

@@ -1,5 +1,5 @@
 # Changelog
-## [1.8.1] - 2024-10-17
+## [1.8.2] - 2024-10-17
 -mod: improve `PanelCreator` Editor
 ## [1.8.0] - 2024-10-17
 -add: `IUIManager.PreloadUIAsync`, `IUIManager.PreloadUI`
