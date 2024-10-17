@@ -12,14 +12,14 @@ namespace RicKit.UI.Editor
     {
         private static string PathKey => $"PanelCreatorEditorPath_{Application.identifier}";
         private static string path = "Assets/Resources/UIPanels";
-        private List<Type> types;
+        private List<MonoScript> scripts;
         private GUIStyle dropAreaStyle;
         private Vector2 scrollPosition;
         private void OnEnable()
         {
             titleContent = new GUIContent("界面编辑器");
-            types = GetAllTypes();
-            types.Sort((a, b) => string.Compare(a.Name, b.Name, StringComparison.Ordinal));
+            scripts = GetAllScripts();
+            scripts.Sort((a, b) => string.Compare(a.name, b.name, StringComparison.Ordinal));
             dropAreaStyle = new GUIStyle
             {
                 normal =
@@ -82,26 +82,26 @@ namespace RicKit.UI.Editor
                 return;
             }
             scrollPosition = GUILayout.BeginScrollView(scrollPosition);
-            foreach (var type in types)
+            foreach (var script in scripts)
             {
                 using (new EditorGUILayout.HorizontalScope())
                 {
-                    var assetPath = $"{path}/{type.Name}.prefab";
-                    GUILayout.Label(type.Name);
+                    var assetPath = $"{path}/{script.name}.prefab";
+                    GUILayout.Label(script.name);
                     var asset = AssetDatabase.LoadAssetAtPath(assetPath, typeof(GameObject));
                     if (asset)
                     {
-                        if (GUILayout.Button("Open", GUILayout.Width(100)))
+                        if (GUILayout.Button("Open", GUILayout.Width(80)))
                         {
                             AssetDatabase.OpenAsset(asset);
                         }
                     }
                     else
                     {
-                        if (GUILayout.Button("Create", GUILayout.Width(100)))
+                        if (GUILayout.Button("Create", GUILayout.Width(80)))
                         {
                             //创建GameObject
-                            var go = new GameObject(type.Name, typeof(RectTransform), type);
+                            var go = new GameObject(script.name, typeof(RectTransform), script.GetClass());
                             //设置锚点
                             var rect = go.GetComponent<RectTransform>();
                             //设置层
@@ -119,25 +119,29 @@ namespace RicKit.UI.Editor
                             DestroyImmediate(go);
                         }
                     }
+                    if(GUILayout.Button("Edit Script", GUILayout.Width(80)))
+                    {
+                        AssetDatabase.OpenAsset(script);
+                    }
                 }
+                GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(2));
             }
             GUILayout.EndScrollView();
         }
 
-        private List<Type> GetAllTypes()
+        private List<MonoScript> GetAllScripts()
         {
             //找到所有继承了AbstractUIPanel的类
-            var list = new List<Type>();
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            foreach (var assembly in assemblies)
+            var list = new List<MonoScript>();
+            var guids = AssetDatabase.FindAssets("t:MonoScript");
+            foreach (var guid in guids)
             {
-                var assemblyTypes = assembly.GetTypes();
-                foreach (var type in assemblyTypes)
+                var guidToAssetPath = AssetDatabase.GUIDToAssetPath(guid);
+                var script = AssetDatabase.LoadAssetAtPath<MonoScript>(guidToAssetPath);
+                var type = script.GetClass();
+                if (type != null && type.IsSubclassOf(typeof(AbstractUIPanel)) && !type.IsAbstract)
                 {
-                    if (type.IsSubclassOf(typeof(AbstractUIPanel)) && !type.IsAbstract)
-                    {
-                        list.Add(type);
-                    }
+                    list.Add(script);
                 }
             }
             return list;
