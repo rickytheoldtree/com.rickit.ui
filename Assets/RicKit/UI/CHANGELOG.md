@@ -1,4 +1,6 @@
 # Changelog
+## [1.8.0] - 2024-10-17
+-add: `IUIManager.PreloadUIAsync`, `IUIManager.PreloadUI`
 ## [1.7.1] - 2024-10-17
 - mod: `PanelCreator` types sort by name
 ## [1.7.0] - 2024-10-14
