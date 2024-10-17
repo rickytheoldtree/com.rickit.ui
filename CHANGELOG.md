@@ -1,4 +1,6 @@
 # Changelog
+## [1.7.1] - 2024-10-17
+- mod: `PanelCreator` types sort by name
 ## [1.7.0] - 2024-10-14
 - mod: 'IUIManager' events to Non-Static
 - mod: panel's UI property to 'IUIManager'

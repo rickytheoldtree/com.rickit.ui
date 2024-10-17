@@ -19,6 +19,7 @@ namespace RicKit.UI.Editor
         {
             titleContent = new GUIContent("界面编辑器");
             types = GetAllTypes();
+            types.Sort((a, b) => string.Compare(a.Name, b.Name, StringComparison.Ordinal));
             dropAreaStyle = new GUIStyle
             {
                 normal =
