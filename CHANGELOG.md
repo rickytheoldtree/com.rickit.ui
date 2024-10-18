@@ -1,4 +1,6 @@
 # Changelog
+## [2.0.2] - 2024-10-18
+- add: `IUIManager.ShowThenHidePrevAsync`, `IUIManager.ShowThenHidePrev`
 ## [2.0.1] - 2024-10-18
 - mod: `IUIManager.GetCustomLayer` to `IUIManager.GetCustomLayerCanvas`, `AbstractUIPanel.SetSortOrder` to `AbstractUIPanel.SetOrderInLayer`
 - add: `AbstractUIPanel.SetSortingLayer`
