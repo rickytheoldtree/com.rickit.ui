@@ -39,6 +39,7 @@ namespace RicKit.UI
         void CloseUntil<T>(bool destroy = false) where T : AbstractUIPanel;
         void BackThenShow<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI") where T : AbstractUIPanel;
         void PreloadUI<T>(string layer = "UI") where T : AbstractUIPanel;
+        void ShowThenHidePrev<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel;
         UniTask ShowUIAsync<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel;
         UniTask HideThenShowUIAsync<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel;
         UniTask CloseThenShowUIAsync<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI") where T : AbstractUIPanel;
@@ -50,6 +51,7 @@ namespace RicKit.UI
         UniTask BackThenShowAsync<T>(Action<T> onInit, bool destroy = false, string layer = "UI") where T : AbstractUIPanel;
         UniTask WaitUntilUIHideEnd<T>() where T : AbstractUIPanel;
         UniTask PreloadUIAsync<T>(string layer = "UI") where T : AbstractUIPanel;
+        UniTask ShowThenHidePrevAsync<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel;
         void ClearAll();
         void SetLockInput(bool on);
         T GetUI<T>() where T : AbstractUIPanel;
@@ -263,6 +265,11 @@ namespace RicKit.UI
             PreloadUIAsync<T>(layer).Forget();
         }
 
+        public void ShowThenHidePrev<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel
+        {
+            ShowThenHidePrevAsync(onInit, layer).Forget();
+        }
+
         #endregion
 
 
@@ -277,11 +284,11 @@ namespace RicKit.UI
             form.gameObject.SetActive(false);
             form.SetSortingLayer(layer);
             form.SetOrderInLayer(sortOrder);
-            onInit?.Invoke(form);
             showFormStack.Push(form);
             if (!uiFormsList.Contains(form))
                 uiFormsList.Add(form);
             CurrentAbstractUIPanel = form;
+            onInit?.Invoke(form);
             form.BeforeShow();
             await form.OnShowAsync();
         }
@@ -308,8 +315,8 @@ namespace RicKit.UI
             form.gameObject.SetActive(false);
             form.SetSortingLayer(layer);
             form.SetOrderInLayer(sortOrder);
-            onInit?.Invoke(form);
             if (!uiFormsList.Contains(form)) uiFormsList.Add(form);
+            onInit?.Invoke(form);
             form.BeforeShow();
             await form.OnShowAsync();
         }
@@ -387,6 +394,14 @@ namespace RicKit.UI
             form.SetOrderInLayer(0);
             if (!uiFormsList.Contains(form))
                 uiFormsList.Add(form);
+        }
+
+        public async UniTask ShowThenHidePrevAsync<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel
+        {
+            var prev = CurrentAbstractUIPanel;
+            await ShowUIAsync(onInit, layer);
+            if(!prev) return;
+            await prev.OnHideAsync();
         }
 
         #endregion
