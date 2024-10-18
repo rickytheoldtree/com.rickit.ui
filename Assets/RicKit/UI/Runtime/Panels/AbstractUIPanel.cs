@@ -67,13 +67,17 @@ namespace RicKit.UI.Panels
             gameObject.SetActive(false);
         }
 
-        public void SetSortOrder(int order)
+        public void SetOrderInLayer(int order)
         {
             SortOrder = order;
             Canvas.overrideSorting = true;
             Canvas.sortingOrder = order;
         }
 
-
+        public void SetSortingLayer(string layer)
+        {
+            Canvas.overrideSorting = true;
+            Canvas.sortingLayerName = layer;
+        }
     }
 }
