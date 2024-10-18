@@ -1,4 +1,6 @@
 # Changelog
+## [2.0.3] - 2024-10-18
+- add: `IUIManager.ShowThenClosePrevAsync`, `IUIManager.ShowThenClosePrev`
 ## [2.0.2] - 2024-10-18
 - add: `IUIManager.ShowThenHidePrevAsync`, `IUIManager.ShowThenHidePrev`
 ## [2.0.1] - 2024-10-18
