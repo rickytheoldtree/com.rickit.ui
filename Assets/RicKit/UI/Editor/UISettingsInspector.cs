@@ -16,7 +16,6 @@ namespace RicKit.UI.Editor
             depth,
             nearClipPlane,
             farClipPlane,
-            sortingLayerName,
             referenceResolution,
             screenMatchMode,
             matchWidthOrHeight,
@@ -38,7 +37,6 @@ namespace RicKit.UI.Editor
             nearClipPlane = serializedObject.FindProperty("nearClipPlane");
             farClipPlane = serializedObject.FindProperty("farClipPlane");
             loadType = serializedObject.FindProperty("loadType");
-            sortingLayerName = serializedObject.FindProperty("sortingLayerName");
             referenceResolution = serializedObject.FindProperty("referenceResolution");
             screenMatchMode = serializedObject.FindProperty("screenMatchMode");
             matchWidthOrHeight = serializedObject.FindProperty("matchWidthOrHeight");
@@ -65,7 +63,6 @@ namespace RicKit.UI.Editor
             EditorGUI.indentLevel--;
             GUILayout.Label("Canvas", EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
-            EditorGUILayout.PropertyField(sortingLayerName);
             EditorGUILayout.PropertyField(referenceResolution);
             EditorGUILayout.PropertyField(screenMatchMode);
             if (settings.screenMatchMode == CanvasScaler.ScreenMatchMode.MatchWidthOrHeight)

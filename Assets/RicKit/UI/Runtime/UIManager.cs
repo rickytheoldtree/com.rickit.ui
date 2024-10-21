@@ -172,7 +172,7 @@ namespace RicKit.UI
             canvas.renderMode = RenderMode.ScreenSpaceCamera;
             canvas.worldCamera = UICamera;
             canvas.planeDistance = 5;
-            canvas.sortingLayerName = settings.sortingLayerName;
+            canvas.sortingLayerName = "UI";
             canvas.sortingOrder = 0;
             canvas.TryGetComponent<CanvasScaler>(out var canvasScaler);
             canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -186,8 +186,8 @@ namespace RicKit.UI
             blockerCg.TryGetComponent<Canvas>(out var blockerCanvas);
             blockerCg.transform.SetParent(canvas.transform, false);
             blockerCanvas.overrideSorting = true;
-            blockerCanvas.sortingLayerName = settings.sortingLayerName;
-            blockerCanvas.sortingOrder = 1000;
+            blockerCanvas.sortingLayerName = "Blocker";
+            blockerCanvas.sortingOrder = 0;
             blockerCg.TryGetComponent<Image>(out var blockerImg);
             blockerImg.color = Color.clear;
             var blockerRt = (RectTransform)blockerCg.transform;
@@ -460,7 +460,7 @@ namespace RicKit.UI
                 if (canvasNew.TryGetComponent(out Canvas c))
                 {
                     c.overrideSorting = true;
-                    c.sortingLayerName = Settings.sortingLayerName;
+                    c.sortingLayerName = "UI";
                     c.sortingOrder = sortOrder;
                 }
 
@@ -482,7 +482,7 @@ namespace RicKit.UI
             rect.offsetMax = Vector2.zero;
             go.TryGetComponent(out canvasNew);
             canvasNew.overrideSorting = true;
-            canvasNew.sortingLayerName = Settings.sortingLayerName;
+            canvasNew.sortingLayerName = "UI";
             canvasNew.sortingOrder = sortOrder;
             customRootDict.Add(name, canvasNew);
             return canvasNew;

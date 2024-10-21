@@ -1,4 +1,7 @@
 # Changelog
+## [2.1.0] - 2024-10-21
+- add: auto create sorting layers
+- remove: `UISettings.sortingLayer`. Canvas default `sortingLayer` will always be `UI`
 ## [2.0.3] - 2024-10-18
 - add: `IUIManager.ShowThenClosePrevAsync`, `IUIManager.ShowThenClosePrev`
 ## [2.0.2] - 2024-10-18
