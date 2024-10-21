@@ -21,7 +21,7 @@ namespace RicKit.UI.Panels
         {
             Canvas = GetComponent<Canvas>();
             Canvas.overrideSorting = true;
-            Canvas.sortingLayerName = UI.Settings.sortingLayerName;
+            Canvas.sortingLayerName = "UI";
             CanvasGroup = GetComponent<CanvasGroup>();
             CanvasRect = Canvas.GetComponent<RectTransform>();
         }

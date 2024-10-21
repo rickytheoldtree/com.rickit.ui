@@ -23,7 +23,6 @@ namespace RicKit.UI
         public int depth;
         public float nearClipPlane = 1;
         public float farClipPlane = 15;
-        public string sortingLayerName = "UI";
         public Vector2 referenceResolution = new Vector2(1080, 1920);
         public CanvasScaler.ScreenMatchMode screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
         [Range(0, 1)]
