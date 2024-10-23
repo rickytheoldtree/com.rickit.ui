@@ -33,6 +33,8 @@ namespace RicKit.UI.Panels
             CanvasGroup.blocksRaycasts = true;
             CanvasGroup.interactable = false;
             await OnAnimationIn(this.GetCancellationTokenOnDestroy());
+            CanvasGroup.blocksRaycasts = true;
+            CanvasGroup.interactable = true;
             UI.OnShowEnd?.Invoke(this);
             UI.SetLockInput(false);
         }
@@ -43,6 +45,7 @@ namespace RicKit.UI.Panels
             CanvasGroup.blocksRaycasts = true;
             CanvasGroup.interactable = false;
             await OnAnimationOut(this.GetCancellationTokenOnDestroy());
+            gameObject.SetActive(false);
             UI.OnHideEnd?.Invoke(this);
             UI.SetLockInput(false);
         }
@@ -55,17 +58,6 @@ namespace RicKit.UI.Panels
         protected abstract UniTask OnAnimationIn(CancellationToken cancellationToken);
 
         protected abstract UniTask OnAnimationOut(CancellationToken cancellationToken);
-
-        protected virtual void OnAnimationInEnd()
-        {
-            CanvasGroup.blocksRaycasts = true;
-            CanvasGroup.interactable = true;
-        }
-
-        protected virtual void OnAnimationOutEnd()
-        {
-            gameObject.SetActive(false);
-        }
 
         public void SetOrderInLayer(int order)
         {

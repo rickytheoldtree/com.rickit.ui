@@ -42,7 +42,6 @@ namespace RicKit.UI.Panels
                 CanvasGroup.Fade(1, Duration, cancellationToken: cancellationToken),
                 panel.Scale(Vector3.one, Duration, AnimEase.OutBack, cancellationToken),
                 cgBlocker.Fade(1, Duration, cancellationToken: cancellationToken));
-            OnAnimationInEnd();
         }
 
         protected override async UniTask OnAnimationOut(CancellationToken cancellationToken)
@@ -51,7 +50,6 @@ namespace RicKit.UI.Panels
                 CanvasGroup.Fade(0, Duration, AnimEase.InBack, cancellationToken: cancellationToken),
                 panel.Scale(0.1f * Vector3.one, Duration, AnimEase.InBack, cancellationToken),
                 cgBlocker.Fade(0, Duration, cancellationToken: cancellationToken));
-            OnAnimationOutEnd();
         }
 
         protected virtual void OnBackClick()

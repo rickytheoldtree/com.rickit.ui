@@ -1,4 +1,6 @@
 # Changelog
+## [2.1.1] - 2024-10-23
+- remove: `AbstractUIPanel.OnAnimationInEnd`, `AbstractUIPanel.OnAnimationOutEnd`
 ## [2.1.0] - 2024-10-21
 - add: auto create sorting layers
 - remove: `UISettings.sortingLayer`. Canvas default `sortingLayer` will always be `UI`
