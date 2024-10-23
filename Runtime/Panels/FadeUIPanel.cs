@@ -13,13 +13,11 @@ namespace RicKit.UI.Panels
         {
             CanvasGroup.alpha = 0;
             await CanvasGroup.Fade(1, FadeTime, cancellationToken: cancellationToken);
-            OnAnimationInEnd();
         }
         
         protected override async UniTask OnAnimationOut(CancellationToken cancellationToken)
         {
             await CanvasGroup.Fade(0, FadeTime, cancellationToken: cancellationToken);
-            OnAnimationOutEnd();
         }
     }
 }
