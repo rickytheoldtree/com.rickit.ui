@@ -1,4 +1,6 @@
 # Changelog
+## [2.1.2] - 2024-10-24
+- mod: `LoadType`
 ## [2.1.1] - 2024-10-23
 - remove: `AbstractUIPanel.OnAnimationInEnd`, `AbstractUIPanel.OnAnimationOutEnd`
 ## [2.1.0] - 2024-10-21

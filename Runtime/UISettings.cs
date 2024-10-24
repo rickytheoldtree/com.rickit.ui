@@ -3,17 +3,6 @@ using UnityEngine.UI;
 
 namespace RicKit.UI
 {
-    public enum LoadType
-    {
-        Resources,
-#if YOO_SUPPORT
-        Yoo,
-#endif
-#if ADDRESSABLES_SUPPORT
-        Addressables,
-#endif
-    }
-    
     [CreateAssetMenu(menuName = "RicKit/创建UIManager配置")]
     public class UISettings : ScriptableObject
     {
@@ -32,6 +21,17 @@ namespace RicKit.UI
 #if YOO_SUPPORT
         public string packageName; 
         public bool yooSyncLoad;
+#endif
+    }
+    
+    public enum LoadType
+    {
+        Resources = 0,
+#if YOO_SUPPORT
+        Yoo = 1,
+#endif
+#if ADDRESSABLES_SUPPORT
+        Addressables = 2,
 #endif
     }
 }
