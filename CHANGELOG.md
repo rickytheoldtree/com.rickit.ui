@@ -1,4 +1,7 @@
 # Changelog
+## [2.2.0] - 2024-10-25
+- add: IPanelLoader required for `UIManager.Init`, null will use `Resources.Load`
+- remove: `LoadType`
 ## [2.1.2] - 2024-10-24
 - mod: `LoadType`
 ## [2.1.1] - 2024-10-23

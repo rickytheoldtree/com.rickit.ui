@@ -8,12 +8,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
-#if ADDRESSABLES_SUPPORT
-using RicKit.UI.Extensions.AddressablesExtension;
-#endif
-#if YOO_SUPPORT
-using RicKit.UI.Extensions.YooExtension;
-#endif
 
 namespace RicKit.UI
 {
@@ -29,6 +23,7 @@ namespace RicKit.UI
         Action<AbstractUIPanel> OnShowEnd { get; set; }
         Action<AbstractUIPanel> OnHideEnd { get; set; }
         void Initiate();
+        void Initiate(IPanelLoader panelLoader);
         void ShowUI<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel;
         void HideThenShowUI<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel;
         void CloseThenShowUI<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI") where T : AbstractUIPanel;
@@ -81,6 +76,7 @@ namespace RicKit.UI
         private readonly Stack<AbstractUIPanel> showFormStack = new Stack<AbstractUIPanel>();
         private readonly List<AbstractUIPanel> uiFormsList = new List<AbstractUIPanel>();
         private Canvas canvas;
+        private static IPanelLoader defaultPanelLoader = new DefaultPanelLoader();
         public UIManagerMono Mono { get; private set; }
         public AbstractUIPanel CurrentAbstractUIPanel { get; private set; }
         public RectTransform CanvasRectTransform { get; private set; }
@@ -99,22 +95,28 @@ namespace RicKit.UI
         /// <summary>
         /// 需要在任何UI操作之前调用
         /// </summary>
-        public static void Init()
+        public static void Init(IPanelLoader panelLoader = null)
         {
             if (instance != null)
             {
                 Debug.LogError("UIManager already initialized.");
                 return;
             }
-            new UIManager().Initiate();
+            new UIManager().Initiate(panelLoader);
         }
+        
         public void Initiate()
         {
+            Initiate(defaultPanelLoader);
+        }
+        
+        public void Initiate(IPanelLoader panelLoader)
+        {
             instance = this;
-            CreateUIManager();
+            CreateUIManager(panelLoader);
         }
 
-        private void CreateUIManager()
+        private void CreateUIManager(IPanelLoader panelLoader)
         {
             Mono = new GameObject("UIManager").AddComponent<UIManagerMono>();
             Mono.SetUIManager(this);
@@ -127,30 +129,7 @@ namespace RicKit.UI
             Object.DontDestroyOnLoad(eventSystem);
             
             var settings = Settings = Resources.Load<UISettings>("UISettings");
-            switch (settings.loadType)
-            {
-                default:
-                    Debug.LogError($"LoadType {settings.loadType} not found");
-                    throw new ArgumentOutOfRangeException();
-                case LoadType.Resources:
-                    panelLoader = new DefaultPanelLoader();
-                    Debug.Log($"UIManager use Resources, assetPathPrefix: {settings.assetPathPrefix}");
-                    break;
-#if YOO_SUPPORT
-                case LoadType.Yoo:
-                    panelLoader = new YooAssetLoader(settings.packageName, settings.yooSyncLoad);
-                    Debug.Log(
-                        $"UIManager use YooAsset, assetPathPrefix: {settings.assetPathPrefix}, packageName: {settings.packageName}");
-                    break;
-#endif
-#if ADDRESSABLES_SUPPORT
-                case LoadType.Addressables:
-                    panelLoader = new AddressablesLoader();
-                    Debug.Log($"UIManager use Addressables, assetPathPrefix: {settings.assetPathPrefix}");
-                    break;
-#endif
-            }
-
+            this.panelLoader = panelLoader ?? defaultPanelLoader;
             new GameObject("UICam", typeof(Camera)).TryGetComponent(out Camera cam);
             UICamera = cam;
             UICamera.transform.SetParent(Mono.transform);

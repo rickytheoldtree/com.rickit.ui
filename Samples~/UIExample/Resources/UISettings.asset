@@ -18,11 +18,7 @@ MonoBehaviour:
   depth: 0
   nearClipPlane: 1
   farClipPlane: 15
-  sortingLayerName: UI
   referenceResolution: {x: 1080, y: 1920}
   screenMatchMode: 1
   matchWidthOrHeight: 1
-  loadType: 0
   assetPathPrefix: UI/
-  packageName: 
-  yooSyncLoad: 0
