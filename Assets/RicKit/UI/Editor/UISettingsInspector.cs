@@ -19,13 +19,7 @@ namespace RicKit.UI.Editor
             referenceResolution,
             screenMatchMode,
             matchWidthOrHeight,
-            loadType,
             assetPathPrefix;
-#if YOO_SUPPORT
-        private SerializedProperty
-            packageName,
-            yooSyncLoad;
-#endif
 
         private void OnEnable()
         {
@@ -36,15 +30,10 @@ namespace RicKit.UI.Editor
             depth = serializedObject.FindProperty("depth");
             nearClipPlane = serializedObject.FindProperty("nearClipPlane");
             farClipPlane = serializedObject.FindProperty("farClipPlane");
-            loadType = serializedObject.FindProperty("loadType");
             referenceResolution = serializedObject.FindProperty("referenceResolution");
             screenMatchMode = serializedObject.FindProperty("screenMatchMode");
             matchWidthOrHeight = serializedObject.FindProperty("matchWidthOrHeight");
             assetPathPrefix = serializedObject.FindProperty("assetPathPrefix");
-#if YOO_SUPPORT
-            packageName = serializedObject.FindProperty("packageName");
-            yooSyncLoad = serializedObject.FindProperty("yooSyncLoad");
-#endif
         }
 
         public override void OnInspectorGUI()
@@ -74,24 +63,12 @@ namespace RicKit.UI.Editor
             EditorGUI.indentLevel--;
             GUILayout.Label("Asset", EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
-            EditorGUILayout.PropertyField(loadType);
             EditorGUILayout.PropertyField(assetPathPrefix);
-            
-#if YOO_SUPPORT
-           if (settings.loadType == LoadType.Yoo)
-            {
-                GUILayout.Label("Yoo Asset", EditorStyles.boldLabel);
-                EditorGUILayout.PropertyField(packageName);
-                EditorGUILayout.PropertyField(yooSyncLoad);
-            }
-            EditorGUI.indentLevel--; 
-#endif
-            
             serializedObject.ApplyModifiedProperties();
         }
         
         [MenuItem("RicKit/UI/Create UISettings")]
-        private static void CreateSettings()
+        public static void CreateSettings()
         {
             var config = CreateInstance<UISettings>();
             if (!AssetDatabase.IsValidFolder("Assets/Resources"))
