@@ -70,12 +70,14 @@ namespace RicKit.UI.Editor
         [MenuItem("RicKit/UI/Create UISettings")]
         public static void CreateSettings()
         {
-            var config = CreateInstance<UISettings>();
+            var config = ScriptableObject.CreateInstance<UISettings>();
             if (!AssetDatabase.IsValidFolder("Assets/Resources"))
             {
                 AssetDatabase.CreateFolder("Assets", "Resources");
             }
             AssetDatabase.CreateAsset(config, "Assets/Resources/UISettings.asset");
+            AssetDatabase.SaveAssets();
+            EditorUtility.FocusProjectWindow();
             Selection.activeObject = config;
         }
     }
