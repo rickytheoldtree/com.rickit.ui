@@ -1,5 +1,5 @@
 # Changelog
-## [2.3.0] - 2024-11-04
+## [2.3.1] - 2024-11-04
 - add `UISceneView`
 ## [2.2.2] - 2024-10-25
 - add: IPanelLoader required for `UIManager.Init`, null will use `Resources.Load`

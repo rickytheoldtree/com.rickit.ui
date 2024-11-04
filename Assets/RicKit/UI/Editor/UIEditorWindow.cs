@@ -30,7 +30,7 @@ namespace RicKit.UI.Editor
             path = EditorPrefs.GetString(PathKey, path);
         }
         
-        [MenuItem("RicKit/UI/UI Editor")]
+        [MenuItem("RicKit/UI/Open Editor", false, 0)]
         public static void Open()
         {
             var window = GetWindow<UIEditorWindow>("UI Editor", true,
@@ -75,9 +75,10 @@ namespace RicKit.UI.Editor
 
         private void OnGUI()
         {
-            GUI.enabled = false;
-            EditorGUILayout.TextField("Path:", path);
-            GUI.enabled = true;
+            using (new EditorGUI.DisabledScope(true))
+            {
+                EditorGUILayout.TextField("Path:", path);
+            }
             DropFolder();
             if (!Directory.Exists(path))
             {
@@ -88,6 +89,7 @@ namespace RicKit.UI.Editor
             scrollPosition = GUILayout.BeginScrollView(scrollPosition);
             foreach (var script in scripts)
             {
+                if (!script) continue;
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     var type = script.GetClass();

@@ -7,17 +7,26 @@ namespace RicKit.UI.Editor
     public class UISceneView
     {
         private static readonly int ControlID = GUIUtility.GetControlID(FocusType.Passive);
-        private static Rect windowRect = new Rect(10, 10, 80, 70);
+        private static bool isShow;
+        private static Rect windowRect = new Rect(10, 10, 100, 70);
         private static Rect lastRect;
-        private const string WindowRectKey = "RicKit.Editor.UISceneView.WindowRect";
-
+        private const string WindowRectKey = "RicKit.UI.Editor.UISceneView.WindowRect";
         static UISceneView()
         {
-            LoadWindowRect();
+            LoadPrefs();
+            if(!isShow) return;
             SceneView.duringSceneGui += OnSceneGUI;
-            
         }
 
+        [MenuItem("RicKit/UI/Toggle Scene View", false, 2)]
+        private static void Toggle()
+        {
+            isShow = !isShow;
+            SceneView.duringSceneGui -= OnSceneGUI;
+            if (!isShow) return;
+            SceneView.duringSceneGui += OnSceneGUI;
+        }
+        
         private static void OnSceneGUI(SceneView sceneView)
         {
             windowRect = GUI.Window(ControlID, windowRect, OnWindow, "RicKit UI");
@@ -27,31 +36,33 @@ namespace RicKit.UI.Editor
 
         private static void OnWindow(int id)
         {
-            if (GUILayout.Button("Editor"))
+            if (GUILayout.Button("Open Editor"))
             {
                 UIEditorWindow.Open();
             }
-            if (GUILayout.Button("Settings"))
+            if (GUILayout.Button("Open Settings"))
             {
                 UISettingsInspector.Open();
             }
             GUI.DragWindow();
-            SaveWindowRect();
+            SavePrefs();
         }
 
-        private static void SaveWindowRect()
+        private static void SavePrefs()
         {
             if (windowRect == lastRect) return;
             lastRect = windowRect;
             EditorPrefs.SetFloat(WindowRectKey + "_x", windowRect.x);
             EditorPrefs.SetFloat(WindowRectKey + "_y", windowRect.y);
+            EditorPrefs.SetBool(WindowRectKey + "_show", isShow);
         }
 
-        private static void LoadWindowRect()
+        private static void LoadPrefs()
         {
-            if (!EditorPrefs.HasKey(WindowRectKey + "_x")) return;
-            windowRect.x = EditorPrefs.GetFloat(WindowRectKey + "_x");
-            windowRect.y = EditorPrefs.GetFloat(WindowRectKey + "_y");
+            windowRect.x = EditorPrefs.GetFloat(WindowRectKey + "_x", 10);
+            windowRect.y = EditorPrefs.GetFloat(WindowRectKey + "_y", 20);
+            isShow = EditorPrefs.GetBool(WindowRectKey + "_show", true);
+            lastRect = windowRect;
         }
     }
 }
