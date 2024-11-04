@@ -67,18 +67,24 @@ namespace RicKit.UI.Editor
             serializedObject.ApplyModifiedProperties();
         }
         
-        [MenuItem("RicKit/UI/Create UISettings")]
-        public static void CreateSettings()
+        [MenuItem("RicKit/UI/Settings")]
+        public static void Open()
         {
-            var config = ScriptableObject.CreateInstance<UISettings>();
             if (!AssetDatabase.IsValidFolder("Assets/Resources"))
             {
                 AssetDatabase.CreateFolder("Assets", "Resources");
             }
-            AssetDatabase.CreateAsset(config, "Assets/Resources/UISettings.asset");
+            var asset = AssetDatabase.LoadAssetAtPath<UISettings>("Assets/Resources/UISettings.asset");
+            if (asset)
+            {
+                Selection.activeObject = asset;
+                return;
+            }
+            asset = CreateInstance<UISettings>();
+            AssetDatabase.CreateAsset(asset, "Assets/Resources/UISettings.asset");
             AssetDatabase.SaveAssets();
             EditorUtility.FocusProjectWindow();
-            Selection.activeObject = config;
+            Selection.activeObject = asset;
         }
     }
 }
