@@ -8,18 +8,17 @@ using UnityEngine;
 
 namespace RicKit.UI.Editor
 {
-    public class PanelCreator : EditorWindow
+    public class UIEditorWindow : EditorWindow
     {
         private static string PathKey => $"PanelCreatorEditorPath_{Application.identifier}";
         private static string path = "Assets/Resources/UIPanels";
         private List<MonoScript> scripts;
         private GUIStyle dropAreaStyle;
         private Vector2 scrollPosition;
+
         private void OnEnable()
         {
-            titleContent = new GUIContent("界面编辑器");
             scripts = GetAllScripts();
-            scripts.Sort((a, b) => string.Compare(a.name, b.name, StringComparison.Ordinal));
             dropAreaStyle = new GUIStyle
             {
                 normal =
@@ -30,18 +29,21 @@ namespace RicKit.UI.Editor
             };
             path = EditorPrefs.GetString(PathKey, path);
         }
-        [MenuItem("RicKit/UI/界面编辑器")]
+        
+        [MenuItem("RicKit/UI/UI Editor")]
         public static void Open()
         {
-            var window = GetWindow<PanelCreator>();
+            var window = GetWindow<UIEditorWindow>("UI Editor", true,
+                typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.ProjectBrowser"));
             window.Show();
         }
+
 
         private void DropFolder()
         {
             var evt = Event.current;
             var dropArea = GUILayoutUtility.GetRect(0.0f, 50.0f, GUILayout.ExpandWidth(true));
-            GUI.Box(dropArea, "将你希望放UI界面预制体的文件夹拖入这里", dropAreaStyle);
+            GUI.Box(dropArea, "Drop your UI prefab directory here", dropAreaStyle);
             switch (evt.type)
             {
                 case EventType.DragUpdated:
@@ -65,22 +67,24 @@ namespace RicKit.UI.Editor
                             }
                         }
                     }
+
                     Event.current.Use();
                     break;
             }
         }
+
         private void OnGUI()
         {
             GUI.enabled = false;
-            EditorGUILayout.TextField("预制体目录", path);
+            EditorGUILayout.TextField("Path:", path);
             GUI.enabled = true;
             DropFolder();
-            //检查路径是否存在
             if (!Directory.Exists(path))
             {
-                EditorGUILayout.HelpBox("文件夹路径不存在", MessageType.Error);
+                EditorGUILayout.HelpBox("path doesn't exist", MessageType.Error);
                 return;
             }
+
             scrollPosition = GUILayout.BeginScrollView(scrollPosition);
             foreach (var script in scripts)
             {
@@ -101,38 +105,33 @@ namespace RicKit.UI.Editor
                     {
                         if (GUILayout.Button("Create", GUILayout.Width(80)))
                         {
-                            //创建GameObject
                             var go = new GameObject(type.Name, typeof(RectTransform), type);
-                            //设置锚点
                             var rect = go.GetComponent<RectTransform>();
-                            //设置层
                             go.layer = LayerMask.NameToLayer("UI");
-                            //全屏
                             rect.anchorMin = Vector2.zero;
                             rect.anchorMax = Vector2.one;
                             rect.offsetMin = Vector2.zero;
                             rect.offsetMax = Vector2.zero;
-                            //保存
                             PrefabUtility.SaveAsPrefabAsset(go, assetPath);
-                            //打开
                             AssetDatabase.OpenAsset(AssetDatabase.LoadAssetAtPath(assetPath, typeof(GameObject)));
-                            //销毁
                             DestroyImmediate(go);
                         }
                     }
-                    if(GUILayout.Button("Edit Script", GUILayout.Width(80)))
+
+                    if (GUILayout.Button("Edit Script", GUILayout.Width(80)))
                     {
                         AssetDatabase.OpenAsset(script);
                     }
                 }
+
                 GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(2));
             }
+
             GUILayout.EndScrollView();
         }
 
-        private List<MonoScript> GetAllScripts()
+        private static List<MonoScript> GetAllScripts()
         {
-            //找到所有继承了AbstractUIPanel的类
             var list = new List<MonoScript>();
             var guids = AssetDatabase.FindAssets("t:MonoScript");
             foreach (var guid in guids)
@@ -145,8 +144,9 @@ namespace RicKit.UI.Editor
                     list.Add(script);
                 }
             }
+
+            list.Sort((a, b) => string.Compare(a.name, b.name, StringComparison.Ordinal));
             return list;
         }
     }
 }
-
