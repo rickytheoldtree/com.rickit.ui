@@ -67,7 +67,7 @@ namespace RicKit.UI.Editor
             serializedObject.ApplyModifiedProperties();
         }
         
-        [MenuItem("RicKit/UI/Settings")]
+        [MenuItem("RicKit/UI/Open Settings", false, 1)]
         public static void Open()
         {
             if (!AssetDatabase.IsValidFolder("Assets/Resources"))
