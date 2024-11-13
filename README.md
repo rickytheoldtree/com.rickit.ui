@@ -22,8 +22,9 @@
 - 所有自己实现的UIPanel需要继承`AbstractUIPanel`，继承了`AbstractUIPanel`的窗口预制体可以在 RicKit => UI => 界面编辑器 中创建/打开 然后编辑
 ## 资源加载自定义
 - 初始化时可选传入自定义`IPanelLoader`, 默认为Resource的同步加载
-- Resource:
+
 ```csharp
+    //Resources
     public class DefaultPanelLoader : IPanelLoader
     {
         //同步
@@ -38,9 +39,8 @@
             return await Resources.LoadAsync<GameObject>(path) as GameObject;
         }*/
     }
-```
-- Addressables:
-```csharp
+
+    //Addressables
     public class AddressablesPanelLoader : IPanelLoader
     {
         //同步
