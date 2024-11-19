@@ -51,6 +51,7 @@ namespace RicKit.UI
         UniTask ShowThenHidePrevAsync<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel;
         void ClearAll();
         void SetLockInput(bool on);
+        bool IsLockInput();
         T GetUI<T>() where T : AbstractUIPanel;
         Canvas GetCustomLayerCanvas(string name, int sortOrder, string layerName = "UI");
         void SetCustomLayerSortOrder(string name, int sortOrder);
@@ -430,6 +431,12 @@ namespace RicKit.UI
 #endif
             blockerCg.blocksRaycasts = lockCount > 0;
         }
+
+        public bool IsLockInput()
+        {
+            return lockCount > 0;
+        }
+
         public static void LockInput(bool on)
         {
             I?.SetLockInput(on);
