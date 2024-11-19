@@ -1,5 +1,5 @@
 # Changelog
-## [2.4.0] - 2024-11-19
+## [2.4.1] - 2024-11-19
 - fix; 'CloseCurrentAsync' bug
 ## [2.3.1] - 2024-11-04
 - add `UISceneView`
