@@ -185,8 +185,11 @@ namespace RicKit.UI
         }
         public void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Escape) && CurrentAbstractUIPanel && CurrentAbstractUIPanel.CanInteract)
-                CurrentAbstractUIPanel.OnESCClick();
+            if (!Input.GetKeyDown(KeyCode.Escape))return;
+            if(IsLockInput()) return;
+            if(!CurrentAbstractUIPanel) return;
+            if(!CurrentAbstractUIPanel.CanInteract) return; 
+            CurrentAbstractUIPanel.OnESCClick();
         }
 
         #region 同步（只是同步调用，并不保证任务同帧开始或者完成）
