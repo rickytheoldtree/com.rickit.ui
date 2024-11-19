@@ -1,5 +1,5 @@
 # Changelog
-## [2.4.2] - 2024-11-19
+## [2.4.3] - 2024-11-19
 - fix: 'CloseCurrentAsync' bug
 - add: `IUIManager.IsLockInput`
 ## [2.3.1] - 2024-11-04
