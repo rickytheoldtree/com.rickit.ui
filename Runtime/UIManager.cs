@@ -78,7 +78,7 @@ namespace RicKit.UI
         private Canvas canvas;
         private static readonly IPanelLoader DefaultPanelLoader = new DefaultPanelLoader();
         public UIManagerMono Mono { get; private set; }
-        public AbstractUIPanel CurrentAbstractUIPanel { get; private set; }
+        public AbstractUIPanel CurrentAbstractUIPanel => showFormStack.Count == 0 ? null : showFormStack.Peek();
         public RectTransform CanvasRectTransform { get; private set; }
         public Camera UICamera {get; private set;}
         public UISettings Settings { get; private set; }
@@ -273,7 +273,6 @@ namespace RicKit.UI
             showFormStack.Push(form);
             if (!uiFormsList.Contains(form))
                 uiFormsList.Add(form);
-            CurrentAbstractUIPanel = form;
             onInit?.Invoke(form);
             form.BeforeShow();
             await form.OnShowAsync();
@@ -323,7 +322,6 @@ namespace RicKit.UI
             if (showFormStack.Count == 0) return;
             var form = showFormStack.Pop();
             await form.OnHideAsync();
-            CurrentAbstractUIPanel = showFormStack.Count == 0 ? null : showFormStack.Peek();
             if (destroy)
             {
                 uiFormsList.Remove(form);
@@ -348,17 +346,26 @@ namespace RicKit.UI
                 {
                     if (!form.isActiveAndEnabled)
                         await form.OnShowAsync();
-                    CurrentAbstractUIPanel = form;
                     return;
                 }
 
                 form = showFormStack.Pop();
-                form.OnHideAsync().ContinueWith(() =>
+                if (form.isActiveAndEnabled)
                 {
-                    if (!destroy) return;
+                    form.OnHideAsync().ContinueWith(() =>
+                    {
+                        if (!destroy) return;
+                        uiFormsList.Remove(form);
+                        Object.Destroy(form.gameObject);
+                    }).Forget();
+                }
+                else
+                {
+                    if (!destroy) continue;
                     uiFormsList.Remove(form);
                     Object.Destroy(form.gameObject);
-                }).Forget();
+                }
+                
             }
         }
 
@@ -507,7 +514,6 @@ namespace RicKit.UI
                 Object.DestroyImmediate(uIForm.gameObject);
             uiFormsList.Clear();
             showFormStack.Clear();
-            CurrentAbstractUIPanel = null;
         }
     }
     public class DefaultPanelLoader : IPanelLoader
