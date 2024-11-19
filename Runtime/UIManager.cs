@@ -76,7 +76,7 @@ namespace RicKit.UI
         private readonly Stack<AbstractUIPanel> showFormStack = new Stack<AbstractUIPanel>();
         private readonly List<AbstractUIPanel> uiFormsList = new List<AbstractUIPanel>();
         private Canvas canvas;
-        private static IPanelLoader defaultPanelLoader = new DefaultPanelLoader();
+        private static readonly IPanelLoader DefaultPanelLoader = new DefaultPanelLoader();
         public UIManagerMono Mono { get; private set; }
         public AbstractUIPanel CurrentAbstractUIPanel { get; private set; }
         public RectTransform CanvasRectTransform { get; private set; }
@@ -107,7 +107,7 @@ namespace RicKit.UI
         
         public void Initiate()
         {
-            Initiate(defaultPanelLoader);
+            Initiate(DefaultPanelLoader);
         }
         
         public void Initiate(IPanelLoader panelLoader)
@@ -129,7 +129,7 @@ namespace RicKit.UI
             Object.DontDestroyOnLoad(eventSystem);
             
             var settings = Settings = Resources.Load<UISettings>("UISettings");
-            this.panelLoader = panelLoader ?? defaultPanelLoader;
+            this.panelLoader = panelLoader ?? DefaultPanelLoader;
             new GameObject("UICam", typeof(Camera)).TryGetComponent(out Camera cam);
             UICamera = cam;
             UICamera.transform.SetParent(Mono.transform);
@@ -310,12 +310,10 @@ namespace RicKit.UI
         public async UniTask BackAsync(bool destroy = false)
         {
             await CloseCurrentAsync(destroy);
-            if (showFormStack.Count == 0) return;
-            var form = showFormStack.Peek();
-            CurrentAbstractUIPanel = form;
-            if (!form.IsShow)
+            if (!CurrentAbstractUIPanel) return;
+            if (!CurrentAbstractUIPanel.IsShow)
             {
-                await form.OnShowAsync();
+                await CurrentAbstractUIPanel.OnShowAsync();
             }
         }
 
@@ -324,8 +322,8 @@ namespace RicKit.UI
         {
             if (showFormStack.Count == 0) return;
             var form = showFormStack.Pop();
-            CurrentAbstractUIPanel = showFormStack.Count == 0 ? null : showFormStack.Peek();
             await form.OnHideAsync();
+            CurrentAbstractUIPanel = showFormStack.Count == 0 ? null : showFormStack.Peek();
             if (destroy)
             {
                 uiFormsList.Remove(form);
@@ -354,7 +352,13 @@ namespace RicKit.UI
                     return;
                 }
 
-                CloseCurrentAsync(destroy).Forget();
+                form = showFormStack.Pop();
+                form.OnHideAsync().ContinueWith(() =>
+                {
+                    if (!destroy) return;
+                    uiFormsList.Remove(form);
+                    Object.Destroy(form.gameObject);
+                }).Forget();
             }
         }
 
