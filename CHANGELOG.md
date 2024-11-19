@@ -1,6 +1,7 @@
 # Changelog
-## [2.4.1] - 2024-11-19
-- fix; 'CloseCurrentAsync' bug
+## [2.4.2] - 2024-11-19
+- fix: 'CloseCurrentAsync' bug
+- add: `IUIManager.IsLockInput`
 ## [2.3.1] - 2024-11-04
 - add `UISceneView`
 ## [2.2.2] - 2024-10-25
