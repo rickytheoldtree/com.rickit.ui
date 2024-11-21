@@ -14,11 +14,12 @@
 
     - 在 Window/PackageManger 左上角选择 `My Registries` 刷新列表后, 找到`RicKit UI`下载
 ## 简介
+- 用栈维护界面顺序
 - 支持入场动画出场动画，动画时默认无法输入
-- 对`Esc`返回默认支持
+- 对`Esc`返回默认支持，动画期间默认忽视Esc点击
 - 使用前在 Resources/UISettings 下设置所有参数，包括`CurvingMasks`, `SortingLayerName`, 依赖分辨率等关键设置
 - 通过`Rickit => UI => Create UISettings` 来创建 `UISettings`
-- `UIManager`必须手动Init，会在第一次调用时创建，包括`UICam`, `Blocker`等重要组成部分
+- `UIManager`必须手动Init，会在第一次调用时创建包括`UICam`, `Blocker`等重要组成部分
 - 所有自己实现的UIPanel需要继承`AbstractUIPanel`，继承了`AbstractUIPanel`的窗口预制体可以在 RicKit => UI => 界面编辑器 中创建/打开 然后编辑
 ## 资源加载自定义
 - 初始化时可选传入自定义`IPanelLoader`, 默认为Resource的同步加载

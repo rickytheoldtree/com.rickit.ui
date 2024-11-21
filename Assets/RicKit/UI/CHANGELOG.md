@@ -1,4 +1,6 @@
 # Changelog
+## [2.4.4] - 2024-11-22
+- add `README.md`
 ## [2.4.3] - 2024-11-19
 - fix: 'CloseCurrentAsync' bug
 - add: `IUIManager.IsLockInput`
