@@ -4,6 +4,7 @@
 - ## 示例
 ![gif](https://github.com/rickytheoldtree/com.rickit.rui/blob/main/Gif/0.gif)
 - 该示例项目可以在 Package Manager 中 RicKit UI 下的 Samples 中找到
+- [WebGL DEMO](https://rickytheoldtree.github.io/com.rickit.ui/)
 ## 安装方式
 - 通过PackageManager安装
     - 打开管理界面 Edit/Project Settings/Package Manager
