@@ -1,0 +1,37 @@
+name: Create UPM Package
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create-upm-package:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Get commit message from event payload
+      - name: Get commit message
+        id: get_commit_message
+        run: echo "message=${{ github.event.head_commit.message }}" >> $GITHUB_ENV
+
+      # Check if commit message starts with 'v'
+      - name: Check if commit message starts with 'v'
+        if: startsWith(env.message, 'v')
+        run: |
+          # Load the environment variable
+          message="$message"
+          echo "Commit message starts with 'v': $message"
+
+          # Extract tag name by removing leading 'v'
+          tag_name="${message:1}"
+          echo "Derived tag name: $tag_name"
+
+          # Perform subtree split
+          git subtree split --prefix=Assets/RicKit/UI --branch upm
+          echo "Subtree split completed. Branch 'upm' created."
+
+          # Create and push the tag
+          git tag "$tag_name" upm
+          git push origin "$tag_name"
+          echo "Tag '$tag_name' pushed to origin."
