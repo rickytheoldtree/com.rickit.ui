@@ -8,6 +8,7 @@ namespace RicKit.UIExample.Scripts
         private void Start()
         {
             UIManager.Init();
+            UIManager.I.ShowUIUnmanagable<UIUnmanagable>();
             UIManager.I.ShowUI<UIOne>();
         }
     }

@@ -16,7 +16,7 @@ namespace RicKit.UIExample.Scripts
 
         private void OnTwoClick()
         {
-            UI.CloseThenShowUI<UITwo>();
+            UI.ShowThenClosePrev<UITwo>();
         }
     }
 }
