@@ -4,7 +4,7 @@
   "author": {
     "name": "LYQ"
   },
-  "version": "2.5.1",
+  "version": "2.5.2",
   "unity": "2018.4",
   "description": "An Async UI Manager for Unity, support custom panel loading both async and sync",
   "samples": [

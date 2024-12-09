@@ -1,5 +1,5 @@
 # Changelog
-## [2.5.1] - 2024-12-04
+## [2.5.2] - 2024-12-04
 - fix: `IUIManager.ClearAll` bug
 ## [2.5.0] - 2024-11-25
 - mod: `Samples`
