@@ -1,5 +1,5 @@
 # Changelog
-## [2.5.3] - 2024-12-11
+## [2.5.4] - 2024-12-11
 - fix: `GetCustomLayerCanvas` bug
 ## [2.5.2] - 2024-12-04
 - fix: `IUIManager.ClearAll` bug
