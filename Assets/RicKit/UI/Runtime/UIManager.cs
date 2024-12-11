@@ -27,7 +27,7 @@ namespace RicKit.UI
         void ShowUI<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel;
         void HideThenShowUI<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel;
         void CloseThenShowUI<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI") where T : AbstractUIPanel;
-        void ShowUIUnmanagable<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel;
+        void ShowUIUnmanagable<T>(Action<T> onInit = null, string layer = "UI", int sortingOrder = 900) where T : AbstractUIPanel;
         void Back(bool destroy = false);
         void CloseCurrent(bool destroy = false);
         void HideCurrent();
@@ -39,7 +39,7 @@ namespace RicKit.UI
         UniTask ShowUIAsync<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel;
         UniTask HideThenShowUIAsync<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel;
         UniTask CloseThenShowUIAsync<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI") where T : AbstractUIPanel;
-        UniTask ShowUIUnmanagableAsync<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel;
+        UniTask ShowUIUnmanagableAsync<T>(Action<T> onInit = null, string layer = "UI", int sortingOrder = 900) where T : AbstractUIPanel;
         UniTask BackAsync(bool destroy = false);
         UniTask CloseCurrentAsync(bool destroy = false);
         UniTask HideCurrentAsync();
@@ -53,7 +53,7 @@ namespace RicKit.UI
         void SetLockInput(bool on);
         bool IsLockInput();
         T GetUI<T>() where T : AbstractUIPanel;
-        Canvas GetCustomLayerCanvas(string name, int sortOrder, string layerName = "UI");
+        Canvas GetCustomLayerCanvas(string name, int sortingOrder, string sortingLayerName = "UI");
         void SetCustomLayerSortOrder(string name, int sortOrder);
     }
     public class UIManager : IUIManager
@@ -209,9 +209,9 @@ namespace RicKit.UI
             CloseThenShowUIAsync(onInit, destroy, layer).Forget();
         }
 
-        public void ShowUIUnmanagable<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel
+        public void ShowUIUnmanagable<T>(Action<T> onInit = null, string layer = "UI", int sortingOrder = 900) where T : AbstractUIPanel
         {
-            ShowUIUnmanagableAsync(onInit, layer).Forget();
+            ShowUIUnmanagableAsync(onInit, layer, sortingOrder).Forget();
         }
 
         public void Back(bool destroy = false)
@@ -295,15 +295,14 @@ namespace RicKit.UI
             await ShowUIAsync(onInit, layer);
         }
 
-        public async UniTask ShowUIUnmanagableAsync<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel
+        public async UniTask ShowUIUnmanagableAsync<T>(Action<T> onInit = null, string layer = "UI", int sortingOrder = 900) where T : AbstractUIPanel
         {
-            const int sortOrder = 900;
             var form = GetUI<T>();
             if (!form)
                 form = await NewUI<T>();
             form.gameObject.SetActive(false);
             form.SetSortingLayer(layer);
-            form.SetOrderInLayer(sortOrder);
+            form.SetOrderInLayer(sortingOrder);
             if (!uiFormsList.Contains(form)) uiFormsList.Add(form);
             onInit?.Invoke(form);
             form.BeforeShow();
@@ -451,25 +450,20 @@ namespace RicKit.UI
 
         private readonly Dictionary<string, Canvas> customRootDict = new Dictionary<string, Canvas>();
 
-        public Canvas GetCustomLayerCanvas(string name, int sortOrder, string layerName = "UI")
+        public Canvas GetCustomLayerCanvas(string name, int sortingOrder, string sortingLayerName = "UI")
         {
-            if (customRootDict.TryGetValue(name, out var canvasNew) && canvasNew)
+            if (customRootDict.TryGetValue(name, out var customCanvas) && customCanvas)
             {
-                canvasNew.gameObject.SetActive(true);
-                canvasNew.gameObject.layer = LayerMask.NameToLayer(layerName);
-                if (canvasNew.TryGetComponent(out Canvas c))
-                {
-                    c.overrideSorting = true;
-                    c.sortingLayerName = "UI";
-                    c.sortingOrder = sortOrder;
-                }
-
-                return canvasNew;
+                customCanvas.gameObject.SetActive(true);
+                customCanvas.overrideSorting = true;
+                customCanvas.sortingLayerName = sortingLayerName;
+                customCanvas.sortingOrder = sortingOrder;
+                return customCanvas;
             }
 
             var go = new GameObject(name, typeof(RectTransform), typeof(Canvas), typeof(GraphicRaycaster))
                 {
-                    layer = LayerMask.NameToLayer(layerName)
+                    layer = LayerMask.NameToLayer("UI")
                 };
             go.transform.SetParent(CanvasRectTransform);
             go.transform.localPosition = Vector3.zero;
@@ -480,12 +474,12 @@ namespace RicKit.UI
             rect.anchorMax = Vector2.one;
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
-            go.TryGetComponent(out canvasNew);
-            canvasNew.overrideSorting = true;
-            canvasNew.sortingLayerName = "UI";
-            canvasNew.sortingOrder = sortOrder;
-            customRootDict.Add(name, canvasNew);
-            return canvasNew;
+            go.TryGetComponent(out customCanvas);
+            customCanvas.overrideSorting = true;
+            customCanvas.sortingLayerName = sortingLayerName;
+            customCanvas.sortingOrder = sortingOrder;
+            customRootDict.Add(name, customCanvas);
+            return customCanvas;
         }
 
         public void SetCustomLayerSortOrder(string name, int sortOrder)
