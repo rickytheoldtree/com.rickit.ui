@@ -78,6 +78,7 @@ namespace RicKit.UI
         private readonly List<AbstractUIPanel> uiFormsList = new List<AbstractUIPanel>();
         private Canvas canvas;
         private static readonly IPanelLoader DefaultPanelLoader = new DefaultPanelLoader();
+        private readonly int uiLayerMask = LayerMask.NameToLayer("UI");
         public UIManagerMono Mono { get; private set; }
         public AbstractUIPanel CurrentAbstractUIPanel => showFormStack.Count == 0 ? null : showFormStack.Peek();
         public RectTransform CanvasRectTransform { get; private set; }
@@ -120,6 +121,7 @@ namespace RicKit.UI
         private void CreateUIManager(IPanelLoader panelLoader)
         {
             Mono = new GameObject("UIManager").AddComponent<UIManagerMono>();
+            Mono.gameObject.layer = uiLayerMask;
             Mono.SetUIManager(this);
             Object.DontDestroyOnLoad(Mono.gameObject);
             var eventSystem = Object.FindObjectOfType<EventSystem>();
@@ -147,6 +149,7 @@ namespace RicKit.UI
 
             new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster))
                 .TryGetComponent(out canvas);
+            canvas.gameObject.layer = uiLayerMask;
             canvas.transform.SetParent(Mono.transform);
             CanvasRectTransform = (RectTransform)canvas.transform;
             canvas.renderMode = RenderMode.ScreenSpaceCamera;
@@ -164,6 +167,7 @@ namespace RicKit.UI
                 typeof(Image), typeof(GraphicRaycaster)).TryGetComponent(out blockerCg);
             blockerCg.blocksRaycasts = false;
             blockerCg.TryGetComponent<Canvas>(out var blockerCanvas);
+            blockerCanvas.gameObject.layer = uiLayerMask;
             blockerCg.transform.SetParent(canvas.transform, false);
             blockerCanvas.overrideSorting = true;
             blockerCanvas.sortingLayerName = "Blocker";
@@ -177,6 +181,7 @@ namespace RicKit.UI
             blockerRt.offsetMax = Vector2.zero;
 
             new GameObject("DefaultRoot", typeof(RectTransform)).TryGetComponent(out defaultRoot);
+            defaultRoot.gameObject.layer = uiLayerMask;
             defaultRoot.SetParent(canvas.transform, false);
             defaultRoot.anchorMin = Vector2.zero;
             defaultRoot.anchorMax = Vector2.one;
@@ -461,17 +466,18 @@ namespace RicKit.UI
                 return customCanvas;
             }
 
-            var go = new GameObject(name, typeof(RectTransform), typeof(Canvas), typeof(GraphicRaycaster));
-            go.transform.SetParent(CanvasRectTransform);
-            go.transform.localPosition = Vector3.zero;
-            go.transform.localScale = Vector3.one;
-            go.transform.localRotation = Quaternion.identity;
-            go.TryGetComponent(out RectTransform rect);
+            new GameObject(name, typeof(RectTransform), typeof(Canvas), typeof(GraphicRaycaster))
+                .TryGetComponent(out RectTransform rect);
+            rect.gameObject.layer = uiLayerMask;
+            rect.SetParent(CanvasRectTransform);
+            rect.localPosition = Vector3.zero;
+            rect.localScale = Vector3.one;
+            rect.localRotation = Quaternion.identity;
             rect.anchorMin = Vector2.zero;
             rect.anchorMax = Vector2.one;
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
-            go.TryGetComponent(out customCanvas);
+            rect.TryGetComponent(out customCanvas);
             customCanvas.overrideSorting = true;
             customCanvas.sortingLayerName = sortingLayerName;
             customCanvas.sortingOrder = sortingOrder;
