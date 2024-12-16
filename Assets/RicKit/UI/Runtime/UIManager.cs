@@ -497,7 +497,7 @@ namespace RicKit.UI
 
         public T GetUI<T>() where T : AbstractUIPanel
         {
-            return uiFormsList.Where(form => form is T).Cast<T>().FirstOrDefault();
+            return uiFormsList.Where(form => form.GetType() == typeof(T)).Cast<T>().FirstOrDefault();
         }
 
         private async UniTask<T> NewUI<T>() where T : AbstractUIPanel

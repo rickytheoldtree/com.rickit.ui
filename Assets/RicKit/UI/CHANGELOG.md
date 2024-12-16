@@ -1,4 +1,6 @@
 # Changelog
+## [2.6.0] - 2024-12-16
+- fix: `IUIManager.GetUI` bug
 ## [2.5.6] - 2024-12-12
 - remove: `SubPanel`, please use `IUIManager.ShowUIUnmanagableAsync`
 ## [2.5.5] - 2024-12-11
