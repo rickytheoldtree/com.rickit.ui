@@ -517,11 +517,30 @@ namespace RicKit.UI
 
         public void ClearAll()
         {
-            foreach (var ui in uiFormsList.Where(ui => ui && !ui.DontDestroyOnClear))
+            uiFormsList.RemoveAll(ui =>
+            {
+                if (!ui || !ui.gameObject) return true;
+                if (ui.DontDestroyOnClear) return false;
                 Object.DestroyImmediate(ui.gameObject);
-            uiFormsList.Clear();
-            showFormStack.Clear();
+                return true;
+            });
+
+            var remainingForms = new Stack<AbstractUIPanel>();
+            while (showFormStack.Count > 0)
+            {
+                var form = showFormStack.Pop();
+                if (form && form.DontDestroyOnClear)
+                {
+                    remainingForms.Push(form);
+                }
+            }
+
+            while (remainingForms.Count > 0)
+            {
+                showFormStack.Push(remainingForms.Pop());
+            }
         }
+
     }
     public class DefaultPanelLoader : IPanelLoader
     {

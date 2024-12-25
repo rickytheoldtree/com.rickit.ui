@@ -1,4 +1,6 @@
 # Changelog
+## [2.6.1] - 2024-12-25
+- fix: `IUIManager.ClearAll` bug
 ## [2.6.0] - 2024-12-16
 - fix: `IUIManager.GetUI` bug
 ## [2.5.6] - 2024-12-12
