@@ -52,6 +52,7 @@ namespace RicKit.UI
         void ClearAll();
         void SetLockInput(bool on);
         bool IsLockInput();
+        void LockInputWhile(UniTask task);
         T GetUI<T>() where T : AbstractUIPanel;
         Canvas GetCustomLayerCanvas(string name, int sortingOrder, string sortingLayerName = "UI");
         void SetCustomLayerSortOrder(string name, int sortOrder);
@@ -442,6 +443,12 @@ namespace RicKit.UI
         public bool IsLockInput()
         {
             return lockCount > 0;
+        }
+        
+        public void LockInputWhile(UniTask task)
+        {
+            SetLockInput(true);
+            task.ContinueWith(() => SetLockInput(false)).Forget();
         }
 
         public static void LockInput(bool on)

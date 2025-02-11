@@ -1,4 +1,6 @@
 # Changelog
+## [2.6.2] - 2025-02-11
+- add: `IUIManager.LockInputWhile(UniTask task)`
 ## [2.6.1] - 2024-12-25
 - fix: `IUIManager.ClearAll` bug
 ## [2.6.0] - 2024-12-16
