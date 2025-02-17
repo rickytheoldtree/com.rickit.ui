@@ -58,6 +58,10 @@
         }*/
     }
 ```
+
+## Universal RP 支持
+- 在需要stack UI相机的`游戏相机`上添加`UniversalRenderPipelineCamStackUICam`脚本
+
 ## 交流与反馈
 - Q群: 851024152
 - 欢迎问题反馈, 以及任何建议
