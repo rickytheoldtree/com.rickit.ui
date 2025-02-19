@@ -60,7 +60,8 @@
 ```
 
 ## Universal RP 支持
-- 在需要stack UI相机的`游戏相机`上添加`UniversalRenderPipelineCamStackUICam`脚本
+- 在需要叠加`UI相机`的`游戏相机`上添加`UniversalRenderPipelineCamStackUICam`脚本
+- 如果只使用UI相机，则不需要做额外操作
 
 ## 交流与反馈
 - Q群: 851024152

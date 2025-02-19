@@ -11,6 +11,8 @@ namespace RicKit.UI.URP
         {
             var camData = GetComponent<Camera>().GetUniversalAdditionalCameraData();
             var uiCam = UIManager.I.UICamera;
+            var uiCamData = uiCam.GetUniversalAdditionalCameraData();
+            uiCamData.renderType = CameraRenderType.Overlay;
             if (camData.cameraStack.Contains(uiCam)) return;
             camData.cameraStack.Add(uiCam);
         }

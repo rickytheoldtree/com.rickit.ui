@@ -8,9 +8,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
-#if USING_URP
-using UnityEngine.Rendering.Universal;
-#endif
 
 namespace RicKit.UI
 {
@@ -136,12 +133,13 @@ namespace RicKit.UI
             Object.DontDestroyOnLoad(eventSystem);
             
             var settings = Settings = Resources.Load<UISettings>("UISettings");
+            if (!settings)
+            {
+                Debug.LogError("UISettings not found in Resources.");
+                return;
+            }
             this.panelLoader = panelLoader ?? DefaultPanelLoader;
             new GameObject("UICam", typeof(Camera)).TryGetComponent(out Camera cam);
-#if USING_URP
-            var camData = cam.GetUniversalAdditionalCameraData();
-            camData.renderType = CameraRenderType.Overlay;
-#endif
             UICamera = cam;
             UICamera.transform.SetParent(Mono.transform);
             UICamera.transform.localPosition = new Vector3(0, 0, -10);
