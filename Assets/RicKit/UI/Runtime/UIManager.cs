@@ -410,7 +410,7 @@ namespace RicKit.UI
         public async UniTask ShowThenClosePrevAsync<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI") where T : AbstractUIPanel
         {
             await ShowUIAsync(onInit, layer);
-            var current = showFormStack.Count > 0 ? showFormStack.Peek() : null;
+            var current = showFormStack.Count > 0 ? showFormStack.Pop() : null;
             if (!current) return;
             var prev = showFormStack.Count > 0 ? showFormStack.Pop() : null;
             showFormStack.Push(current);

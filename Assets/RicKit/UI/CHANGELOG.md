@@ -1,5 +1,5 @@
 # Changelog
-## [3.0.4] - 2025-03-27
+## [3.0.5] - 2025-03-27
 - fix: `ShowThenClosePrevAsync` show panel has same order in layer with prev panel bug
 - change: `AbstractUIPanel.SortOrder` to `AbstractUIPanel.OrderInLayer`
 ## [3.0.3] - 2025-02-19
