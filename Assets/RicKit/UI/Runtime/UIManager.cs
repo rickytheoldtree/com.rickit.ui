@@ -278,7 +278,7 @@ namespace RicKit.UI
 
         public async UniTask ShowUIAsync<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel
         {
-            var sortOrder = showFormStack.Count == 0 ? 1 : showFormStack.Peek().SortOrder + 5;
+            var sortOrder = showFormStack.Count == 0 ? 1 : showFormStack.Peek().OrderInLayer + 5;
             var form = GetUI<T>();
             if (!form)
                 form = await NewUI<T>();
@@ -409,8 +409,11 @@ namespace RicKit.UI
 
         public async UniTask ShowThenClosePrevAsync<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI") where T : AbstractUIPanel
         {
-            var prev = showFormStack.Count > 0 ? showFormStack.Pop() : null;
             await ShowUIAsync(onInit, layer);
+            var current = showFormStack.Count > 0 ? showFormStack.Peek() : null;
+            if (!current) return;
+            var prev = showFormStack.Count > 0 ? showFormStack.Pop() : null;
+            showFormStack.Push(current);
             if (!prev) return;
             await prev.OnHideAsync();
             if (destroy)

@@ -8,7 +8,7 @@ namespace RicKit.UI.Panels
     [RequireComponent(typeof(Canvas), typeof(CanvasGroup), typeof(GraphicRaycaster))]
     public abstract class AbstractUIPanel : MonoBehaviour
     {
-        public int SortOrder { get; private set; }
+        public int OrderInLayer { get; private set; }
         public bool IsShow =>  gameObject.activeSelf;
 
         public bool CanInteract => IsShow && CanvasGroup.interactable;
@@ -61,7 +61,7 @@ namespace RicKit.UI.Panels
 
         public void SetOrderInLayer(int order)
         {
-            SortOrder = order;
+            OrderInLayer = order;
             Canvas.overrideSorting = true;
             Canvas.sortingOrder = order;
         }
