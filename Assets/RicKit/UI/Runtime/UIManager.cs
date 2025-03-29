@@ -24,31 +24,64 @@ namespace RicKit.UI
         Action<AbstractUIPanel> OnHideEnd { get; set; }
         void Initiate();
         void Initiate(IPanelLoader panelLoader);
-        void ShowUI<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel;
-        void HideThenShowUI<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel;
-        void CloseThenShowUI<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI") where T : AbstractUIPanel;
-        void ShowUIUnmanagable<T>(Action<T> onInit = null, string layer = "UI", int sortingOrder = 900) where T : AbstractUIPanel;
+
+        void ShowUI<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5)
+            where T : AbstractUIPanel;
+
+        void HideThenShowUI<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5)
+            where T : AbstractUIPanel;
+
+        void CloseThenShowUI<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI",
+            int orderInLayerDelta = 5) where T : AbstractUIPanel;
+
+        void ShowUIUnmanagable<T>(Action<T> onInit = null, string layer = "UI", int sortingOrder = 900)
+            where T : AbstractUIPanel;
+
         void Back(bool destroy = false);
         void CloseCurrent(bool destroy = false);
         void HideCurrent();
         void CloseUntil<T>(bool destroy = false) where T : AbstractUIPanel;
-        void BackThenShow<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI") where T : AbstractUIPanel;
+
+        void BackThenShow<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI",
+            int orderInLayerDelta = 5) where T : AbstractUIPanel;
+
         void PreloadUI<T>(string layer = "UI") where T : AbstractUIPanel;
-        void ShowThenClosePrev<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI") where T : AbstractUIPanel;
-        void ShowThenHidePrev<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel;
-        UniTask ShowUIAsync<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel;
-        UniTask HideThenShowUIAsync<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel;
-        UniTask CloseThenShowUIAsync<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI") where T : AbstractUIPanel;
-        UniTask ShowUIUnmanagableAsync<T>(Action<T> onInit = null, string layer = "UI", int sortingOrder = 900) where T : AbstractUIPanel;
+
+        void ShowThenClosePrev<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI",
+            int orderInLayerDelta = 10) where T : AbstractUIPanel;
+
+        void ShowThenHidePrev<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5)
+            where T : AbstractUIPanel;
+
+        UniTask ShowUIAsync<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5)
+            where T : AbstractUIPanel;
+
+        UniTask HideThenShowUIAsync<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5)
+            where T : AbstractUIPanel;
+
+        UniTask CloseThenShowUIAsync<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI",
+            int orderInLayerDelta = 5) where T : AbstractUIPanel;
+
+        UniTask ShowUIUnmanagableAsync<T>(Action<T> onInit = null, string layer = "UI", int sortingOrder = 900)
+            where T : AbstractUIPanel;
+
         UniTask BackAsync(bool destroy = false);
         UniTask CloseCurrentAsync(bool destroy = false);
         UniTask HideCurrentAsync();
         UniTask CloseUntilAsync<T>(bool destroy = false) where T : AbstractUIPanel;
-        UniTask BackThenShowAsync<T>(Action<T> onInit, bool destroy = false, string layer = "UI") where T : AbstractUIPanel;
+
+        UniTask BackThenShowAsync<T>(Action<T> onInit, bool destroy = false, string layer = "UI",
+            int orderInLayerDelta = 5) where T : AbstractUIPanel;
+
         UniTask WaitUntilUIHideEnd<T>() where T : AbstractUIPanel;
         UniTask PreloadUIAsync<T>(string layer = "UI") where T : AbstractUIPanel;
-        UniTask ShowThenClosePrevAsync<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI") where T : AbstractUIPanel;
-        UniTask ShowThenHidePrevAsync<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel;
+
+        UniTask ShowThenClosePrevAsync<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI",
+            int orderInLayerDelta = 10) where T : AbstractUIPanel;
+
+        UniTask ShowThenHidePrevAsync<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5)
+            where T : AbstractUIPanel;
+
         void ClearAll();
         void SetLockInput(bool on);
         bool IsLockInput();
@@ -57,9 +90,11 @@ namespace RicKit.UI
         Canvas GetCustomLayerCanvas(string name, int sortingOrder, string sortingLayerName = "UI");
         void SetCustomLayerSortOrder(string name, int sortOrder);
     }
+
     public class UIManager : IUIManager
     {
         private static IUIManager instance;
+
         public static IUIManager I
         {
             get
@@ -68,6 +103,7 @@ namespace RicKit.UI
                 {
                     Debug.LogError("UIManager not initialized, please call UIManager.Init() first.");
                 }
+
                 return instance;
             }
         }
@@ -83,7 +119,7 @@ namespace RicKit.UI
         public UIManagerMono Mono { get; private set; }
         public AbstractUIPanel CurrentAbstractUIPanel => showFormStack.Count == 0 ? null : showFormStack.Peek();
         public RectTransform CanvasRectTransform { get; private set; }
-        public Camera UICamera {get; private set;}
+        public Camera UICamera { get; private set; }
         public UISettings Settings { get; private set; }
 
         #region Events
@@ -105,14 +141,15 @@ namespace RicKit.UI
                 Debug.LogError("UIManager already initialized.");
                 return;
             }
+
             new UIManager().Initiate(panelLoader);
         }
-        
+
         public void Initiate()
         {
             Initiate(DefaultPanelLoader);
         }
-        
+
         public void Initiate(IPanelLoader panelLoader)
         {
             instance = this;
@@ -131,20 +168,21 @@ namespace RicKit.UI
                 : new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule))
                     .GetComponent<EventSystem>();
             Object.DontDestroyOnLoad(eventSystem);
-            
+
             var settings = Settings = Resources.Load<UISettings>("UISettings");
             if (!settings)
             {
                 Debug.LogError("UISettings not found in Resources.");
                 return;
             }
+
             this.panelLoader = panelLoader ?? DefaultPanelLoader;
             new GameObject("UICam", typeof(Camera)).TryGetComponent(out Camera cam);
             UICamera = cam;
             UICamera.transform.SetParent(Mono.transform);
             UICamera.transform.localPosition = new Vector3(0, 0, -10);
             UICamera.clearFlags = settings.cameraClearFlags;
-            if(UICamera.clearFlags == CameraClearFlags.SolidColor || UICamera.clearFlags == CameraClearFlags.Skybox)
+            if (UICamera.clearFlags == CameraClearFlags.SolidColor || UICamera.clearFlags == CameraClearFlags.Skybox)
                 UICamera.backgroundColor = settings.backgroundColor;
             UICamera.cullingMask = settings.cullingMask;
             UICamera.depth = settings.depth;
@@ -194,33 +232,38 @@ namespace RicKit.UI
             defaultRoot.offsetMin = Vector2.zero;
             defaultRoot.offsetMax = Vector2.zero;
         }
+
         public void Update()
         {
-            if (!Input.GetKeyDown(KeyCode.Escape))return;
-            if(IsLockInput()) return;
-            if(!CurrentAbstractUIPanel) return;
-            if(!CurrentAbstractUIPanel.CanInteract) return; 
+            if (!Input.GetKeyDown(KeyCode.Escape)) return;
+            if (IsLockInput()) return;
+            if (!CurrentAbstractUIPanel) return;
+            if (!CurrentAbstractUIPanel.CanInteract) return;
             CurrentAbstractUIPanel.OnESCClick();
         }
 
         #region 同步（只是同步调用，并不保证任务同帧开始或者完成）
 
-        public void ShowUI<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel
+        public void ShowUI<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5)
+            where T : AbstractUIPanel
         {
-            ShowUIAsync(onInit, layer).Forget();
+            ShowUIAsync(onInit, layer, orderInLayerDelta).Forget();
         }
 
-        public void HideThenShowUI<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel
+        public void HideThenShowUI<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5)
+            where T : AbstractUIPanel
         {
-            HideThenShowUIAsync(onInit, layer).Forget();
+            HideThenShowUIAsync(onInit, layer, orderInLayerDelta).Forget();
         }
 
-        public void CloseThenShowUI<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI") where T : AbstractUIPanel
+        public void CloseThenShowUI<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI",
+            int orderInLayerDelta = 5) where T : AbstractUIPanel
         {
-            CloseThenShowUIAsync(onInit, destroy, layer).Forget();
+            CloseThenShowUIAsync(onInit, destroy, layer, orderInLayerDelta).Forget();
         }
 
-        public void ShowUIUnmanagable<T>(Action<T> onInit = null, string layer = "UI", int sortingOrder = 900) where T : AbstractUIPanel
+        public void ShowUIUnmanagable<T>(Action<T> onInit = null, string layer = "UI", int sortingOrder = 900)
+            where T : AbstractUIPanel
         {
             ShowUIUnmanagableAsync(onInit, layer, sortingOrder).Forget();
         }
@@ -238,6 +281,7 @@ namespace RicKit.UI
         {
             CloseCurrentAsync(destroy).Forget();
         }
+
         /// <summary>
         /// Hide不会出栈，且不可销毁
         /// </summary>
@@ -251,9 +295,10 @@ namespace RicKit.UI
             CloseUntilAsync<T>(destroy).Forget();
         }
 
-        public void BackThenShow<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI") where T : AbstractUIPanel
+        public void BackThenShow<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI",
+            int orderInLayerDelta = 5) where T : AbstractUIPanel
         {
-            BackThenShowAsync(onInit, destroy, layer).Forget();
+            BackThenShowAsync(onInit, destroy, layer, orderInLayerDelta).Forget();
         }
 
         public void PreloadUI<T>(string layer = "UI") where T : AbstractUIPanel
@@ -261,14 +306,16 @@ namespace RicKit.UI
             PreloadUIAsync<T>(layer).Forget();
         }
 
-        public void ShowThenClosePrev<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI") where T : AbstractUIPanel
+        public void ShowThenClosePrev<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI",
+            int orderInLayerDelta = 10) where T : AbstractUIPanel
         {
-            ShowThenClosePrevAsync(onInit, destroy, layer).Forget();
+            ShowThenClosePrevAsync(onInit, destroy, layer, orderInLayerDelta).Forget();
         }
 
-        public void ShowThenHidePrev<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel
+        public void ShowThenHidePrev<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5)
+            where T : AbstractUIPanel
         {
-            ShowThenHidePrevAsync(onInit, layer).Forget();
+            ShowThenHidePrevAsync(onInit, layer, orderInLayerDelta).Forget();
         }
 
         #endregion
@@ -276,9 +323,10 @@ namespace RicKit.UI
 
         #region 异步
 
-        public async UniTask ShowUIAsync<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel
+        public async UniTask ShowUIAsync<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5)
+            where T : AbstractUIPanel
         {
-            var sortOrder = showFormStack.Count == 0 ? 1 : showFormStack.Peek().OrderInLayer + 5;
+            var sortOrder = showFormStack.Count == 0 ? 1 : showFormStack.Peek().OrderInLayer + orderInLayerDelta;
             var form = GetUI<T>();
             if (!form)
                 form = await NewUI<T>();
@@ -294,19 +342,22 @@ namespace RicKit.UI
         }
 
 
-        public async UniTask HideThenShowUIAsync<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel
+        public async UniTask HideThenShowUIAsync<T>(Action<T> onInit = null, string layer = "UI",
+            int orderInLayerDelta = 5) where T : AbstractUIPanel
         {
             await HideCurrentAsync();
-            await ShowUIAsync(onInit, layer);
+            await ShowUIAsync(onInit, layer, orderInLayerDelta);
         }
 
-        public async UniTask CloseThenShowUIAsync<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI") where T : AbstractUIPanel
+        public async UniTask CloseThenShowUIAsync<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI",
+            int orderInLayerDelta = 5) where T : AbstractUIPanel
         {
             await CloseCurrentAsync(destroy);
-            await ShowUIAsync(onInit, layer);
+            await ShowUIAsync(onInit, layer, orderInLayerDelta);
         }
 
-        public async UniTask ShowUIUnmanagableAsync<T>(Action<T> onInit = null, string layer = "UI", int sortingOrder = 900) where T : AbstractUIPanel
+        public async UniTask ShowUIUnmanagableAsync<T>(Action<T> onInit = null, string layer = "UI",
+            int sortingOrder = 900) where T : AbstractUIPanel
         {
             var form = GetUI<T>();
             if (!form)
@@ -379,14 +430,14 @@ namespace RicKit.UI
                     uiFormsList.Remove(form);
                     Object.Destroy(form.gameObject);
                 }
-                
             }
         }
 
-        public async UniTask BackThenShowAsync<T>(Action<T> onInit, bool destroy = false, string layer = "UI") where T : AbstractUIPanel
+        public async UniTask BackThenShowAsync<T>(Action<T> onInit, bool destroy = false, string layer = "UI",
+            int orderInLayerDelta = 5) where T : AbstractUIPanel
         {
             await BackAsync(destroy);
-            await ShowUIAsync(onInit, layer);
+            await ShowUIAsync(onInit, layer, orderInLayerDelta);
         }
 
         public UniTask WaitUntilUIHideEnd<T>() where T : AbstractUIPanel
@@ -407,13 +458,11 @@ namespace RicKit.UI
                 uiFormsList.Add(form);
         }
 
-        public async UniTask ShowThenClosePrevAsync<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI") where T : AbstractUIPanel
+        public async UniTask ShowThenClosePrevAsync<T>(Action<T> onInit = null, bool destroy = false,
+            string layer = "UI", int orderInLayerDelta = 10) where T : AbstractUIPanel
         {
-            await ShowUIAsync(onInit, layer);
-            var current = showFormStack.Count > 0 ? showFormStack.Pop() : null;
-            if (!current) return;
             var prev = showFormStack.Count > 0 ? showFormStack.Pop() : null;
-            showFormStack.Push(current);
+            await ShowUIAsync(onInit, layer, orderInLayerDelta);
             if (!prev) return;
             await prev.OnHideAsync();
             if (destroy)
@@ -423,11 +472,12 @@ namespace RicKit.UI
             }
         }
 
-        public async UniTask ShowThenHidePrevAsync<T>(Action<T> onInit = null, string layer = "UI") where T : AbstractUIPanel
+        public async UniTask ShowThenHidePrevAsync<T>(Action<T> onInit = null, string layer = "UI",
+            int orderInLayerDelta = 5) where T : AbstractUIPanel
         {
             var prev = showFormStack.Count > 0 ? showFormStack.Peek() : null;
-            await ShowUIAsync(onInit, layer);
-            if(!prev) return;
+            await ShowUIAsync(onInit, layer, orderInLayerDelta);
+            if (!prev) return;
             await prev.OnHideAsync();
         }
 
@@ -437,6 +487,7 @@ namespace RicKit.UI
         #region LockInput
 
         private int lockCount;
+
         public void SetLockInput(bool on)
         {
             if (instance == null) return;
@@ -452,7 +503,7 @@ namespace RicKit.UI
         {
             return lockCount > 0;
         }
-        
+
         public void LockInputWhile(UniTask task)
         {
             SetLockInput(true);
@@ -517,9 +568,9 @@ namespace RicKit.UI
 
         private async UniTask<T> NewUI<T>() where T : AbstractUIPanel
         {
-            LockInput(true);
+            SetLockInput(true);
             var prefab = await panelLoader.LoadPrefab($"{Settings.assetPathPrefix}{typeof(T).Name}");
-            LockInput(false);
+            SetLockInput(false);
             var go = Object.Instantiate(prefab, defaultRoot);
             go.TryGetComponent(out RectTransform rect);
             rect.anchorMin = Vector2.zero;
@@ -555,8 +606,8 @@ namespace RicKit.UI
                 showFormStack.Push(remainingForms.Pop());
             }
         }
-
     }
+
     public class DefaultPanelLoader : IPanelLoader
     {
         public UniTask<GameObject> LoadPrefab(string path)
