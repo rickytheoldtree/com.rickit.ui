@@ -5,6 +5,8 @@ namespace RicKit.UI.Interfaces
 {
     public interface IPanelLoader
     {
-        UniTask<GameObject> LoadPrefab(string path);
+        UniTask<GameObject> LoadPrefabAsync(string path);
+        
+        GameObject LoadPrefab(string path);
     }
 }

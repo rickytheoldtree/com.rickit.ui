@@ -24,7 +24,7 @@ namespace RicKit.UI
         Action<AbstractUIPanel> OnHideEnd { get; set; }
         void Initiate();
         void Initiate(IPanelLoader panelLoader);
-
+        bool PanelAsyncLoading { get; set; }
         void ShowUI<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5)
             where T : AbstractUIPanel;
 
@@ -155,6 +155,8 @@ namespace RicKit.UI
             instance = this;
             CreateUIManager(panelLoader);
         }
+
+        public bool PanelAsyncLoading { get; set; } = true;
 
         private void CreateUIManager(IPanelLoader panelLoader)
         {
@@ -329,7 +331,8 @@ namespace RicKit.UI
             var sortOrder = showFormStack.Count == 0 ? 1 : showFormStack.Peek().OrderInLayer + orderInLayerDelta;
             var form = GetUI<T>();
             if (!form)
-                form = await NewUI<T>();
+                form = PanelAsyncLoading ? await NewUIAsync<T>() : NewUI<T>();
+
             form.gameObject.SetActive(false);
             form.SetSortingLayer(layer);
             form.SetOrderInLayer(sortOrder);
@@ -361,7 +364,7 @@ namespace RicKit.UI
         {
             var form = GetUI<T>();
             if (!form)
-                form = await NewUI<T>();
+                form = PanelAsyncLoading ? await NewUIAsync<T>() : NewUI<T>();
             form.gameObject.SetActive(false);
             form.SetSortingLayer(layer);
             form.SetOrderInLayer(sortingOrder);
@@ -450,7 +453,7 @@ namespace RicKit.UI
         {
             var form = GetUI<T>();
             if (!form)
-                form = await NewUI<T>();
+                form = PanelAsyncLoading ? await NewUIAsync<T>() : NewUI<T>();
             form.gameObject.SetActive(false);
             form.SetSortingLayer(layer);
             form.SetOrderInLayer(0);
@@ -566,10 +569,25 @@ namespace RicKit.UI
             return uiFormsList.Where(form => form.GetType() == typeof(T)).Cast<T>().FirstOrDefault();
         }
 
-        private async UniTask<T> NewUI<T>() where T : AbstractUIPanel
+        private async UniTask<T> NewUIAsync<T>() where T : AbstractUIPanel
         {
             SetLockInput(true);
-            var prefab = await panelLoader.LoadPrefab($"{Settings.assetPathPrefix}{typeof(T).Name}");
+            var prefab = await panelLoader.LoadPrefabAsync($"{Settings.assetPathPrefix}{typeof(T).Name}");
+            SetLockInput(false);
+            var go = Object.Instantiate(prefab, defaultRoot);
+            go.TryGetComponent(out RectTransform rect);
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            go.TryGetComponent(out T form);
+            return form;
+        }
+
+        private T NewUI<T>() where T : AbstractUIPanel
+        {
+            SetLockInput(true);
+            var prefab = panelLoader.LoadPrefab($"{Settings.assetPathPrefix}{typeof(T).Name}");
             SetLockInput(false);
             var go = Object.Instantiate(prefab, defaultRoot);
             go.TryGetComponent(out RectTransform rect);
@@ -610,9 +628,14 @@ namespace RicKit.UI
 
     public class DefaultPanelLoader : IPanelLoader
     {
-        public UniTask<GameObject> LoadPrefab(string path)
+        public UniTask<GameObject> LoadPrefabAsync(string path)
         {
             return UniTask.FromResult(Resources.Load<GameObject>(path));
+        }
+        
+        public GameObject LoadPrefab(string path)
+        {
+            return Resources.Load<GameObject>(path);
         }
     }
 }
