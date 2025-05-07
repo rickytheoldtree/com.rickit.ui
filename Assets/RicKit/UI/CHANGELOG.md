@@ -1,4 +1,6 @@
 # Changelog
+## [3.2.0] - 2025-05-07
+- feat: Add SafeDestroy method to UIManager for safe panel destruction
 ## [3.1.0] - 2025-04-29
 - feat: `PanelAsyncLoading`
 ## [3.0.6] - 2025-03-27

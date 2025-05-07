@@ -89,6 +89,7 @@ namespace RicKit.UI
         T GetUI<T>() where T : AbstractUIPanel;
         Canvas GetCustomLayerCanvas(string name, int sortingOrder, string sortingLayerName = "UI");
         void SetCustomLayerSortOrder(string name, int sortOrder);
+        void SafeDestroy(AbstractUIPanel panel);
     }
 
     public class UIManager : IUIManager
@@ -560,6 +561,16 @@ namespace RicKit.UI
             {
                 canvasNew.sortingOrder = sortOrder;
             }
+        }
+
+        public void SafeDestroy(AbstractUIPanel panel)
+        {
+            if (!panel) return;
+            if (uiFormsList.Contains(panel))
+            {
+                uiFormsList.Remove(panel);
+            }
+            Object.Destroy(panel.gameObject);
         }
 
         #endregion
