@@ -1,4 +1,6 @@
 # Changelog
+## [3.2.1] - 2025-05-09
+- refactor: rename showFormStack and uiFormsList to showStack and panelList for clarity
 ## [3.2.0] - 2025-05-07
 - feat: Add SafeDestroy method to UIManager for safe panel destruction
 ## [3.1.0] - 2025-04-29

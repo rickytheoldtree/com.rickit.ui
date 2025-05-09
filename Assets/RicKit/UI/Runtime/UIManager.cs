@@ -112,13 +112,13 @@ namespace RicKit.UI
         private CanvasGroup blockerCg;
         private RectTransform defaultRoot;
         private IPanelLoader panelLoader;
-        private readonly Stack<AbstractUIPanel> showFormStack = new Stack<AbstractUIPanel>();
-        private readonly List<AbstractUIPanel> uiFormsList = new List<AbstractUIPanel>();
+        private readonly Stack<AbstractUIPanel> showStack = new Stack<AbstractUIPanel>();
+        private readonly List<AbstractUIPanel> panelList = new List<AbstractUIPanel>();
         private Canvas canvas;
         private static readonly IPanelLoader DefaultPanelLoader = new DefaultPanelLoader();
         private readonly int uiLayerMask = LayerMask.NameToLayer("UI");
         public UIManagerMono Mono { get; private set; }
-        public AbstractUIPanel CurrentAbstractUIPanel => showFormStack.Count == 0 ? null : showFormStack.Peek();
+        public AbstractUIPanel CurrentAbstractUIPanel => showStack.Count == 0 ? null : showStack.Peek();
         public RectTransform CanvasRectTransform { get; private set; }
         public Camera UICamera { get; private set; }
         public UISettings Settings { get; private set; }
@@ -329,7 +329,7 @@ namespace RicKit.UI
         public async UniTask ShowUIAsync<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5)
             where T : AbstractUIPanel
         {
-            var sortOrder = showFormStack.Count == 0 ? 1 : showFormStack.Peek().OrderInLayer + orderInLayerDelta;
+            var sortOrder = showStack.Count == 0 ? 1 : showStack.Peek().OrderInLayer + orderInLayerDelta;
             var form = GetUI<T>();
             if (!form)
                 form = PanelAsyncLoading ? await NewUIAsync<T>() : NewUI<T>();
@@ -337,9 +337,9 @@ namespace RicKit.UI
             form.gameObject.SetActive(false);
             form.SetSortingLayer(layer);
             form.SetOrderInLayer(sortOrder);
-            showFormStack.Push(form);
-            if (!uiFormsList.Contains(form))
-                uiFormsList.Add(form);
+            showStack.Push(form);
+            if (!panelList.Contains(form))
+                panelList.Add(form);
             onInit?.Invoke(form);
             form.BeforeShow();
             await form.OnShowAsync();
@@ -369,7 +369,7 @@ namespace RicKit.UI
             form.gameObject.SetActive(false);
             form.SetSortingLayer(layer);
             form.SetOrderInLayer(sortingOrder);
-            if (!uiFormsList.Contains(form)) uiFormsList.Add(form);
+            if (!panelList.Contains(form)) panelList.Add(form);
             onInit?.Invoke(form);
             form.BeforeShow();
             await form.OnShowAsync();
@@ -388,12 +388,12 @@ namespace RicKit.UI
 
         public async UniTask CloseCurrentAsync(bool destroy = false)
         {
-            if (showFormStack.Count == 0) return;
-            var form = showFormStack.Pop();
+            if (showStack.Count == 0) return;
+            var form = showStack.Pop();
             await form.OnHideAsync();
             if (destroy)
             {
-                uiFormsList.Remove(form);
+                panelList.Remove(form);
                 Object.Destroy(form.gameObject);
             }
         }
@@ -401,16 +401,16 @@ namespace RicKit.UI
 
         public async UniTask HideCurrentAsync()
         {
-            if (showFormStack.Count == 0) return;
-            var form = showFormStack.Peek();
+            if (showStack.Count == 0) return;
+            var form = showStack.Peek();
             await form.OnHideAsync();
         }
 
         public async UniTask CloseUntilAsync<T>(bool destroy = false) where T : AbstractUIPanel
         {
-            while (showFormStack.Count > 0)
+            while (showStack.Count > 0)
             {
-                var form = showFormStack.Peek();
+                var form = showStack.Peek();
                 if (form is T)
                 {
                     if (!form.isActiveAndEnabled)
@@ -418,20 +418,20 @@ namespace RicKit.UI
                     return;
                 }
 
-                form = showFormStack.Pop();
+                form = showStack.Pop();
                 if (form.isActiveAndEnabled)
                 {
                     form.OnHideAsync().ContinueWith(() =>
                     {
                         if (!destroy) return;
-                        uiFormsList.Remove(form);
+                        panelList.Remove(form);
                         Object.Destroy(form.gameObject);
                     }).Forget();
                 }
                 else
                 {
                     if (!destroy) continue;
-                    uiFormsList.Remove(form);
+                    panelList.Remove(form);
                     Object.Destroy(form.gameObject);
                 }
             }
@@ -458,20 +458,20 @@ namespace RicKit.UI
             form.gameObject.SetActive(false);
             form.SetSortingLayer(layer);
             form.SetOrderInLayer(0);
-            if (!uiFormsList.Contains(form))
-                uiFormsList.Add(form);
+            if (!panelList.Contains(form))
+                panelList.Add(form);
         }
 
         public async UniTask ShowThenClosePrevAsync<T>(Action<T> onInit = null, bool destroy = false,
             string layer = "UI", int orderInLayerDelta = 10) where T : AbstractUIPanel
         {
-            var prev = showFormStack.Count > 0 ? showFormStack.Pop() : null;
+            var prev = showStack.Count > 0 ? showStack.Pop() : null;
             await ShowUIAsync(onInit, layer, orderInLayerDelta);
             if (!prev) return;
             await prev.OnHideAsync();
             if (destroy)
             {
-                uiFormsList.Remove(prev);
+                panelList.Remove(prev);
                 Object.Destroy(prev.gameObject);
             }
         }
@@ -479,7 +479,7 @@ namespace RicKit.UI
         public async UniTask ShowThenHidePrevAsync<T>(Action<T> onInit = null, string layer = "UI",
             int orderInLayerDelta = 5) where T : AbstractUIPanel
         {
-            var prev = showFormStack.Count > 0 ? showFormStack.Peek() : null;
+            var prev = showStack.Count > 0 ? showStack.Peek() : null;
             await ShowUIAsync(onInit, layer, orderInLayerDelta);
             if (!prev) return;
             await prev.OnHideAsync();
@@ -566,9 +566,17 @@ namespace RicKit.UI
         public void SafeDestroy(AbstractUIPanel panel)
         {
             if (!panel) return;
-            if (uiFormsList.Contains(panel))
+            if (panelList.Contains(panel))
             {
-                uiFormsList.Remove(panel);
+                panelList.Remove(panel);
+            }
+
+            if (showStack.Contains(panel))
+            {
+                var all = showStack.ToArray();
+                showStack.Clear();
+                foreach (var item in all.Reverse())
+                    if (item != panel) showStack.Push(item);
             }
             Object.Destroy(panel.gameObject);
         }
@@ -577,7 +585,7 @@ namespace RicKit.UI
 
         public T GetUI<T>() where T : AbstractUIPanel
         {
-            return uiFormsList.Where(form => form.GetType() == typeof(T)).Cast<T>().FirstOrDefault();
+            return panelList.Where(form => form.GetType() == typeof(T)).Cast<T>().FirstOrDefault();
         }
 
         private async UniTask<T> NewUIAsync<T>() where T : AbstractUIPanel
@@ -612,7 +620,7 @@ namespace RicKit.UI
 
         public void ClearAll()
         {
-            uiFormsList.RemoveAll(ui =>
+            panelList.RemoveAll(ui =>
             {
                 if (!ui || !ui.gameObject) return true;
                 if (ui.DontDestroyOnClear) return false;
@@ -621,9 +629,9 @@ namespace RicKit.UI
             });
 
             var remainingForms = new Stack<AbstractUIPanel>();
-            while (showFormStack.Count > 0)
+            while (showStack.Count > 0)
             {
-                var form = showFormStack.Pop();
+                var form = showStack.Pop();
                 if (form && form.DontDestroyOnClear)
                 {
                     remainingForms.Push(form);
@@ -632,7 +640,7 @@ namespace RicKit.UI
 
             while (remainingForms.Count > 0)
             {
-                showFormStack.Push(remainingForms.Pop());
+                showStack.Push(remainingForms.Pop());
             }
         }
     }
