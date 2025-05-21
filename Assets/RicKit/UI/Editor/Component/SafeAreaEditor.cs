@@ -21,12 +21,12 @@ namespace RicKit.UI.Editor.Component
                 parent = canvas.transform;
             }
             var safeArea = new GameObject("SafeArea", typeof(RectTransform), typeof(SafeArea));
-            safeArea.transform.SetParent(parent);
+            safeArea.transform.SetParent(parent, false);
             var rect = safeArea.GetComponent<RectTransform>();
             rect.anchorMin = Vector2.zero;
             rect.anchorMax = Vector2.one;
-            rect.anchoredPosition = Vector2.zero;
-            rect.sizeDelta = Vector2.zero;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
             Selection.activeGameObject = safeArea;
         }
     }

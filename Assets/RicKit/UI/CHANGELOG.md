@@ -1,4 +1,6 @@
 # Changelog
+## [3.2.2] - 2025-05-21
+- refactor: SafeArea calculations for improved accuracy
 ## [3.2.1] - 2025-05-09
 - refactor: rename showFormStack and uiFormsList to showStack and panelList for clarity
 ## [3.2.0] - 2025-05-07

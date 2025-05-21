@@ -27,8 +27,8 @@ namespace RicKit.UI.Component
         private void AdaptAnchorsValue()
         {
             safeArea = Screen.safeArea;
-            var maxWidth = Display.main.systemWidth;
-            var maxHeight = Display.main.systemHeight;
+            var maxWidth = Screen.width;
+            var maxHeight = Screen.height;
             var anchorMin = safeArea.position;
             var anchorMax = safeArea.position + safeArea.size;
             anchorMin.x /= maxWidth;
