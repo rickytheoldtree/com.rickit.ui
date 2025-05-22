@@ -167,9 +167,3 @@ public class AddressablesPanelLoader : IPanelLoader
 
 - QQ 群：851024152
 - 欢迎提出问题反馈与建议
-
----
-
-## License
-
-MIT
