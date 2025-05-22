@@ -46,8 +46,6 @@ RicKit UI 通过 `IUIManager` 统一管理 UI，支持同步和异步写法，�
 - **初始化与设置**
     - `UIManager.Init()` / `UIManager.Init(panelLoader)`  
       初始化 UI 管理器，可指定自定义面板加载器。
-    - `PanelAsyncLoading`  
-      是否异步加载面板。
 
 - **显示与切换界面**
     - `ShowUI<T>()` / `ShowUIAsync<T>()`  
