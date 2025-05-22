@@ -14,7 +14,8 @@ namespace RicKit.UI
     public interface IUIManager
     {
         UIManagerMono Mono { get; }
-        AbstractUIPanel CurrentAbstractUIPanel { get; }
+        AbstractUIPanel CurrentUIPanel { get; }
+        Canvas UICanvas { get; }
         RectTransform CanvasRectTransform { get; }
         Camera UICamera { get; }
         UISettings Settings { get; }
@@ -24,64 +25,54 @@ namespace RicKit.UI
         Action<AbstractUIPanel> OnHideEnd { get; set; }
         void Initiate();
         void Initiate(IPanelLoader panelLoader);
-        bool PanelAsyncLoading { get; set; }
-        void ShowUI<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5)
+        void ShowUI<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5,
+            bool asyncLoadNew = true)
             where T : AbstractUIPanel;
-
-        void HideThenShowUI<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5)
+        void HideThenShowUI<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5,
+            bool asyncLoadNew = true)
             where T : AbstractUIPanel;
-
         void CloseThenShowUI<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI",
-            int orderInLayerDelta = 5) where T : AbstractUIPanel;
-
-        void ShowUIUnmanagable<T>(Action<T> onInit = null, string layer = "UI", int sortingOrder = 900)
+            int orderInLayerDelta = 5, bool asyncLoadNew = true) where T : AbstractUIPanel;
+        void ShowUIUnmanagable<T>(Action<T> onInit = null, string layer = "UI", int sortingOrder = 900,
+            bool asyncLoadNew = true)
             where T : AbstractUIPanel;
-
         void Back(bool destroy = false);
         void CloseCurrent(bool destroy = false);
         void HideCurrent();
         void CloseUntil<T>(bool destroy = false) where T : AbstractUIPanel;
-
         void BackThenShow<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI",
-            int orderInLayerDelta = 5) where T : AbstractUIPanel;
-
-        void PreloadUI<T>(string layer = "UI") where T : AbstractUIPanel;
-
+            int orderInLayerDelta = 5, bool asyncLoadNew = true) where T : AbstractUIPanel;
+        void PreloadUI<T>(string layer = "UI", bool asyncLoadNew = true) where T : AbstractUIPanel;
         void ShowThenClosePrev<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI",
-            int orderInLayerDelta = 10) where T : AbstractUIPanel;
-
-        void ShowThenHidePrev<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5)
+            int orderInLayerDelta = 10, bool asyncLoadNew = true) where T : AbstractUIPanel;
+        void ShowThenHidePrev<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5,
+            bool asyncLoadNew = true)
             where T : AbstractUIPanel;
-
-        UniTask ShowUIAsync<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5)
+        UniTask ShowUIAsync<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5,
+            bool asyncLoadNew = true)
             where T : AbstractUIPanel;
-
-        UniTask HideThenShowUIAsync<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5)
+        UniTask HideThenShowUIAsync<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5,
+            bool asyncLoadNew = true)
             where T : AbstractUIPanel;
-
         UniTask CloseThenShowUIAsync<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI",
-            int orderInLayerDelta = 5) where T : AbstractUIPanel;
-
-        UniTask ShowUIUnmanagableAsync<T>(Action<T> onInit = null, string layer = "UI", int sortingOrder = 900)
+            int orderInLayerDelta = 5, bool asyncLoadNew = true) where T : AbstractUIPanel;
+        UniTask ShowUIUnmanagableAsync<T>(Action<T> onInit = null, string layer = "UI", int sortingOrder = 900,
+            bool asyncLoadNew = true)
             where T : AbstractUIPanel;
-
         UniTask BackAsync(bool destroy = false);
         UniTask CloseCurrentAsync(bool destroy = false);
         UniTask HideCurrentAsync();
         UniTask CloseUntilAsync<T>(bool destroy = false) where T : AbstractUIPanel;
-
         UniTask BackThenShowAsync<T>(Action<T> onInit, bool destroy = false, string layer = "UI",
-            int orderInLayerDelta = 5) where T : AbstractUIPanel;
-
+            int orderInLayerDelta = 5, bool asyncLoadNew = true) where T : AbstractUIPanel;
         UniTask WaitUntilUIHideEnd<T>() where T : AbstractUIPanel;
-        UniTask PreloadUIAsync<T>(string layer = "UI") where T : AbstractUIPanel;
+        UniTask PreloadUIAsync<T>(string layer = "UI", bool asyncLoadNew = true) where T : AbstractUIPanel;
 
         UniTask ShowThenClosePrevAsync<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI",
-            int orderInLayerDelta = 10) where T : AbstractUIPanel;
-
-        UniTask ShowThenHidePrevAsync<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5)
+            int orderInLayerDelta = 10, bool asyncLoadNew = true) where T : AbstractUIPanel;
+        UniTask ShowThenHidePrevAsync<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5,
+            bool asyncLoadNew = true)
             where T : AbstractUIPanel;
-
         void ClearAll();
         void SetLockInput(bool on);
         bool IsLockInput();
@@ -118,7 +109,8 @@ namespace RicKit.UI
         private static readonly IPanelLoader DefaultPanelLoader = new DefaultPanelLoader();
         private readonly int uiLayerMask = LayerMask.NameToLayer("UI");
         public UIManagerMono Mono { get; private set; }
-        public AbstractUIPanel CurrentAbstractUIPanel => showStack.Count == 0 ? null : showStack.Peek();
+        public AbstractUIPanel CurrentUIPanel => showStack.Count == 0 ? null : showStack.Peek();
+        public Canvas UICanvas => canvas;
         public RectTransform CanvasRectTransform { get; private set; }
         public Camera UICamera { get; private set; }
         public UISettings Settings { get; private set; }
@@ -156,8 +148,6 @@ namespace RicKit.UI
             instance = this;
             CreateUIManager(panelLoader);
         }
-
-        public bool PanelAsyncLoading { get; set; } = true;
 
         private void CreateUIManager(IPanelLoader panelLoader)
         {
@@ -240,35 +230,38 @@ namespace RicKit.UI
         {
             if (!Input.GetKeyDown(KeyCode.Escape)) return;
             if (IsLockInput()) return;
-            if (!CurrentAbstractUIPanel) return;
-            if (!CurrentAbstractUIPanel.CanInteract) return;
-            CurrentAbstractUIPanel.OnESCClick();
+            if (!CurrentUIPanel) return;
+            if (!CurrentUIPanel.CanInteract) return;
+            CurrentUIPanel.OnESCClick();
         }
 
         #region 同步（只是同步调用，并不保证任务同帧开始或者完成）
 
-        public void ShowUI<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5)
+        public void ShowUI<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5,
+            bool asyncLoadNew = true)
             where T : AbstractUIPanel
         {
-            ShowUIAsync(onInit, layer, orderInLayerDelta).Forget();
+            ShowUIAsync(onInit, layer, orderInLayerDelta, asyncLoadNew).Forget();
         }
 
-        public void HideThenShowUI<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5)
+        public void HideThenShowUI<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5,
+            bool asyncLoadNew = true)
             where T : AbstractUIPanel
         {
-            HideThenShowUIAsync(onInit, layer, orderInLayerDelta).Forget();
+            HideThenShowUIAsync(onInit, layer, orderInLayerDelta, asyncLoadNew).Forget();
         }
 
         public void CloseThenShowUI<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI",
-            int orderInLayerDelta = 5) where T : AbstractUIPanel
+            int orderInLayerDelta = 5, bool asyncLoadNew = true) where T : AbstractUIPanel
         {
-            CloseThenShowUIAsync(onInit, destroy, layer, orderInLayerDelta).Forget();
+            CloseThenShowUIAsync(onInit, destroy, layer, orderInLayerDelta, asyncLoadNew).Forget();
         }
 
-        public void ShowUIUnmanagable<T>(Action<T> onInit = null, string layer = "UI", int sortingOrder = 900)
+        public void ShowUIUnmanagable<T>(Action<T> onInit = null, string layer = "UI", int sortingOrder = 900,
+            bool asyncLoadNew = true)
             where T : AbstractUIPanel
         {
-            ShowUIUnmanagableAsync(onInit, layer, sortingOrder).Forget();
+            ShowUIUnmanagableAsync(onInit, layer, sortingOrder, asyncLoadNew).Forget();
         }
 
         public void Back(bool destroy = false)
@@ -299,26 +292,27 @@ namespace RicKit.UI
         }
 
         public void BackThenShow<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI",
-            int orderInLayerDelta = 5) where T : AbstractUIPanel
+            int orderInLayerDelta = 5, bool asyncLoadNew = true) where T : AbstractUIPanel
         {
-            BackThenShowAsync(onInit, destroy, layer, orderInLayerDelta).Forget();
+            BackThenShowAsync(onInit, destroy, layer, orderInLayerDelta, asyncLoadNew).Forget();
         }
 
-        public void PreloadUI<T>(string layer = "UI") where T : AbstractUIPanel
+        public void PreloadUI<T>(string layer = "UI", bool asyncLoadNew = true) where T : AbstractUIPanel
         {
-            PreloadUIAsync<T>(layer).Forget();
+            PreloadUIAsync<T>(layer, asyncLoadNew).Forget();
         }
 
         public void ShowThenClosePrev<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI",
-            int orderInLayerDelta = 10) where T : AbstractUIPanel
+            int orderInLayerDelta = 10, bool asyncLoadNew = true) where T : AbstractUIPanel
         {
-            ShowThenClosePrevAsync(onInit, destroy, layer, orderInLayerDelta).Forget();
+            ShowThenClosePrevAsync(onInit, destroy, layer, orderInLayerDelta, asyncLoadNew).Forget();
         }
 
-        public void ShowThenHidePrev<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5)
+        public void ShowThenHidePrev<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5,
+            bool asyncLoadNew = true)
             where T : AbstractUIPanel
         {
-            ShowThenHidePrevAsync(onInit, layer, orderInLayerDelta).Forget();
+            ShowThenHidePrevAsync(onInit, layer, orderInLayerDelta, asyncLoadNew).Forget();
         }
 
         #endregion
@@ -326,13 +320,14 @@ namespace RicKit.UI
 
         #region 异步
 
-        public async UniTask ShowUIAsync<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5)
+        public async UniTask ShowUIAsync<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5,
+            bool asyncLoadNew = true)
             where T : AbstractUIPanel
         {
             var sortOrder = showStack.Count == 0 ? 1 : showStack.Peek().OrderInLayer + orderInLayerDelta;
             var form = GetUI<T>();
             if (!form)
-                form = PanelAsyncLoading ? await NewUIAsync<T>() : NewUI<T>();
+                form = asyncLoadNew ? await NewUIAsync<T>() : NewUI<T>();
 
             form.gameObject.SetActive(false);
             form.SetSortingLayer(layer);
@@ -347,25 +342,25 @@ namespace RicKit.UI
 
 
         public async UniTask HideThenShowUIAsync<T>(Action<T> onInit = null, string layer = "UI",
-            int orderInLayerDelta = 5) where T : AbstractUIPanel
+            int orderInLayerDelta = 5, bool asyncLoadNew = true) where T : AbstractUIPanel
         {
             await HideCurrentAsync();
-            await ShowUIAsync(onInit, layer, orderInLayerDelta);
+            await ShowUIAsync(onInit, layer, orderInLayerDelta, asyncLoadNew);
         }
 
         public async UniTask CloseThenShowUIAsync<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI",
-            int orderInLayerDelta = 5) where T : AbstractUIPanel
+            int orderInLayerDelta = 5, bool asyncLoadNew = true) where T : AbstractUIPanel
         {
             await CloseCurrentAsync(destroy);
-            await ShowUIAsync(onInit, layer, orderInLayerDelta);
+            await ShowUIAsync(onInit, layer, orderInLayerDelta, asyncLoadNew);
         }
 
         public async UniTask ShowUIUnmanagableAsync<T>(Action<T> onInit = null, string layer = "UI",
-            int sortingOrder = 900) where T : AbstractUIPanel
+            int sortingOrder = 900, bool asyncLoadNew = true) where T : AbstractUIPanel
         {
             var form = GetUI<T>();
             if (!form)
-                form = PanelAsyncLoading ? await NewUIAsync<T>() : NewUI<T>();
+                form = asyncLoadNew ? await NewUIAsync<T>() : NewUI<T>();
             form.gameObject.SetActive(false);
             form.SetSortingLayer(layer);
             form.SetOrderInLayer(sortingOrder);
@@ -378,10 +373,10 @@ namespace RicKit.UI
         public async UniTask BackAsync(bool destroy = false)
         {
             await CloseCurrentAsync(destroy);
-            if (!CurrentAbstractUIPanel) return;
-            if (!CurrentAbstractUIPanel.IsShow)
+            if (!CurrentUIPanel) return;
+            if (!CurrentUIPanel.IsShow)
             {
-                await CurrentAbstractUIPanel.OnShowAsync();
+                await CurrentUIPanel.OnShowAsync();
             }
         }
 
@@ -438,10 +433,10 @@ namespace RicKit.UI
         }
 
         public async UniTask BackThenShowAsync<T>(Action<T> onInit, bool destroy = false, string layer = "UI",
-            int orderInLayerDelta = 5) where T : AbstractUIPanel
+            int orderInLayerDelta = 5, bool asyncLoadNew = true) where T : AbstractUIPanel
         {
             await BackAsync(destroy);
-            await ShowUIAsync(onInit, layer, orderInLayerDelta);
+            await ShowUIAsync(onInit, layer, orderInLayerDelta, asyncLoadNew);
         }
 
         public UniTask WaitUntilUIHideEnd<T>() where T : AbstractUIPanel
@@ -450,11 +445,11 @@ namespace RicKit.UI
             return UniTask.WaitUntil(() => panel.gameObject.activeSelf == false);
         }
 
-        public async UniTask PreloadUIAsync<T>(string layer = "UI") where T : AbstractUIPanel
+        public async UniTask PreloadUIAsync<T>(string layer = "UI", bool asyncLoadNew = true) where T : AbstractUIPanel
         {
             var form = GetUI<T>();
             if (!form)
-                form = PanelAsyncLoading ? await NewUIAsync<T>() : NewUI<T>();
+                form = asyncLoadNew ? await NewUIAsync<T>() : NewUI<T>();
             form.gameObject.SetActive(false);
             form.SetSortingLayer(layer);
             form.SetOrderInLayer(0);
@@ -463,10 +458,10 @@ namespace RicKit.UI
         }
 
         public async UniTask ShowThenClosePrevAsync<T>(Action<T> onInit = null, bool destroy = false,
-            string layer = "UI", int orderInLayerDelta = 10) where T : AbstractUIPanel
+            string layer = "UI", int orderInLayerDelta = 10, bool asyncLoadNew = true) where T : AbstractUIPanel
         {
             var prev = showStack.Count > 0 ? showStack.Pop() : null;
-            await ShowUIAsync(onInit, layer, orderInLayerDelta);
+            await ShowUIAsync(onInit, layer, orderInLayerDelta, asyncLoadNew);
             if (!prev) return;
             await prev.OnHideAsync();
             if (destroy)
@@ -477,10 +472,10 @@ namespace RicKit.UI
         }
 
         public async UniTask ShowThenHidePrevAsync<T>(Action<T> onInit = null, string layer = "UI",
-            int orderInLayerDelta = 5) where T : AbstractUIPanel
+            int orderInLayerDelta = 5, bool asyncLoadNew = true) where T : AbstractUIPanel
         {
             var prev = showStack.Count > 0 ? showStack.Peek() : null;
-            await ShowUIAsync(onInit, layer, orderInLayerDelta);
+            await ShowUIAsync(onInit, layer, orderInLayerDelta, asyncLoadNew);
             if (!prev) return;
             await prev.OnHideAsync();
         }
@@ -576,8 +571,10 @@ namespace RicKit.UI
                 var all = showStack.ToArray();
                 showStack.Clear();
                 foreach (var item in all.Reverse())
-                    if (item != panel) showStack.Push(item);
+                    if (item != panel)
+                        showStack.Push(item);
             }
+
             Object.Destroy(panel.gameObject);
         }
 
@@ -651,7 +648,7 @@ namespace RicKit.UI
         {
             return UniTask.FromResult(Resources.Load<GameObject>(path));
         }
-        
+
         public GameObject LoadPrefab(string path)
         {
             return Resources.Load<GameObject>(path);

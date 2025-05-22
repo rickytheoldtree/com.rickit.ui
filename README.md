@@ -20,10 +20,10 @@
 
 1. **通过 Package Manager 安装**
     - 打开 `Edit > Project Settings > Package Manager`
-    - 添加自定义 Registry（国际、实时更新）  
-      - Name: package.openupm.com  
-      - URL: https://package.openupm.com  
-      - Scope(s): `com.rickit.ui`, `com.cysharp.unitask`
+    - 添加自定义 Registry（国际、实时更新）
+        - Name: package.openupm.com
+        - URL: https://package.openupm.com
+        - Scope(s): `com.rickit.ui`, `com.cysharp.unitask`
     - 在 `Window > Package Manager` 左上角选择 `My Registries`，刷新列表后找到 `RicKit UI` 下载
 
 ---
@@ -39,119 +39,93 @@
 
 ---
 
-## 主要 API（IUIManager）
+## 主要 API（常用接口）
 
-`IUIManager` 是 UI 管理的核心接口，负责 UI 栈管理、界面切换、资源加载等。主要接口说明如下：
+RicKit UI 通过 `IUIManager` 统一管理 UI，支持同步和异步写法，主要常用接口如下：
 
-```csharp
-public interface IUIManager
-{
-    // 组件和配置
-    UIManagerMono Mono { get; }                  // Mono 管理器实例
-    AbstractUIPanel CurrentAbstractUIPanel { get; } // 当前活跃的 UI 面板
-    RectTransform CanvasRectTransform { get; }   // UI 根节点 RectTransform
-    Camera UICamera { get; }                     // UI 相机
-    UISettings Settings { get; }                 // UI 配置
+- **初始化与设置**
+    - `UIManager.Init()` / `UIManager.Init(panelLoader)`  
+      初始化 UI 管理器，可指定自定义面板加载器。
+    - `PanelAsyncLoading`  
+      是否异步加载面板。
 
-    // 事件
-    Action<AbstractUIPanel> OnShow { get; set; }     // 面板显示回调
-    Action<AbstractUIPanel> OnHide { get; set; }     // 面板隐藏回调
-    Action<AbstractUIPanel> OnShowEnd { get; set; }  // 动画结束后回调
-    Action<AbstractUIPanel> OnHideEnd { get; set; }  // 动画结束后回调
+- **显示与切换界面**
+    - `ShowUI<T>()` / `ShowUIAsync<T>()`  
+      显示指定类型的 UI，自动入栈。可传初始化回调。
+    - `HideThenShowUI<T>()` / `HideThenShowUIAsync<T>()`  
+      隐藏当前 UI 后显示目标 UI。
+    - `CloseThenShowUI<T>()` / `CloseThenShowUIAsync<T>()`  
+      关闭（可选择销毁）当前 UI 后显示目标 UI。
+    - `ShowUIUnmanagable<T>()`  
+      显示不受栈管理的 UI（如弹窗）。
+    - `ShowThenClosePrev<T>()` / `ShowThenClosePrevAsync<T>()`  
+      显示新 UI 并关闭前一个 UI。
 
-    // 初始化
-    void Initiate();                          // 用默认 Loader 初始化
-    void Initiate(IPanelLoader panelLoader);  // 用自定义 Loader 初始化
-    bool PanelAsyncLoading { get; set; }      // 是否异步加载面板
+- **返回与栈操作**
+    - `Back()` / `BackAsync()`  
+      返回上一个 UI（关闭栈顶）。
+    - `CloseCurrent()` / `CloseCurrentAsync()`  
+      关闭当前 UI（可销毁）。
+    - `HideCurrent()` / `HideCurrentAsync()`  
+      隐藏当前 UI（不出栈）。
+    - `CloseUntil<T>()` / `CloseUntilAsync<T>()`  
+      关闭直到某类型的 UI。
+    - `BackThenShow<T>()` / `BackThenShowAsync<T>()`  
+      返回后立即显示目标 UI。
 
-    // 界面切换（同步）
-    void ShowUI<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5) where T : AbstractUIPanel;
-    // 显示 UI，自动叠加到栈顶
+- **预加载与等待**
+    - `PreloadUI<T>()` / `PreloadUIAsync<T>()`  
+      预加载指定 UI 资源。
+    - `WaitUntilUIHideEnd<T>()`  
+      等待指定类型 UI 隐藏完成。
 
-    void HideThenShowUI<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5) where T : AbstractUIPanel;
-    // 隐藏当前 UI 后显示新 UI
+- **其它辅助**
+    - `GetUI<T>()`  
+      获取某类型 UI 实例。
+    - `ClearAll()`  
+      清除所有 UI。
+    - `SetLockInput(bool)` / `IsLockInput()`  
+      输入锁定与查询。
+    - 事件委托（如 `OnShow`, `OnHide` 等）
 
-    void CloseThenShowUI<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI", int orderInLayerDelta = 5) where T : AbstractUIPanel;
-    // 关闭（可销毁）当前 UI 后显示新 UI
-
-    // 其它界面操作
-    void Back(bool destroy = false);         // 返回（关闭栈顶 UI）
-    void CloseCurrent(bool destroy = false); // 关闭当前 UI
-    void HideCurrent();                      // 隐藏当前 UI
-    void CloseUntil<T>(bool destroy = false) where T : AbstractUIPanel;
-    // 关闭直到某个类型的 UI 为止
-
-    // 获取面板实例
-    T GetUI<T>() where T : AbstractUIPanel;  // 获取某类型的 UI 实例
-    void ClearAll(); // 清理所有 UI
-
-    // 异步版本（支持 UniTask，推荐异步管理复杂切换）
-    UniTask ShowUIAsync<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5) where T : AbstractUIPanel;
-    UniTask HideThenShowUIAsync<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5) where T : AbstractUIPanel;
-    UniTask CloseThenShowUIAsync<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI", int orderInLayerDelta = 5) where T : AbstractUIPanel;
-    UniTask BackAsync(bool destroy = false);
-    UniTask CloseCurrentAsync(bool destroy = false);
-    UniTask HideCurrentAsync();
-    UniTask CloseUntilAsync<T>(bool destroy = false) where T : AbstractUIPanel;
-    UniTask BackThenShowAsync<T>(Action<T> onInit, bool destroy = false, string layer = "UI", int orderInLayerDelta = 5) where T : AbstractUIPanel;
-    UniTask WaitUntilUIHideEnd<T>() where T : AbstractUIPanel; // 等待 UI 隐藏结束
-    UniTask PreloadUIAsync<T>(string layer = "UI") where T : AbstractUIPanel; // 预加载 UI
-}
-```
-
-### 常用接口功能简述
-
-- `ShowUI<T>()` / `ShowUIAsync<T>()`  
-  显示类型为 T 的 UI 面板，自动叠加到 UI 栈顶。
-
-- `HideThenShowUI<T>()` / `HideThenShowUIAsync<T>()`  
-  先隐藏当前 UI，再显示目标 UI。
-
-- `CloseThenShowUI<T>()` / `CloseThenShowUIAsync<T>()`  
-  先关闭（可选择销毁）当前 UI，再显示目标 UI。
-
-- `Back()` / `BackAsync()`  
-  返回上一个 UI（即关闭当前栈顶 UI）。
-
-- `CloseCurrent()` / `CloseCurrentAsync()`  
-  关闭当前 UI（可选择销毁）。
-
-- `HideCurrent()` / `HideCurrentAsync()`  
-  隐藏当前 UI（但不出栈）。
-
-- `CloseUntil<T>()` / `CloseUntilAsync<T>()`  
-  持续关闭 UI 直到遇到某个类型的 UI。
-
-- `PreloadUIAsync<T>()`  
-  异步预加载某类型的 UI 面板资源。
-
-- `WaitUntilUIHideEnd<T>()`  
-  等待某类型 UI 完全隐藏后继续后续逻辑。
+> **泛型 T** 均需继承自 `AbstractUIPanel`。  
+> 推荐异步管理复杂切换，所有异步接口基于 UniTask。
 
 ---
 
-## 资源加载自定义
+## 资源加载自定义（IPanelLoader 示例）
 
-可通过实现 `IPanelLoader` 接口自定义资源加载方式，支持同步和异步、Resource/Addressables 等：
+支持自定义 UI 资源加载方式，只需实现 `IPanelLoader` 接口并在初始化时传入：
 
 ```csharp
-// Resources 示例
-public class DefaultPanelLoader : IPanelLoader
+// 1. Resources 加载同步/异步
+public class MyPanelLoader : IPanelLoader
 {
-    public UniTask<GameObject> LoadPrefab(string path)
+    // 同步加载
+    public GameObject LoadPrefab(string path)
+        => Resources.Load<GameObject>(path);
+
+    // 异步加载
+    public async UniTask<GameObject> LoadPrefabAsync(string path)
     {
-        return UniTask.FromResult(Resources.Load<GameObject>(path));
+        var req = Resources.LoadAsync<GameObject>(path);
+        await UniTask.WaitUntil(() => req.isDone);
+        return req.asset as GameObject;
     }
 }
 
-// Addressables 示例
+// 2. Addressables 加载
 public class AddressablesPanelLoader : IPanelLoader
 {
-    public UniTask<GameObject> LoadPrefab(string path)
-    {
-        return UniTask.FromResult(Addressables.LoadAssetAsync<GameObject>(path).WaitForCompletion());
-    }
+    public GameObject LoadPrefab(string path)
+        => Addressables.LoadAssetAsync<GameObject>(path).WaitForCompletion();
+
+    public async UniTask<GameObject> LoadPrefabAsync(string path)
+        => await Addressables.LoadAssetAsync<GameObject>(path);
 }
+
+// 使用
+UIManager.Init(new MyPanelLoader());
 ```
 
 ---

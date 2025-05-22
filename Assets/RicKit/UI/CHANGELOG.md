@@ -1,4 +1,8 @@
 # Changelog
+## [3.3.0] - 2025-06-01
+- refactor: UIManager interface and methods to support async loading options
+- change: `IUIManager.CurrentAbstractUIPanel` to `IUIManager.CurrentUIPanel`
+- add: `IUIManager.UICanvas`
 ## [3.2.2] - 2025-05-21
 - refactor: SafeArea calculations for improved accuracy
 ## [3.2.1] - 2025-05-09
