@@ -35,7 +35,6 @@ namespace RicKit.UI.Component
             anchorMin.y /= maxHeight;
             anchorMax.x /= maxWidth;
             anchorMax.y /= maxHeight;
-
             rectTrans.anchorMin = anchorMin;
             rectTrans.anchorMax = anchorMax;
         }

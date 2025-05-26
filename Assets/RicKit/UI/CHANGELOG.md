@@ -1,5 +1,5 @@
 # Changelog
-## [3.3.0] - 2025-06-01
+## [3.3.1] - 2025-06-01
 - refactor: UIManager interface and methods to support async loading options
 - change: `IUIManager.CurrentAbstractUIPanel` to `IUIManager.CurrentUIPanel`
 - add: `IUIManager.UICanvas`
