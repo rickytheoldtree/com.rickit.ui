@@ -17,11 +17,20 @@ namespace RicKit.UI.Panels
 
         [SerializeField] protected Button btnBack;
 
+        [SerializeField] protected Button[] moreBtnBacks;
+
         protected override void Awake()
         {
             base.Awake();
             if (btnBack)
                 btnBack.onClick.AddListener(OnBackClick);
+            if (moreBtnBacks != null && moreBtnBacks.Length > 0)
+            {
+                foreach (var btn in moreBtnBacks)
+                {
+                    btn.onClick.AddListener(OnBackClick);
+                }
+            }
             cgBlocker.alpha = 0;
             cgBlocker.blocksRaycasts = true;
             CanvasGroup.alpha = 0;
