@@ -1,4 +1,6 @@
 # Changelog
+## [3.3.4] - 2025-05-29
+- fix: UI panel visibility and initialization sequence
 ## [3.3.3] - 2025-05-29
 - feat: add support for multiple back buttons in PopUIPanel
 ## [3.3.1] - 2025-05-27

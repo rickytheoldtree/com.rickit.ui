@@ -28,8 +28,8 @@ namespace RicKit.UI.Panels
         public async UniTask OnShowAsync()
         {
             UI.SetLockInput(true);
-            UI.OnShow?.Invoke(this);
             gameObject.SetActive(true);
+            UI.OnShow?.Invoke(this);
             CanvasGroup.blocksRaycasts = true;
             CanvasGroup.interactable = false;
             await OnAnimationIn(this.GetCancellationTokenOnDestroy());
@@ -48,10 +48,6 @@ namespace RicKit.UI.Panels
             gameObject.SetActive(false);
             UI.OnHideEnd?.Invoke(this);
             UI.SetLockInput(false);
-        }
-
-        public virtual void BeforeShow()
-        {
         }
 
         public abstract void OnESCClick();

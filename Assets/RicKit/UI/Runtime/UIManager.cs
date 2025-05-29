@@ -329,14 +329,13 @@ namespace RicKit.UI
             if (!form)
                 form = asyncLoadNew ? await NewUIAsync<T>() : NewUI<T>();
 
-            form.gameObject.SetActive(false);
+            form.gameObject.SetActive(true);
             form.SetSortingLayer(layer);
             form.SetOrderInLayer(sortOrder);
             showStack.Push(form);
             if (!panelList.Contains(form))
                 panelList.Add(form);
             onInit?.Invoke(form);
-            form.BeforeShow();
             await form.OnShowAsync();
         }
 
@@ -361,12 +360,11 @@ namespace RicKit.UI
             var form = GetUI<T>();
             if (!form)
                 form = asyncLoadNew ? await NewUIAsync<T>() : NewUI<T>();
-            form.gameObject.SetActive(false);
+            form.gameObject.SetActive(true);
             form.SetSortingLayer(layer);
             form.SetOrderInLayer(sortingOrder);
             if (!panelList.Contains(form)) panelList.Add(form);
             onInit?.Invoke(form);
-            form.BeforeShow();
             await form.OnShowAsync();
         }
 
