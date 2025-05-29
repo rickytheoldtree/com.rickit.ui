@@ -24,12 +24,9 @@ namespace RicKit.UI.Panels
             base.Awake();
             if (btnBack)
                 btnBack.onClick.AddListener(OnBackClick);
-            if (moreBtnBacks != null && moreBtnBacks.Length > 0)
+            foreach (var btn in moreBtnBacks)
             {
-                foreach (var btn in moreBtnBacks)
-                {
-                    btn.onClick.AddListener(OnBackClick);
-                }
+                btn.onClick.AddListener(OnBackClick);
             }
             cgBlocker.alpha = 0;
             cgBlocker.blocksRaycasts = true;
@@ -38,8 +35,19 @@ namespace RicKit.UI.Panels
 
         public override void OnESCClick()
         {
-            if (!btnBack || !btnBack.gameObject.activeSelf) return;
-            OnBackClick();
+            if (btnBack && btnBack.gameObject.activeSelf)
+            {
+                OnBackClick();
+                return;
+            }
+            foreach (var btn in moreBtnBacks)
+            {
+                if (btn.gameObject.activeSelf)
+                {
+                    OnBackClick();
+                    break;
+                }
+            }
         }
 
         protected override async UniTask OnAnimationIn(CancellationToken cancellationToken)

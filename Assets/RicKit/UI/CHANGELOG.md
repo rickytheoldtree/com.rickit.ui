@@ -1,5 +1,5 @@
 # Changelog
-## [3.3.2] - 2025-05-29
+## [3.3.3] - 2025-05-29
 - feat: add support for multiple back buttons in PopUIPanel
 ## [3.3.1] - 2025-05-27
 - refactor: UIManager interface and methods to support async loading options
