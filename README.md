@@ -2,108 +2,90 @@
 
 [![openupm](https://img.shields.io/npm/v/com.rickit.ui?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.rickit.ui/)
 
-异步的 Unity UI 管理插件，支持栈式管理、动画、以及自定义资源加载。  
-本插件适用于需要高效、灵活 UI 控制的 Unity 项目。
+**English | [中文文档 (Chinese)](./README.zh-CN.md)**
+
+RicKit UI is an asynchronous Unity UI management plugin supporting stack-based management, animation, and custom resource loading.  
+It is ideal for Unity projects that require efficient and flexible UI control.
 
 ---
 
-## 示例
+## Demo
 
-![演示动图](https://github.com/rickytheoldtree/com.rickit.rui/blob/main/Gif/0.gif)
+![Demo GIF](https://github.com/rickytheoldtree/com.rickit.rui/blob/main/Gif/0.gif)
 
-- 示例项目可在 Package Manager 中 RicKit UI 下的 Samples 中找到
-- [WebGL DEMO 在线体验](https://rickytheoldtree.github.io/com.rickit.ui/)
+- Sample projects can be found under `Samples` in RicKit UI in the Package Manager.
+- [WebGL Online Demo](https://rickytheoldtree.github.io/com.rickit.ui/)
 
 ---
 
-## 安装方式
+## Installation
 
-1. **通过 Package Manager 安装**
-    - 打开 `Edit > Project Settings > Package Manager`
-    - 添加自定义 Registry（国际、实时更新）
+1. **Via Package Manager**
+    - Open `Edit > Project Settings > Package Manager`
+    - Add a custom Registry (international, real-time update):
         - Name: package.openupm.com
         - URL: https://package.openupm.com
         - Scope(s): `com.rickit.ui`, `com.cysharp.unitask`
-    - 在 `Window > Package Manager` 左上角选择 `My Registries`，刷新列表后找到 `RicKit UI` 下载
+    - In `Window > Package Manager`, select `My Registries` in the upper left and refresh. Download RicKit UI.
 
 ---
 
-## 使用简介
+## Quick Start
 
-- **栈式管理界面顺序**，支持出场/入场动画，动画过程中自动屏蔽输入
-- 默认支持 Esc 返回，动画期间忽略 Esc
-- 使用前请在 `Resources/UISettings` 下设置所有参数（如 CurvingMasks、SortingLayerName、分辨率等）
-- 通过 `Rickit => UI => Create UISettings` 菜单创建 UISettings
-- 首次使用需手动调用 `UIManager.Init()`，会自动创建 `UICam`、`Blocker` 等核心组件
-- 自定义 UIPanel 请继承 `AbstractUIPanel`，创建的窗口预制体可在界面编辑器中编辑
-
----
-
-## 主要 API（常用接口）
-
-RicKit UI 通过 `IUIManager` 统一管理 UI，支持同步和异步写法，主要常用接口如下：
-
-- **初始化与设置**
-    - `UIManager.Init()` / `UIManager.Init(panelLoader)`  
-      初始化 UI 管理器，可指定自定义面板加载器。
-
-- **显示与切换界面**
-    - `ShowUI<T>()` / `ShowUIAsync<T>()`  
-      显示指定类型的 UI，自动入栈。可传初始化回调。
-    - `HideThenShowUI<T>()` / `HideThenShowUIAsync<T>()`  
-      隐藏当前 UI 后显示目标 UI。
-    - `CloseThenShowUI<T>()` / `CloseThenShowUIAsync<T>()`  
-      关闭（可选择销毁）当前 UI 后显示目标 UI。
-    - `ShowUIUnmanagable<T>()`  
-      显示不受栈管理的 UI（如弹窗）。
-    - `ShowThenClosePrev<T>()` / `ShowThenClosePrevAsync<T>()`  
-      显示新 UI 并关闭前一个 UI。
-
-- **返回与栈操作**
-    - `Back()` / `BackAsync()`  
-      返回上一个 UI（关闭栈顶）。
-    - `CloseCurrent()` / `CloseCurrentAsync()`  
-      关闭当前 UI（可销毁）。
-    - `HideCurrent()` / `HideCurrentAsync()`  
-      隐藏当前 UI（不出栈）。
-    - `CloseUntil<T>()` / `CloseUntilAsync<T>()`  
-      关闭直到某类型的 UI。
-    - `BackThenShow<T>()` / `BackThenShowAsync<T>()`  
-      返回后立即显示目标 UI。
-
-- **预加载与等待**
-    - `PreloadUI<T>()` / `PreloadUIAsync<T>()`  
-      预加载指定 UI 资源。
-    - `WaitUntilUIHideEnd<T>()`  
-      等待指定类型 UI 隐藏完成。
-
-- **其它辅助**
-    - `GetUI<T>()`  
-      获取某类型 UI 实例。
-    - `ClearAll()`  
-      清除所有 UI。
-    - `SetLockInput(bool)` / `IsLockInput()`  
-      输入锁定与查询。
-    - 事件委托（如 `OnShow`, `OnHide` 等）
-
-> **泛型 T** 均需继承自 `AbstractUIPanel`。  
-> 推荐异步管理复杂切换，所有异步接口基于 UniTask。
+- **Stack-based UI management**: Supports enter/exit animations and auto input blocking during transitions.
+- Esc key returns by default, Esc is ignored during animations.
+- Before use, set all parameters under `Resources/UISettings` (e.g., CurvingMasks, SortingLayerName, resolution, etc.).
+- Create UISettings via the menu: `Rickit => UI => Create UISettings`.
+- First use: manually call `UIManager.Init()` to automatically create core components like `UICam`, `Blocker`.
+- To create a custom UIPanel, inherit from `AbstractUIPanel`. The created window prefab can be edited in the inspector.
 
 ---
 
-## 资源加载自定义（IPanelLoader 示例）
+## Main APIs
 
-支持自定义 UI 资源加载方式，只需实现 `IPanelLoader` 接口并在初始化时传入：
+RicKit UI manages UI through `IUIManager`, supports both synchronous and asynchronous usage. Main APIs:
+
+- **Initialization & Settings**
+    - `UIManager.Init()` / `UIManager.Init(panelLoader)`
+- **Show & Switch Panels**
+    - `ShowUI<T>()` / `ShowUIAsync<T>()`
+    - `HideThenShowUI<T>()` / `HideThenShowUIAsync<T>()`
+    - `CloseThenShowUI<T>()` / `CloseThenShowUIAsync<T>()`
+    - `ShowUIUnmanagable<T>()`
+    - `ShowThenClosePrev<T>()` / `ShowThenClosePrevAsync<T>()`
+- **Back & Stack Operations**
+    - `Back()` / `BackAsync()`
+    - `CloseCurrent()` / `CloseCurrentAsync()`
+    - `HideCurrent()` / `HideCurrentAsync()`
+    - `CloseUntil<T>()` / `CloseUntilAsync<T>()`
+    - `BackThenShow<T>()` / `BackThenShowAsync<T>()`
+- **Preload & Await**
+    - `PreloadUI<T>()` / `PreloadUIAsync<T>()`
+    - `WaitUntilUIHideEnd<T>()`
+- **Other Helpers**
+    - `GetUI<T>()`
+    - `ClearAll()`
+    - `SetLockInput(bool)` / `IsLockInput()`
+    - Event delegates: `OnShow`, `OnHide`, etc.
+
+> **Note:** Generic `T` must inherit from `AbstractUIPanel`.  
+> Asynchronous management is recommended for complex transitions, all async APIs rely on UniTask.
+
+---
+
+## Custom Resource Loading (IPanelLoader Example)
+
+Supports custom UI resource loading by implementing `IPanelLoader` and passing it during initialization:
 
 ```csharp
-// 1. Resources 加载同步/异步
+// 1. Resources loading (sync/async)
 public class MyPanelLoader : IPanelLoader
 {
-    // 同步加载
+    // Synchronous
     public GameObject LoadPrefab(string path)
         => Resources.Load<GameObject>(path);
 
-    // 异步加载
+    // Asynchronous
     public async UniTask<GameObject> LoadPrefabAsync(string path)
     {
         var req = Resources.LoadAsync<GameObject>(path);
@@ -112,7 +94,7 @@ public class MyPanelLoader : IPanelLoader
     }
 }
 
-// 2. Addressables 加载
+// 2. Addressables loading
 public class AddressablesPanelLoader : IPanelLoader
 {
     public GameObject LoadPrefab(string path)
@@ -122,20 +104,22 @@ public class AddressablesPanelLoader : IPanelLoader
         => await Addressables.LoadAssetAsync<GameObject>(path);
 }
 
-// 使用
+// Usage
 UIManager.Init(new MyPanelLoader());
 ```
 
 ---
 
-## Universal RP 支持
+## Universal RP Support
 
-- 在需要叠加 UI 相机的游戏相机上添加 `UniversalRenderPipelineCamStackUICam` 脚本
-- 仅使用 UI 相机则无需额外操作
+- To overlay UI camera on a game camera, add the `UniversalRenderPipelineCamStackUICam` script.
+- If only using a UI camera, no extra steps needed.
 
 ---
 
-## 交流与反馈
+## Feedback & Contact
 
-- QQ 群：851024152
-- 欢迎提出问题反馈与建议
+- QQ Group: 851024152
+- Issues and suggestions are welcome!
+
+---
