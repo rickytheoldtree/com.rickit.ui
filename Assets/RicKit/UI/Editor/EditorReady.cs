@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace RicKit.UI.Editor
@@ -8,49 +9,47 @@ namespace RicKit.UI.Editor
         [InitializeOnLoadMethod]
         public static void MakeSureSortingLayersReady()
         {
-            AddSortingLayer("UI", 114514);
-            AddSortingLayer("Blocker", 810975);
+            AddSortingLayer("UI");
+            AddSortingLayer("Blocker");
         }
 
-        private static void AddSortingLayer(string sortingLayer, int uniqueID)
+        private static void AddSortingLayer(string sortingLayer)
         {
-            if (IsHasSortingLayer(sortingLayer)) return;
-            var tagManager =
-                new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
-            var it = tagManager.GetIterator();
-            while (it.NextVisible(true))
-            {
-                if (it.name != "m_SortingLayers") continue;
-                it.InsertArrayElementAtIndex(it.arraySize);
-                var dataPoint = it.GetArrayElementAtIndex(it.arraySize - 1);
-                while (dataPoint.NextVisible(true))
-                {
-                    switch (dataPoint.name)
-                    {
-                        case "name":
-                            dataPoint.stringValue = sortingLayer;
-                            tagManager.ApplyModifiedProperties();
-                            break;
-                        case "uniqueID":
-                            dataPoint.intValue = uniqueID;
-                            tagManager.ApplyModifiedProperties();
-                            break;
-                    }
-                }
-            }
+            foreach (var layer in SortingLayer.layers)
+                if (layer.name == sortingLayer) return;
+
+            var asset = AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0];
+            var tagManager = new SerializedObject(asset);
+
+            var prop = tagManager.FindProperty("m_SortingLayers");
+            var insertIndex = prop.arraySize;
+            prop.InsertArrayElementAtIndex(insertIndex);
+
+            var element = prop.GetArrayElementAtIndex(insertIndex);
+            var nameProp = element.FindPropertyRelative("name");
+            var idProp   = element.FindPropertyRelative("uniqueID");
+
+            nameProp.stringValue = sortingLayer;
+            idProp.intValue      = GenerateUniqueID(prop);
+
+            tagManager.ApplyModifiedProperties();
         }
 
-        private static bool IsHasSortingLayer(string sortingLayer)
+        private static int GenerateUniqueID(SerializedProperty layerArray)
         {
-            var layers = SortingLayer.layers;
-            foreach (var layer in layers)
+            var used = new HashSet<int>();
+            for (var i = 0; i < layerArray.arraySize; i++)
             {
-                if (layer.name == sortingLayer)
-                {
-                    return true;
-                }
+                var id = layerArray
+                    .GetArrayElementAtIndex(i)
+                    .FindPropertyRelative("uniqueID")
+                    .intValue;
+                used.Add(id);
             }
-            return false;
+            var candidate = 1;
+            while (used.Contains(candidate))
+                candidate++;
+            return candidate;
         }
     }
 }
