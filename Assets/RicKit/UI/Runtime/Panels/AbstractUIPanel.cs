@@ -55,14 +55,14 @@ namespace RicKit.UI.Panels
 
         protected abstract UniTask OnAnimationOut(CancellationToken cancellationToken);
 
-        public void SetOrderInLayer(int order)
+        public virtual void SetOrderInLayer(int order)
         {
             OrderInLayer = order;
             Canvas.overrideSorting = true;
             Canvas.sortingOrder = order;
         }
 
-        public void SetSortingLayer(string layer)
+        public virtual void SetSortingLayer(string layer)
         {
             Canvas.overrideSorting = true;
             Canvas.sortingLayerName = layer;

@@ -1,5 +1,5 @@
 # Changelog
-## [3.3.6] - 2025-08-01
+## [3.3.7] - 2025-08-01
 - Fix sort order calculation in UIManager for better layer management
 ## [3.3.5] - 2025-06-23
 - refactor sorting layer management and improve UI editor script handling

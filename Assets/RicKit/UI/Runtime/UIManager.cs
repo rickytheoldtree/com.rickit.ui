@@ -44,7 +44,7 @@ namespace RicKit.UI
             int orderInLayerDelta = 5, bool asyncLoadNew = true) where T : AbstractUIPanel;
         void PreloadUI<T>(string layer = "UI", bool asyncLoadNew = true) where T : AbstractUIPanel;
         void ShowThenClosePrev<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI",
-            int orderInLayerDelta = 10, bool asyncLoadNew = true) where T : AbstractUIPanel;
+            int orderInLayerDelta = 5, bool asyncLoadNew = true) where T : AbstractUIPanel;
         void ShowThenHidePrev<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5,
             bool asyncLoadNew = true)
             where T : AbstractUIPanel;
@@ -69,7 +69,7 @@ namespace RicKit.UI
         UniTask PreloadUIAsync<T>(string layer = "UI", bool asyncLoadNew = true) where T : AbstractUIPanel;
 
         UniTask ShowThenClosePrevAsync<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI",
-            int orderInLayerDelta = 10, bool asyncLoadNew = true) where T : AbstractUIPanel;
+            int orderInLayerDelta = 5, bool asyncLoadNew = true) where T : AbstractUIPanel;
         UniTask ShowThenHidePrevAsync<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5,
             bool asyncLoadNew = true)
             where T : AbstractUIPanel;
@@ -303,7 +303,7 @@ namespace RicKit.UI
         }
 
         public void ShowThenClosePrev<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI",
-            int orderInLayerDelta = 10, bool asyncLoadNew = true) where T : AbstractUIPanel
+            int orderInLayerDelta = 5, bool asyncLoadNew = true) where T : AbstractUIPanel
         {
             ShowThenClosePrevAsync(onInit, destroy, layer, orderInLayerDelta, asyncLoadNew).Forget();
         }
@@ -456,12 +456,16 @@ namespace RicKit.UI
         }
 
         public async UniTask ShowThenClosePrevAsync<T>(Action<T> onInit = null, bool destroy = false,
-            string layer = "UI", int orderInLayerDelta = 10, bool asyncLoadNew = true) where T : AbstractUIPanel
+            string layer = "UI", int orderInLayerDelta = 5, bool asyncLoadNew = true) where T : AbstractUIPanel
         {
             var prev = showStack.Count > 0 ? showStack.Pop() : null;
-            await ShowUIAsync(onInit, layer, orderInLayerDelta, asyncLoadNew);
+            var prevOrderInLayer = prev ? prev.OrderInLayer : 0;
+            await ShowUIAsync(onInit, layer, prevOrderInLayer + orderInLayerDelta, asyncLoadNew);
             if (!prev) return;
             await prev.OnHideAsync();
+            var current = GetUI<T>();
+            if (current) 
+                current.SetOrderInLayer(prevOrderInLayer);
             if (destroy)
             {
                 panelList.Remove(prev);
