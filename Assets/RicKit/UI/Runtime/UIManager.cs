@@ -324,7 +324,7 @@ namespace RicKit.UI
             bool asyncLoadNew = true)
             where T : AbstractUIPanel
         {
-            var sortOrder = showStack.Count == 0 ? 1 : showStack.Peek().OrderInLayer + orderInLayerDelta;
+            var sortOrder = showStack.Count == 0 ? orderInLayerDelta : showStack.Peek().OrderInLayer + orderInLayerDelta;
             var form = GetUI<T>();
             if (!form)
                 form = asyncLoadNew ? await NewUIAsync<T>() : NewUI<T>();
