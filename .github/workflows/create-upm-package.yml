@@ -16,7 +16,7 @@ jobs:
         run: |
           {
             echo 'COMMIT_MESSAGE<<EOF'
-            echo "${{ github.event.head_commit.message }}"
+            echo "${{ github.event.head_commit.message }}" | head -n 1
             echo 'EOF'
           } >> $GITHUB_ENV
 
