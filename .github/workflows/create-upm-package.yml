@@ -13,7 +13,12 @@ jobs:
       # Get commit message from event payload
       - name: Get commit message
         id: get_commit_message
-        run: echo "message=${{ github.event.head_commit.message }}" >> $GITHUB_ENV
+        run: |
+          {
+            echo 'COMMIT_MESSAGE<<EOF'
+            echo "${{ github.event.head_commit.message }}"
+            echo 'EOF'
+          } >> $GITHUB_ENV
 
       - uses: actions/checkout@v4
 
