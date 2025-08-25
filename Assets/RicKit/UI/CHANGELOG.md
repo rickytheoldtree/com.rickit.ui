@@ -1,4 +1,6 @@
 # Changelog
+## [3.6.0] - 2025-08-25
+- The WaitUntilUIHideEnd method now accepts an optional CancellationToken, allowing callers to cancel the wait operation if needed.
 ## [3.5.6] - 2025-08-01
 - Fix sort order calculation in UIManager for better layer management
 ## [3.5.5] - 2025-06-23

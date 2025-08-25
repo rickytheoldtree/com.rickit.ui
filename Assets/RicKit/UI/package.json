@@ -4,7 +4,7 @@
   "author": {
     "name": "LYQ"
   },
-  "version": "3.5.6",
+  "version": "3.6.0",
   "unity": "2020.3",
   "description": "An Async UI Manager for Unity, support custom panel loading both async and sync",
   "samples": [

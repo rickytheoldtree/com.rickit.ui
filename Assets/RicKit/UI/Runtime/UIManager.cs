@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using RicKit.UI.Interfaces;
 using RicKit.UI.Panels;
@@ -65,7 +66,7 @@ namespace RicKit.UI
         UniTask CloseUntilAsync<T>(bool destroy = false) where T : AbstractUIPanel;
         UniTask BackThenShowAsync<T>(Action<T> onInit, bool destroy = false, string layer = "UI",
             int orderInLayerDelta = 5, bool asyncLoadNew = true) where T : AbstractUIPanel;
-        UniTask WaitUntilUIHideEnd<T>() where T : AbstractUIPanel;
+        UniTask WaitUntilUIHideEnd<T>(CancellationToken token = default) where T : AbstractUIPanel;
         UniTask PreloadUIAsync<T>(string layer = "UI", bool asyncLoadNew = true) where T : AbstractUIPanel;
 
         UniTask ShowThenClosePrevAsync<T>(Action<T> onInit = null, bool destroy = false, string layer = "UI",
@@ -437,10 +438,10 @@ namespace RicKit.UI
             await ShowUIAsync(onInit, layer, orderInLayerDelta, asyncLoadNew);
         }
 
-        public UniTask WaitUntilUIHideEnd<T>() where T : AbstractUIPanel
+        public UniTask WaitUntilUIHideEnd<T>(CancellationToken token = default) where T : AbstractUIPanel
         {
             var panel = GetUI<T>();
-            return UniTask.WaitUntil(() => panel.gameObject.activeSelf == false);
+            return UniTask.WaitUntil(() => !panel.gameObject.activeSelf, cancellationToken: token);
         }
 
         public async UniTask PreloadUIAsync<T>(string layer = "UI", bool asyncLoadNew = true) where T : AbstractUIPanel
