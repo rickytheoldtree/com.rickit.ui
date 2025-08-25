@@ -24,10 +24,10 @@ jobs:
 
       # Check if commit message starts with 'v'
       - name: Check if commit message starts with 'v'
-        if: startsWith(env.message, 'v')
+        if: startsWith(env.COMMIT_MESSAGE, 'v')
         run: |
           # Load the environment variable
-          message="$message"
+          message="$COMMIT_MESSAGE"
           echo "Commit message starts with 'v': $message"
 
           # Extract tag name by removing leading 'v'
