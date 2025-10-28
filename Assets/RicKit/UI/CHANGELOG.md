@@ -1,4 +1,6 @@
 # Changelog
+## [3.6.1] - 2025-10-28
+- Add Close and CloseAsync methods to UIManager
 ## [3.6.0] - 2025-08-25
 - The WaitUntilUIHideEnd method now accepts an optional CancellationToken, allowing callers to cancel the wait operation if needed.
 ## [3.5.6] - 2025-08-01

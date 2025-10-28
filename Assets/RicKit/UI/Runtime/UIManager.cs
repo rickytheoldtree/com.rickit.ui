@@ -49,6 +49,7 @@ namespace RicKit.UI
         void ShowThenHidePrev<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5,
             bool asyncLoadNew = true)
             where T : AbstractUIPanel;
+        void Close<T>(bool destroy = false) where T : AbstractUIPanel;
         UniTask ShowUIAsync<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5,
             bool asyncLoadNew = true)
             where T : AbstractUIPanel;
@@ -74,6 +75,7 @@ namespace RicKit.UI
         UniTask ShowThenHidePrevAsync<T>(Action<T> onInit = null, string layer = "UI", int orderInLayerDelta = 5,
             bool asyncLoadNew = true)
             where T : AbstractUIPanel;
+        UniTask CloseAsync<T>(bool destroy = false) where T : AbstractUIPanel;
         void ClearAll();
         void SetLockInput(bool on);
         bool IsLockInput();
@@ -316,6 +318,11 @@ namespace RicKit.UI
             ShowThenHidePrevAsync(onInit, layer, orderInLayerDelta, asyncLoadNew).Forget();
         }
 
+        public void Close<T>(bool destroy = false) where T : AbstractUIPanel
+        {
+            CloseAsync<T>(destroy).Forget();
+        }
+
         #endregion
 
 
@@ -481,6 +488,26 @@ namespace RicKit.UI
             await ShowUIAsync(onInit, layer, orderInLayerDelta, asyncLoadNew);
             if (!prev) return;
             await prev.OnHideAsync();
+        }
+
+        public async UniTask CloseAsync<T>(bool destroy = false) where T : AbstractUIPanel
+        {
+            var all = showStack.ToArray();
+            showStack.Clear();
+            foreach (var item in all.Reverse())
+            {
+                if (item is T)
+                {
+                    await item.OnHideAsync();
+                    if (!destroy) continue;
+                    panelList.Remove(item);
+                    Object.Destroy(item.gameObject);
+                }
+                else
+                {
+                    showStack.Push(item);
+                }
+            }
         }
 
         #endregion
