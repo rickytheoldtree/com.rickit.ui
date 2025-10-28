@@ -59,6 +59,7 @@ RicKit UI manages UI through `IUIManager`, supports both synchronous and asynchr
     - `HideCurrent()` / `HideCurrentAsync()`
     - `CloseUntil<T>()` / `CloseUntilAsync<T>()`
     - `BackThenShow<T>()` / `BackThenShowAsync<T>()`
+    - `Close<T>` / `CloseAsync<T>()`
 - **Preload & Await**
     - `PreloadUI<T>()` / `PreloadUIAsync<T>()`
     - `WaitUntilUIHideEnd<T>()`
