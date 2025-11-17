@@ -59,6 +59,7 @@ RicKit UI 通过 `IUIManager` 统一管理 UI，支持同步和异步写法，�
     - `HideCurrent()` / `HideCurrentAsync()`
     - `CloseUntil<T>()` / `CloseUntilAsync<T>()`
     - `BackThenShow<T>()` / `BackThenShowAsync<T>()`
+    - `Close<T>` / `CloseAsync<T>()`
 - **预加载与等待**
     - `PreloadUI<T>()` / `PreloadUIAsync<T>()`
     - `WaitUntilUIHideEnd<T>()`
