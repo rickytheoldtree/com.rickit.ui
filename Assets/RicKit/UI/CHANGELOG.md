@@ -1,4 +1,6 @@
 # Changelog
+## [3.6.2] - 2025-12-22
+- Introduces GetLockInputScope() to provide an IDisposable-based input lock mechanism. Refactors LockInputWhile to use this scope for safer and more robust input locking during asynchronous tasks.
 ## [3.6.1] - 2025-10-28
 - Add Close and CloseAsync methods to UIManager
 ## [3.6.0] - 2025-08-25

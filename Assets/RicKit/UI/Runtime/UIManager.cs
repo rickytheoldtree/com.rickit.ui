@@ -80,6 +80,7 @@ namespace RicKit.UI
         void SetLockInput(bool on);
         bool IsLockInput();
         void LockInputWhile(UniTask task);
+        IDisposable GetLockInputScope();
         T GetUI<T>() where T : AbstractUIPanel;
         Canvas GetCustomLayerCanvas(string name, int sortingOrder, string sortingLayerName = "UI");
         void SetCustomLayerSortOrder(string name, int sortOrder);
@@ -535,8 +536,38 @@ namespace RicKit.UI
 
         public void LockInputWhile(UniTask task)
         {
-            SetLockInput(true);
-            task.ContinueWith(() => SetLockInput(false)).Forget();
+            LockRoutine().Forget();
+            return;
+            async UniTaskVoid LockRoutine()
+            {
+                using (GetLockInputScope())
+                {
+                    await task;
+                }
+            }
+        }
+                
+        public IDisposable GetLockInputScope()
+        {
+            return new LockInputScope(this);
+        }
+        
+        private struct LockInputScope : IDisposable
+        {
+            private IUIManager manager;
+
+            public LockInputScope(IUIManager manager)
+            {
+                this.manager = manager;
+                this.manager.SetLockInput(true);
+            }
+
+            public void Dispose()
+            {
+                if (manager == null) return;
+                manager.SetLockInput(false);
+                manager = null;
+            }
         }
 
         public static void LockInput(bool on)
