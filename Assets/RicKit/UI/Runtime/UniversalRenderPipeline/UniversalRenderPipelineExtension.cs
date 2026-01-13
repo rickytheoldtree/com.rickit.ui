@@ -41,12 +41,8 @@ namespace RicKit.UI.URP
             var camData = cam.GetUniversalAdditionalCameraData();
             camData.cameraStack.Remove(uiCam);
 
-            if (RegisteredCams.Count == 0)
-            {
-                var uiCamData = uiCam.GetUniversalAdditionalCameraData();
-                if (uiCamData.cameraStack.Count == 0)
-                    uiCamData.renderType = CameraRenderType.Base;
-            }
+            if (RegisteredCams.Count == 0) 
+                uiCam.GetUniversalAdditionalCameraData().renderType = CameraRenderType.Base;
         }
     }
 }

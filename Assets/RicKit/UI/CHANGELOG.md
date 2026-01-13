@@ -1,5 +1,5 @@
 # Changelog
-## [3.6.3] - 2026-01-13
+## [3.6.4] - 2026-01-13
 - Improve URP UI camera stack management
 ## [3.6.2] - 2025-12-22
 - Introduces GetLockInputScope() to provide an IDisposable-based input lock mechanism. Refactors LockInputWhile to use this scope for safer and more robust input locking during asynchronous tasks.
