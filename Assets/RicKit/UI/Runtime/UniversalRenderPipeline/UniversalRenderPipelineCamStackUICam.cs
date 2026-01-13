@@ -1,20 +1,28 @@
 ﻿#if USING_URP
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 
 namespace RicKit.UI.URP
 {
     [RequireComponent(typeof(Camera))]
     public class UniversalRenderPipelineCamStackUICam : MonoBehaviour
     {
-        private void Start()
+        private Camera cam;
+
+        private void Awake()
         {
-            var camData = GetComponent<Camera>().GetUniversalAdditionalCameraData();
-            var uiCam = UIManager.I.UICamera;
-            var uiCamData = uiCam.GetUniversalAdditionalCameraData();
-            uiCamData.renderType = CameraRenderType.Overlay;
-            if (camData.cameraStack.Contains(uiCam)) return;
-            camData.cameraStack.Add(uiCam);
+            cam = GetComponent<Camera>();
+        }
+
+        private void OnEnable()
+        {
+            if (UIManager.I == null) return;
+            UIManager.I.RegisterBaseCam(cam);
+        }
+
+        private void OnDisable()
+        {
+            if (UIManager.I == null) return;
+            UIManager.I.UnregisterBaseCam(cam);
         }
     }
 }
