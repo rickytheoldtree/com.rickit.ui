@@ -1,10 +1,9 @@
-﻿#if USING_URP
 using UnityEngine;
 
-namespace RicKit.UI.URP
+namespace RicKit.UI.Component
 {
     [RequireComponent(typeof(Camera))]
-    public class UniversalRenderPipelineCamStackUICam : MonoBehaviour
+    public class UIAdditionalCamera : MonoBehaviour
     {
         private Camera cam;
 
@@ -16,14 +15,13 @@ namespace RicKit.UI.URP
         private void OnEnable()
         {
             if (UIManager.I == null) return;
-            UIManager.I.RegisterBaseCam(cam);
+            UIManager.I.RegisterAdditionalCam(cam);
         }
 
         private void OnDisable()
         {
             if (UIManager.I == null) return;
-            UIManager.I.UnregisterBaseCam(cam);
+            UIManager.I.UnregisterAdditionalCam(cam);
         }
     }
 }
-#endif

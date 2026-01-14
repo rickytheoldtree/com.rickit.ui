@@ -85,6 +85,8 @@ namespace RicKit.UI
         Canvas GetCustomLayerCanvas(string name, int sortingOrder, string sortingLayerName = "UI");
         void SetCustomLayerSortOrder(string name, int sortOrder);
         void SafeDestroy(AbstractUIPanel panel);
+        void RegisterAdditionalCam(Camera cam);
+        void UnregisterAdditionalCam(Camera cam);
     }
 
     public class UIManager : IUIManager
@@ -116,7 +118,14 @@ namespace RicKit.UI
         public AbstractUIPanel CurrentUIPanel => showStack.Count == 0 ? null : showStack.Peek();
         public Canvas UICanvas => canvas;
         public RectTransform CanvasRectTransform { get; private set; }
-        public Camera UICamera { get; private set; }
+
+        public Camera UICamera
+        {
+            get => canvas.worldCamera;
+            private set => canvas.worldCamera = value;
+        }
+        private Camera defaultCamera;
+        private readonly List<Camera> uiCameras = new();
         public UISettings Settings { get; private set; }
 
         #region Events
@@ -174,19 +183,18 @@ namespace RicKit.UI
             }
 
             this.panelLoader = panelLoader ?? DefaultPanelLoader;
-            new GameObject("UICam", typeof(Camera)).TryGetComponent(out Camera cam);
-            UICamera = cam;
-            UICamera.transform.SetParent(Mono.transform);
-            UICamera.transform.localPosition = new Vector3(0, 0, -10);
-            UICamera.clearFlags = settings.cameraClearFlags;
-            if (UICamera.clearFlags == CameraClearFlags.SolidColor || UICamera.clearFlags == CameraClearFlags.Skybox)
-                UICamera.backgroundColor = settings.backgroundColor;
-            UICamera.cullingMask = settings.cullingMask;
-            UICamera.depth = settings.depth;
-            UICamera.orthographic = true;
-            UICamera.orthographicSize = 5;
-            UICamera.nearClipPlane = settings.nearClipPlane;
-            UICamera.farClipPlane = settings.farClipPlane;
+            new GameObject("UICam", typeof(Camera)).TryGetComponent(out defaultCamera);
+            defaultCamera.transform.SetParent(Mono.transform);
+            defaultCamera.transform.localPosition = new Vector3(0, 0, -10);
+            defaultCamera.clearFlags = settings.cameraClearFlags;
+            if (defaultCamera.clearFlags == CameraClearFlags.SolidColor || defaultCamera.clearFlags == CameraClearFlags.Skybox)
+                defaultCamera.backgroundColor = settings.backgroundColor;
+            defaultCamera.cullingMask = settings.cullingMask;
+            defaultCamera.depth = settings.depth;
+            defaultCamera.orthographic = true;
+            defaultCamera.orthographicSize = 5;
+            defaultCamera.nearClipPlane = settings.nearClipPlane;
+            defaultCamera.farClipPlane = settings.farClipPlane;
 
             new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster))
                 .TryGetComponent(out canvas);
@@ -194,7 +202,7 @@ namespace RicKit.UI
             canvas.transform.SetParent(Mono.transform);
             CanvasRectTransform = (RectTransform)canvas.transform;
             canvas.renderMode = RenderMode.ScreenSpaceCamera;
-            canvas.worldCamera = UICamera;
+            UICamera = defaultCamera;
             canvas.planeDistance = 5;
             canvas.sortingLayerName = "UI";
             canvas.sortingOrder = 0;
@@ -637,6 +645,27 @@ namespace RicKit.UI
             }
 
             Object.Destroy(panel.gameObject);
+        }
+
+        public void RegisterAdditionalCam(Camera cam)
+        {
+            if (uiCameras.Contains(cam)) return;
+            uiCameras.Add(cam);
+            UICamera = cam;
+            defaultCamera.enabled = false;
+        }
+
+        public void UnregisterAdditionalCam(Camera cam)
+        {
+            if (!uiCameras.Contains(cam)) return;
+            uiCameras.Remove(cam);
+            if (uiCameras.Count > 0)
+                UICamera = uiCameras[^1];
+            else
+            {
+                defaultCamera.enabled = true;
+                UICamera = defaultCamera;
+            }
         }
 
         #endregion
