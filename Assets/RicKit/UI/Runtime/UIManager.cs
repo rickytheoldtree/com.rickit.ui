@@ -682,7 +682,7 @@ namespace RicKit.UI
             {
                 if (!ui || !ui.gameObject) return true;
                 if (ui.DontDestroyOnClear) return false;
-                Object.DestroyImmediate(ui.gameObject);
+                Object.Destroy(ui.gameObject);
                 return true;
             });
 
