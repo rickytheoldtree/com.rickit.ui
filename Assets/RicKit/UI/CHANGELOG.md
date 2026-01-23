@@ -1,5 +1,5 @@
 # Changelog
-## [3.6.7] - 2026-01-14
+## [3.6.8] - 2026-01-14
 - Remove URP UI camera stack management, use UIAdditionalCamera component instead
 ## [3.6.6] - 2026-01-14
 - ClearAll DestroyImmediate => Destroy

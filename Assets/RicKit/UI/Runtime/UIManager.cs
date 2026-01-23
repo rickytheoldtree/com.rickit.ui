@@ -663,6 +663,7 @@ namespace RicKit.UI
                 UICamera = uiCameras[^1];
             else
             {
+                if (!defaultCamera) return;
                 defaultCamera.enabled = true;
                 UICamera = defaultCamera;
             }
