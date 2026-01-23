@@ -709,21 +709,24 @@ namespace RicKit.UI
         public void ClearAll()
         {
             var keepSet = new HashSet<AbstractUIPanel>();
-            foreach (var ui in panelList.Where(ui => ui && ui.gameObject))
+
+            var panels = panelList.ToArray();
+
+            foreach (var ui in panels)
             {
+                if (!ui || !ui.gameObject) continue;
+
                 if (ui.DontDestroyOnClear)
-                {
                     keepSet.Add(ui);
-                }
                 else
-                {
                     Object.Destroy(ui.gameObject);
-                }
             }
+
             panelList.Clear();
             panelList.AddRange(keepSet);
 
             if (showStack.Count == 0) return;
+
             var temp = showStack.ToArray();
             showStack.Clear();
 
@@ -731,9 +734,7 @@ namespace RicKit.UI
             {
                 var panel = temp[i];
                 if (panel && keepSet.Contains(panel))
-                {
                     showStack.Push(panel);
-                }
             }
         }
     }
