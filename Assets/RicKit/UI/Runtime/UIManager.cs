@@ -671,12 +671,12 @@ namespace RicKit.UI
 
         #endregion
 
-        public T GetUI<T>() where T : AbstractUIPanel
+        public virtual T GetUI<T>() where T : AbstractUIPanel
         {
             return panelList.Where(form => form.GetType() == typeof(T)).Cast<T>().FirstOrDefault();
         }
 
-        private async UniTask<T> NewUIAsync<T>() where T : AbstractUIPanel
+        protected virtual async UniTask<T> NewUIAsync<T>() where T : AbstractUIPanel
         {
             SetLockInput(true);
             var prefab = await panelLoader.LoadPrefabAsync($"{Settings.assetPathPrefix}{typeof(T).Name}");
@@ -691,7 +691,7 @@ namespace RicKit.UI
             return form;
         }
 
-        private T NewUI<T>() where T : AbstractUIPanel
+        protected virtual T NewUI<T>() where T : AbstractUIPanel
         {
             SetLockInput(true);
             var prefab = panelLoader.LoadPrefab($"{Settings.assetPathPrefix}{typeof(T).Name}");

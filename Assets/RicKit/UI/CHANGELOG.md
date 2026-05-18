@@ -1,4 +1,6 @@
 # Changelog
+## [3.7.0] - 2026-05-18
+- Make UIManager methods overridable: GetUI is now virtual, NewUIAsync and NewUI are now protected virtual to allow subclassing/extension without changing existing behavior.
 ## [3.6.9] - 2026-01-23
 - Fix UIManager.ClearAll to avoid modifying collection during iteration
 ## [3.6.8] - 2026-01-14
