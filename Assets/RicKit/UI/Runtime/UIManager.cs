@@ -463,8 +463,9 @@ namespace RicKit.UI
         public async UniTask PreloadUIAsync<T>(string layer = "UI", bool asyncLoadNew = true) where T : AbstractUIPanel
         {
             var form = GetUI<T>();
-            if (!form)
-                form = asyncLoadNew ? await NewUIAsync<T>() : NewUI<T>();
+            if (form)
+                return;
+            form = asyncLoadNew ? await NewUIAsync<T>() : NewUI<T>();
             form.gameObject.SetActive(false);
             form.SetSortingLayer(layer);
             form.SetOrderInLayer(0);
