@@ -1,5 +1,4 @@
-using System;
-using System.Threading;
+﻿using System.Threading;
 using Cysharp.Threading.Tasks;
 using RicKit.UI.Ease;
 using RicKit.UI.Extensions.TaskExtension;
@@ -18,35 +17,32 @@ namespace RicKit.UI.Panels
 
         [SerializeField] protected Button btnBack;
 
-        [SerializeField] protected Button[] moreBtnBacks = Array.Empty<Button>();
+        [SerializeField] protected Button[] moreBtnBacks;
 
         protected override void Awake()
         {
             base.Awake();
             if (btnBack)
                 btnBack.onClick.AddListener(OnBackClick);
-            foreach (var btn in moreBtnBacks ?? Array.Empty<Button>())
+            foreach (var btn in moreBtnBacks)
             {
-                if (btn) btn.onClick.AddListener(OnBackClick);
+                btn.onClick.AddListener(OnBackClick);
             }
-            if (cgBlocker)
-            {
-                cgBlocker.alpha = 0;
-                cgBlocker.blocksRaycasts = true;
-            }
+            cgBlocker.alpha = 0;
+            cgBlocker.blocksRaycasts = true;
             CanvasGroup.alpha = 0;
         }
 
         public override void OnESCClick()
         {
-            if (btnBack && btnBack.gameObject.activeInHierarchy && btnBack.interactable)
+            if (btnBack && btnBack.gameObject.activeSelf)
             {
                 OnBackClick();
                 return;
             }
-            foreach (var btn in moreBtnBacks ?? Array.Empty<Button>())
+            foreach (var btn in moreBtnBacks)
             {
-                if (btn && btn.gameObject.activeInHierarchy && btn.interactable)
+                if (btn.gameObject.activeSelf)
                 {
                     OnBackClick();
                     break;
@@ -56,7 +52,6 @@ namespace RicKit.UI.Panels
 
         protected override async UniTask OnAnimationIn(CancellationToken cancellationToken)
         {
-            ValidateReferences();
             panel.localScale = 0.1f * Vector3.one;
             cgBlocker.alpha = 0;
             CanvasGroup.alpha = 0;
@@ -68,23 +63,10 @@ namespace RicKit.UI.Panels
 
         protected override async UniTask OnAnimationOut(CancellationToken cancellationToken)
         {
-            ValidateReferences();
             await UniTask.WhenAll(
                 CanvasGroup.Fade(0, Duration, AnimEase.InBack, cancellationToken: cancellationToken),
                 panel.Scale(0.1f * Vector3.one, Duration, AnimEase.InBack, cancellationToken),
                 cgBlocker.Fade(0, Duration, cancellationToken: cancellationToken));
-        }
-
-        protected override void RestoreAnimationState(bool shown)
-        {
-            base.RestoreAnimationState(shown);
-            if (panel) panel.localScale = (shown ? 1f : 0.1f) * Vector3.one;
-            if (cgBlocker) cgBlocker.alpha = shown ? 1 : 0;
-        }
-        private void ValidateReferences()
-        {
-            if (!panel || !cgBlocker)
-                throw new InvalidOperationException($"{GetType().Name} requires panel and cgBlocker references.");
         }
 
         protected virtual void OnBackClick()

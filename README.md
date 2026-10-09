@@ -34,8 +34,8 @@ It is ideal for Unity projects that require efficient and flexible UI control.
 
 - **Stack-based UI management**: Supports enter/exit animations and auto input blocking during transitions.
 - Esc key returns by default, Esc is ignored during animations.
-- Before use, set all parameters under `Resources/UISettings` (e.g., camera, scaling, resolution, and asset path prefix).
-- Create UISettings via the menu: `RicKit > UI > Open Settings`.
+- Before use, set all parameters under `Resources/UISettings` (e.g., CurvingMasks, SortingLayerName, resolution, etc.).
+- Create UISettings via the menu: `Rickit => UI => Create UISettings`.
 - First use: manually call `UIManager.Init()` to automatically create core components like `UICam`, `Blocker`.
 - To create a custom UIPanel, inherit from `AbstractUIPanel`. The created window prefab can be edited in the inspector.
 
@@ -63,14 +63,26 @@ RicKit UI manages UI through `IUIManager`, supports both synchronous and asynchr
 - **Preload & Await**
     - `PreloadUI<T>()` / `PreloadUIAsync<T>()`
     - `WaitUntilUIHideEnd<T>()`
+    - `ShowUIAndWaitHideAsync<T>()`: show a panel and wait until it is closed, for chaining popups
 - **Other Helpers**
     - `GetUI<T>()`
     - `ClearAll()`
     - `SetLockInput(bool)` / `IsLockInput()`
     - Event delegates: `OnShow`, `OnHide`, etc.
+    - `UIManager.TryGetInstance(out ui)`: check for an instance without logging an error
 
 > **Note:** Generic `T` must inherit from `AbstractUIPanel`.  
 > Asynchronous management is recommended for complex transitions, all async APIs rely on UniTask.
+
+### Panel Contract
+
+- `Back` and `CloseCurrent` **pop the stack before** the exit animation, so `CurrentUIPanel` inside `OnHideEnd` is the panel revealed underneath
+- Showing a panel that is already shown pushes it again and replays `OnAnimationIn`
+- A new panel runs `Awake` before `onInit`, so initialization in `Awake` is safe
+- `OnAnimationIn` / `OnAnimationOut` may await other navigation calls
+- Override `DestroyOnClose => true` to always destroy a panel when it is closed (same as passing `destroy: true`), useful for large, rarely used panels
+- Add `UISortingFollower` (with an `offset`) to particles, `SortingGroup`s or child `Canvas`es inside a panel to follow the panel's sorting order automatically
+- Turn on `UISettings.verboseLog` to log navigation calls, stack depth and the input lock count when tracking down a hang
 
 ---
 
@@ -95,98 +107,35 @@ public class MyPanelLoader : IPanelLoader
     }
 }
 
-// 2. Addressables loading with explicit ownership (requires the Addressables package)
+// 2. Addressables loading: implement IReleasablePanelLoader to give the reference back once the panel is destroyed
 public class AddressablesPanelLoader : IReleasablePanelLoader
 {
-    private readonly Dictionary<GameObject, Stack<AsyncOperationHandle<GameObject>>> handles
-        = new Dictionary<GameObject, Stack<AsyncOperationHandle<GameObject>>>();
-
     public GameObject LoadPrefab(string path)
-    {
-        var handle = Addressables.LoadAssetAsync<GameObject>(path);
-        try
-        {
-            handle.WaitForCompletion();
-            return Retain(handle);
-        }
-        catch
-        {
-            if (handle.IsValid()) Addressables.Release(handle);
-            throw;
-        }
-    }
+        => Addressables.LoadAssetAsync<GameObject>(path).WaitForCompletion();
 
     public async UniTask<GameObject> LoadPrefabAsync(string path)
-    {
-        var handle = Addressables.LoadAssetAsync<GameObject>(path);
-        try
-        {
-            await handle;
-            return Retain(handle);
-        }
-        catch
-        {
-            if (handle.IsValid()) Addressables.Release(handle);
-            throw;
-        }
-    }
-
-    private GameObject Retain(AsyncOperationHandle<GameObject> handle)
-    {
-        if (handle.Status != AsyncOperationStatus.Succeeded || !handle.Result)
-            throw handle.OperationException ?? new InvalidOperationException("UI asset load failed.");
-        var prefab = handle.Result;
-        if (!handles.TryGetValue(prefab, out var stack))
-            handles.Add(prefab, stack = new Stack<AsyncOperationHandle<GameObject>>());
-        stack.Push(handle);
-        return prefab;
-    }
+        => await Addressables.LoadAssetAsync<GameObject>(path);
 
     public void ReleasePrefab(string path, GameObject prefab)
-    {
-        if (!handles.TryGetValue(prefab, out var stack)) return;
-        Addressables.Release(stack.Pop());
-        if (stack.Count == 0) handles.Remove(prefab);
-    }
+        => Addressables.Release(prefab);
 }
 
 // Usage
 UIManager.Init(new MyPanelLoader());
 ```
 
----
+### Releasing Resources (IReleasablePanelLoader)
 
-## Navigation and lifecycle guarantees
-
-- Call manager operations on Unity's main thread. Navigation, preloading, and unmanaged shows share one queue; composite switches execute as one operation. Void APIs enqueue work and return immediately.
-- Each requested generic panel type has one cached instance; its prefab may contain a derived panel type. Showing an existing panel refreshes `onInit` and moves it to the top without adding another entry. An already shown panel does not replay its entrance animation or show events.
-- New instances remain inactive until `onInit` has run. `Awake` may run on first activation, so initialize fields required by `onInit` in field initializers or serialized data rather than depending on `Awake`.
-- `CloseUntilAsync` waits for every exit animation. Failed animations and callbacks release input locks and preserve recoverable navigation state. Replacement operations keep the previous panel until the new panel succeeds.
-- Direct panel transitions give ownership to the latest call. Reentry from cancellation callbacks, `OnEnable`, and `OnDisable` cannot let an older transition overwrite newer state; transitions inside activation callbacks resume on the next frame. Failed transitions restore the last committed visibility and alpha, and cancel unfinished sibling animations.
-- Input locks use a raycast blocker and a root CanvasGroup to block pointer input and keyboard/controller submission on UI controls that inherit parent group state. Controls using `ignoreParentGroups` or custom input must honor the lock themselves. Manual `SetLockInput` calls and scoped locks have independent counters; manual unlocks cannot release framework scopes. Dispose scopes on the main thread.
-- Callbacks and animation overrides must not await another queued manager operation from inside the current operation: the new operation waits for the current one. Enqueue follow-up navigation with a void API, or await it after the current operation completes.
-- `ClearAll()` cancels active and queued work, then preserves panels whose `DontDestroyOnClear` is true. Navigation enqueued by cancellation callbacks runs after clearing completes. A non-cancellable loader's late result is released rather than instantiated.
-- `UIManager.Shutdown()` or `((UIManager)UIManager.I).Dispose()` cancels pending work and destroys owned objects. Initialization can then run again. Existing scene EventSystems remain owned by the scene; configure one for projects using the new Input System. Automatic Esc handling uses the legacy Input Manager.
-- To inject settings, use `new UIManager().Initiate(settings, loader)`; pass `null` for the default Resources loader. Configuration is validated before the singleton is published.
-- Closed panels remain cached by default. Enable **Destroy On Close** on a panel or override `DestroyOnClose` to release rarely used panels. `destroy: true` always requests destruction. `DontDestroyOnClear` does not exempt panels from shutdown.
-
-`Fade` and `Scale` use unscaled time by default; pass `ignoreTimeScale: false` to follow game time. Cancellation throws `OperationCanceledException` without snapping to the final value. Custom panel animations must honor their cancellation token and can override `RestoreAnimationState(bool shown)` to restore additional targets after failure or cancellation. The supplied popup animation restores its scale and blocker automatically. Durations must be finite; zero or negative durations complete immediately. The framework stops waiting and releases its own input lock even if a custom animation ignores cancellation, but custom animations must still check the token before writing to their targets. Exceptions from cancellation callbacks are logged while cleanup and cancellation of queued requests continue.
-
-### Loader ownership
-
-Existing `IPanelLoader` implementations remain supported. Optional `ICancellablePanelLoader` implementations receive a cancellation token and must clean up failed/cancelled loads themselves. Optional `IReleasablePanelLoader.ReleasePrefab(path, prefab)` is called once for each successful load when its instance is actually destroyed, including unused preloads, invalid prefabs, and late results after clearing. Resources follow the instance GameObject. If only its panel component is removed, the next cache access or cleanup still destroys the object and releases its resources. Hiding a cached panel does not release its prefab. Keep the loaded prefab and its dependencies valid until that callback; do not release an Addressables handle immediately after instantiation.
-
-The default loader now uses `Resources.LoadAsync`. Addressables adapters should retain one handle per successful load, as in the example above. It needs `System`, `System.Collections.Generic`, `UnityEngine.AddressableAssets`, and `UnityEngine.ResourceManagement.AsyncOperations` imports, plus UniTask's Addressables integration when awaiting handles. Avoid synchronous Addressables loading on platforms that do not support it.
-
-### Tests
-
-PlayMode regression tests are in `Assets/RicKit/UI/Tests/Runtime`. They cover duplicate and concurrent requests, failed loads/animations/events, activation/cancellation reentrancy, input lock isolation and keyboard submission, derived panel caches, component-only destruction, preloads and resource release, popup recovery, paused animations, invalid settings, shutdown, and camera/EventSystem ownership. Run them from Unity's Test Runner with the Unity Test Framework installed.
+- Every successful load gets exactly one `ReleasePrefab`, called **after** the panel instance from that load is destroyed: `ClearAll`, closing with `destroy`, `DestroyOnClose`, `SafeDestroy` and a plain external `Destroy` all count; hiding (`Back` without `destroy`) does not
+- A loaded prefab whose root lacks the panel component is released as well
+- **Caution:** objects a panel instantiates from its own prefab and parents outside the panel must be cleaned up before the panel is destroyed, otherwise they lose their textures once the bundle is unloaded
 
 ---
+
 ## Universal RP Support
 
-- Add `UIAdditionalCamera` to a camera that should render UI. Enabling it selects that camera; disabling it restores the previous registered camera or the default UI camera.
-- Configure URP camera stacking, render types, and culling masks in your project; the plugin does not modify the URP camera stack.
+- To render UI with a game camera, add the `UIAdditionalCamera` component to it (cameras enabled before `UIManager` is initialized are registered too).
+- If only using a UI camera, no extra steps needed.
 
 ---
 

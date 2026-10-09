@@ -1,4 +1,4 @@
-using System;
+﻿    using System;
 
 namespace RicKit.UI.Ease
 {
@@ -49,19 +49,31 @@ namespace RicKit.UI.Ease
         }
         public static float Apply(float time, float duration, AnimEase ease)
         {
-            var t = duration <= 0 ? 1 : Math.Max(0, Math.Min(1, time / duration));
-            // Evaluate directly to avoid constructing a method-group delegate on every animation frame.
-            switch (ease)
+            return Apply(time, duration, GetEasingFunction(ease));
+        }
+
+        private static Func<float, float> GetEasingFunction(AnimEase ease)
+        {
+            return ease switch
             {
-                case AnimEase.Linear: return Linear(t);
-                case AnimEase.QuadIn: return QuadIn(t);
-                case AnimEase.QuadOut: return QuadOut(t);
-                case AnimEase.QuadInOut: return QuadInOut(t);
-                case AnimEase.InBack: return InBack(t);
-                case AnimEase.OutBack: return OutBack(t);
-                case AnimEase.InOutBack: return InOutBack(t);
-                default: throw new ArgumentOutOfRangeException(nameof(ease), ease, null);
-            }
+                AnimEase.Linear => Linear,
+                AnimEase.QuadIn => QuadIn,
+                AnimEase.QuadOut => QuadOut,
+                AnimEase.QuadInOut => QuadInOut,
+                AnimEase.InBack => InBack,
+                AnimEase.OutBack => OutBack,
+                AnimEase.InOutBack => InOutBack,
+                _ => throw new ArgumentOutOfRangeException(nameof(ease), ease, null)
+            };
+        }
+
+        private static float Apply(float time, float duration, Func<float, float> easingFunction)
+        {
+            if (duration <= 0) return 1;
+            if (time < 0) return 0;
+            if (time > duration) return 1;
+            return easingFunction(time / duration);
         }
     }
+
 }

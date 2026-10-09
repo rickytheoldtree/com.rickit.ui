@@ -19,7 +19,8 @@ namespace RicKit.UI.Editor
             referenceResolution,
             screenMatchMode,
             matchWidthOrHeight,
-            assetPathPrefix;
+            assetPathPrefix,
+            verboseLog;
 
         private void OnEnable()
         {
@@ -34,10 +35,12 @@ namespace RicKit.UI.Editor
             screenMatchMode = serializedObject.FindProperty("screenMatchMode");
             matchWidthOrHeight = serializedObject.FindProperty("matchWidthOrHeight");
             assetPathPrefix = serializedObject.FindProperty("assetPathPrefix");
+            verboseLog = serializedObject.FindProperty("verboseLog");
         }
 
         public override void OnInspectorGUI()
         {
+            serializedObject.Update();
             GUILayout.Label("Camera", EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
             EditorGUILayout.PropertyField(cameraClearFlags);
@@ -64,6 +67,11 @@ namespace RicKit.UI.Editor
             GUILayout.Label("Asset", EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
             EditorGUILayout.PropertyField(assetPathPrefix);
+            EditorGUI.indentLevel--;
+            GUILayout.Label("Debug", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
+            EditorGUILayout.PropertyField(verboseLog);
+            EditorGUI.indentLevel--;
             serializedObject.ApplyModifiedProperties();
         }
         

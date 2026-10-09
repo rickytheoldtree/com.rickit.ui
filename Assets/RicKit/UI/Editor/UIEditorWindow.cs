@@ -12,7 +12,7 @@ namespace RicKit.UI.Editor
     public class UIEditorWindow : EditorWindow
     {
         private static string PathKey => $"PanelCreatorEditorPath_{Application.identifier}";
-        private static string path = "Assets/Resources/UI";
+        private static string path = "Assets/Resources/UIPanels";
         private List<MonoScript> scripts;
         private Dictionary<MonoScript, Object> scriptToAssetMap = new Dictionary<MonoScript, Object>();
         private GUIStyle dropAreaStyle;
@@ -20,7 +20,6 @@ namespace RicKit.UI.Editor
 
         private void OnEnable()
         {
-            EditorApplication.projectChanged += RefreshMap;
             UpdateMap();
             dropAreaStyle = new GUIStyle
             {
@@ -42,13 +41,6 @@ namespace RicKit.UI.Editor
         }
 
 
-        private void OnDisable() => EditorApplication.projectChanged -= RefreshMap;
-
-        private void RefreshMap()
-        {
-            UpdateMap();
-            Repaint();
-        }
         private void DropFolder()
         {
             var evt = Event.current;
@@ -147,31 +139,34 @@ namespace RicKit.UI.Editor
         {
             scripts = new List<MonoScript>();
             scriptToAssetMap.Clear();
-            var scriptsByType = new Dictionary<Type, MonoScript>();
-            foreach (var guid in AssetDatabase.FindAssets("t:MonoScript"))
-            {
-                var script = AssetDatabase.LoadAssetAtPath<MonoScript>(AssetDatabase.GUIDToAssetPath(guid));
-                if (!script) continue;
-                var type = script.GetClass();
-                if (type == null || !type.IsSubclassOf(typeof(AbstractUIPanel)) || type.IsAbstract || type.ContainsGenericParameters)
-                    continue;
-                scripts.Add(script);
-                scriptsByType[type] = script;
-            }
 
-            // Inspect each prefab once, rather than loading all prefabs for each script.
-            foreach (var guid in AssetDatabase.FindAssets("t:Prefab"))
+            var scriptGuids = AssetDatabase.FindAssets("t:MonoScript");
+            var prefabGuids = AssetDatabase.FindAssets("t:Prefab");
+
+            foreach (var sg in scriptGuids)
             {
-                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath(guid));
-                if (!prefab) continue;
-                foreach (var panel in prefab.GetComponents<AbstractUIPanel>())
+                var scriptPath = AssetDatabase.GUIDToAssetPath(sg);
+                var monoScript = AssetDatabase.LoadAssetAtPath<MonoScript>(scriptPath);
+                var type = monoScript.GetClass();
+
+                if (type == null
+                    || !type.IsSubclassOf(typeof(AbstractUIPanel))
+                    || type.IsAbstract)
+                    continue;
+
+                scripts.Add(monoScript);
+
+                foreach (var pg in prefabGuids)
                 {
-                    if (!panel) continue;
-                    for (var type = panel.GetType(); type != null && type != typeof(AbstractUIPanel); type = type.BaseType)
-                        if (scriptsByType.TryGetValue(type, out var script) && !scriptToAssetMap.ContainsKey(script))
-                            scriptToAssetMap.Add(script, prefab);
+                    var prefabPath = AssetDatabase.GUIDToAssetPath(pg);
+                    var go = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+                    if (!go) continue;
+                    if (!go.GetComponent(type)) continue;
+                    scriptToAssetMap[monoScript] = go;
+                    break;
                 }
             }
+
             scripts.Sort((a, b) => string.Compare(a.name, b.name, StringComparison.Ordinal));
         }
     }

@@ -16,5 +16,7 @@ namespace RicKit.UI
         [Range(0, 1)]
         public float matchWidthOrHeight = 1f;
         public string assetPathPrefix = "UI/";
+        [Tooltip("打印导航调用、栈深和输入锁计数，以及被吞掉的取消异常，排查卡死用")]
+        public bool verboseLog;
     }
 }

@@ -1,205 +1,116 @@
-using System;
+﻿using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using Cysharp.Threading.Tasks.Triggers;
+using RicKit.UI.Component;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace RicKit.UI.Panels
 {
-    public enum UIPanelState { Hidden, Showing, Shown, Hiding }
-
     [RequireComponent(typeof(Canvas), typeof(CanvasGroup), typeof(GraphicRaycaster))]
     public abstract class AbstractUIPanel : MonoBehaviour
     {
         public int OrderInLayer { get; private set; }
-        public bool IsShow => gameObject.activeSelf;
-        public bool CanInteract => IsShow && State == UIPanelState.Shown && CanvasGroup && CanvasGroup.interactable;
-        public UIPanelState State { get; private set; }
-        public bool IsTransitioning => State == UIPanelState.Showing || State == UIPanelState.Hiding;
-        public string SortingLayerName => sortingLayer;
+        public bool IsShow =>  gameObject.activeSelf;
+
+        public bool CanInteract => IsShow && CanvasGroup.interactable;
         protected CanvasGroup CanvasGroup { get; private set; }
         protected RectTransform CanvasRect { get; private set; }
         private Canvas Canvas { get; set; }
-        private IUIManager owner;
-        private CancellationTokenSource transitionCancellation;
-        private bool stableShown;
-        private float stableAlpha;
-        private bool destroyRequested;
-        private int activationDepth;
-        private string sortingLayer = "UI";
-        [SerializeField] private bool destroyOnClose;
+        public string SortingLayerName => Canvas ? Canvas.sortingLayerName : "UI";
         public virtual bool DontDestroyOnClear => false;
-        public virtual bool DestroyOnClose => destroyOnClose;
+        /// <summary>
+        /// 关闭（Back、CloseCurrent、Close、CloseUntil、ShowThenClosePrev）时是否总是销毁，
+        /// 相当于这些调用都传了 destroy: true。占内存大、又不常打开的面板可以重写为 true
+        /// </summary>
+        public virtual bool DestroyOnClose => false;
         protected static IUIManager UI => UIManager.I;
-
-        protected virtual void Awake() => EnsureComponents();
-
-        private void EnsureComponents()
+        private static readonly List<UISortingFollower> FollowerBuffer = new List<UISortingFollower>();
+        protected virtual void Awake()
         {
-            if (Canvas) return;
             Canvas = GetComponent<Canvas>();
+            Canvas.overrideSorting = true;
+            Canvas.sortingLayerName = "UI";
             CanvasGroup = GetComponent<CanvasGroup>();
-            CanvasRect = (RectTransform)transform;
-            ApplySorting();
-            stableAlpha = CanvasGroup.alpha;
+            CanvasRect = Canvas.GetComponent<RectTransform>();
         }
-
-        internal void BindManager(IUIManager manager)
+        public async UniTask OnShowAsync()
         {
-            owner = manager;
-            EnsureComponents();
-        }
-
-        internal void CancelTransition() => UIManager.CancelSafely(transitionCancellation);
-
-        internal void PrepareForDestroy()
-        {
-            destroyRequested = true;
-            CancelTransition();
-            // Destroy is deferred by Unity; avoid reentering activation when called from OnEnable.
-            if (activationDepth == 0) SetPanelActive(false);
-        }
-
-        /// <summary>Restore custom animation targets when a transition fails or is cancelled.</summary>
-        protected virtual void RestoreAnimationState(bool shown) { }
-
-        public UniTask OnShowAsync() => OnShowAsync(CancellationToken.None);
-        public UniTask OnHideAsync() => OnHideAsync(CancellationToken.None);
-        public UniTask OnShowAsync(CancellationToken cancellationToken) => TransitionAsync(true, cancellationToken);
-        public UniTask OnHideAsync(CancellationToken cancellationToken) => TransitionAsync(false, cancellationToken);
-
-        private async UniTask TransitionAsync(bool show, CancellationToken cancellationToken)
-        {
-            UIManager.EnsureMainThread();
-            cancellationToken.ThrowIfCancellationRequested();
-            if (!this || destroyRequested) throw new OperationCanceledException("The panel is being destroyed.");
-            EnsureComponents();
-            if (!IsTransitioning && (show ? State == UIPanelState.Shown && IsShow : State == UIPanelState.Hidden && !IsShow))
-                return;
-            var manager = owner;
-            if (manager == null && !UIManager.TryGetInstance(out manager))
-                throw new InvalidOperationException("The panel has no initialized UIManager.");
-            owner = manager;
-            var previous = transitionCancellation;
-            var source = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, gameObject.GetAsyncDestroyTrigger().CancellationToken);
-            var token = source.Token;
-            var wasShown = stableShown;
-            // A superseded animation may already have changed alpha. Restore the last committed value.
-            var previousAlpha = stableAlpha;
-            transitionCancellation = source;
-            IDisposable inputLock = null;
+            var ui = UI;
+            ui.SetLockInput(true);
+            // 动画中途被销毁（OperationCanceledException）或回调抛异常时也必须解锁，否则输入永久锁死
             try
             {
-                inputLock = manager.GetLockInputScope();
-                // Publish ownership before cancellation: user cancellation callbacks can start a newer transition.
-                UIManager.CancelSafely(previous);
-                // Unity rejects SetActive reentry from OnEnable/OnDisable. Keep the new owner,
-                // but wait until the activation callback has unwound before changing the object.
-                if (activationDepth > 0) await UniTask.NextFrame(cancellationToken: token);
-                CheckTransition(source, token);
-                State = show ? UIPanelState.Showing : UIPanelState.Hiding;
+                gameObject.SetActive(true);
+                ui.OnShow?.Invoke(this);
                 CanvasGroup.blocksRaycasts = true;
                 CanvasGroup.interactable = false;
-                if (show)
-                {
-                    SetPanelActive(true);
-                    CheckTransition(source, token);
-                    manager.OnShow?.Invoke(this);
-                }
-                else manager.OnHide?.Invoke(this);
-                CheckTransition(source, token);
-
-                // Release our own state and input lock even if a custom animation ignores cancellation.
-                // Custom animations must still observe the token before modifying their targets.
-                await (show ? OnAnimationIn(token) : OnAnimationOut(token)).AttachExternalCancellation(token);
-                await UniTask.SwitchToMainThread();
-                CheckTransition(source, token);
-                if (!show)
-                {
-                    SetPanelActive(false);
-                    CheckTransition(source, token);
-                }
-                stableShown = show;
-                stableAlpha = CanvasGroup.alpha;
-                State = show ? UIPanelState.Shown : UIPanelState.Hidden;
-                CanvasGroup.blocksRaycasts = show;
-                CanvasGroup.interactable = show;
-                if (show) manager.OnShowEnd?.Invoke(this);
-                else manager.OnHideEnd?.Invoke(this);
-                CheckTransition(source, token);
-            }
-            catch
-            {
-                await UniTask.SwitchToMainThread();
-                // WhenAll can fail before its other animations finish. Stop those before restoring visuals.
-                UIManager.CancelSafely(source);
-                if (activationDepth > 0) await UniTask.NextFrame();
-                if (this && !destroyRequested && ReferenceEquals(transitionCancellation, source))
-                {
-                    stableShown = wasShown;
-                    stableAlpha = previousAlpha;
-                    State = wasShown ? UIPanelState.Shown : UIPanelState.Hidden;
-                    CanvasGroup.alpha = previousAlpha;
-                    CanvasGroup.blocksRaycasts = wasShown;
-                    CanvasGroup.interactable = wasShown;
-                    try { RestoreAnimationState(wasShown); }
-                    catch (Exception exception) { Debug.LogException(exception); }
-                    // Both the restore hook and OnEnable/OnDisable may reenter. Do no further writes after SetActive.
-                    if (this && !destroyRequested && ReferenceEquals(transitionCancellation, source))
-                        SetPanelActive(wasShown);
-                }
-                throw;
+                await OnAnimationIn(this.GetCancellationTokenOnDestroy());
+                // 动画期间面板被销毁（ClearAll 等），后面的状态和回调都没有意义了
+                if (!this) return;
+                CanvasGroup.blocksRaycasts = true;
+                CanvasGroup.interactable = true;
+                ui.OnShowEnd?.Invoke(this);
             }
             finally
             {
-                if (ReferenceEquals(transitionCancellation, source)) transitionCancellation = null;
-                source.Dispose();
-                inputLock?.Dispose();
+                ui.SetLockInput(false);
             }
         }
-
-        private void SetPanelActive(bool active)
+        public async UniTask OnHideAsync()
         {
-            activationDepth++;
-            try { gameObject.SetActive(active); }
-            finally { activationDepth--; }
-            // Unity drops overrideSorting set on an inactive nested Canvas. Reapply it once active.
-            if (active && this) ApplySorting();
-        }
-
-        private void ApplySorting()
-        {
-            Canvas.overrideSorting = true;
-            Canvas.sortingLayerName = sortingLayer;
-            Canvas.sortingOrder = OrderInLayer;
-        }
-
-        private void CheckTransition(CancellationTokenSource source, CancellationToken token)
-        {
-            token.ThrowIfCancellationRequested();
-            if (!this || destroyRequested || !ReferenceEquals(transitionCancellation, source))
-                throw new OperationCanceledException(token);
+            var ui = UI;
+            ui.SetLockInput(true);
+            try
+            {
+                ui.OnHide?.Invoke(this);
+                CanvasGroup.blocksRaycasts = true;
+                CanvasGroup.interactable = false;
+                await OnAnimationOut(this.GetCancellationTokenOnDestroy());
+                // 动画期间面板被销毁（ClearAll 等），后面的状态和回调都没有意义了
+                if (!this) return;
+                gameObject.SetActive(false);
+                ui.OnHideEnd?.Invoke(this);
+            }
+            finally
+            {
+                ui.SetLockInput(false);
+            }
         }
 
         public abstract void OnESCClick();
         protected abstract UniTask OnAnimationIn(CancellationToken cancellationToken);
+
         protected abstract UniTask OnAnimationOut(CancellationToken cancellationToken);
 
         public virtual void SetOrderInLayer(int order)
         {
-            UIManager.EnsureMainThread();
-            EnsureComponents();
             OrderInLayer = order;
-            ApplySorting();
+            Canvas.overrideSorting = true;
+            Canvas.sortingOrder = order;
+            RefreshSortingFollowers();
         }
 
         public virtual void SetSortingLayer(string layer)
         {
-            UIManager.EnsureMainThread();
-            EnsureComponents();
-            sortingLayer = layer;
-            ApplySorting();
+            Canvas.overrideSorting = true;
+            Canvas.sortingLayerName = layer;
+            RefreshSortingFollowers();
+        }
+
+        // 子节点上的粒子、SortingGroup 挂 UISortingFollower 后，面板层级一变就跟着改，不用在 OnAnimationIn 里手动同步
+        private void RefreshSortingFollowers()
+        {
+            GetComponentsInChildren(true, FollowerBuffer);
+            try
+            {
+                foreach (var follower in FollowerBuffer)
+                    follower.Follow(this);
+            }
+            finally
+            {
+                FollowerBuffer.Clear();
+            }
         }
     }
 }

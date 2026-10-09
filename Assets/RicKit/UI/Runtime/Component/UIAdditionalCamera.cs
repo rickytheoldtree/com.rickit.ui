@@ -6,28 +6,24 @@ namespace RicKit.UI.Component
     public class UIAdditionalCamera : MonoBehaviour
     {
         private Camera cam;
-        private IUIManager owner;
+        internal Camera Camera => cam ? cam : cam = GetComponent<Camera>();
 
-        private void Awake() => cam = GetComponent<Camera>();
+        private void Awake()
+        {
+            cam = GetComponent<Camera>();
+        }
 
         private void OnEnable()
         {
-            if (UIManager.TryGetInstance(out var manager)) Register(manager);
-        }
-
-        internal void Register(IUIManager manager)
-        {
-            if (!isActiveAndEnabled || ReferenceEquals(owner, manager)) return;
-            owner?.UnregisterAdditionalCam(cam);
-            if (!cam) cam = GetComponent<Camera>();
-            owner = manager;
-            owner.RegisterAdditionalCam(cam);
+            // UIManager 还没初始化时不报错，初始化时会主动把已启用的相机注册上
+            if (!UIManager.TryGetInstance(out var manager)) return;
+            manager.RegisterAdditionalCam(Camera);
         }
 
         private void OnDisable()
         {
-            owner?.UnregisterAdditionalCam(cam);
-            owner = null;
+            if (!UIManager.TryGetInstance(out var manager)) return;
+            manager.UnregisterAdditionalCam(Camera);
         }
     }
 }
