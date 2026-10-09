@@ -1,4 +1,28 @@
 # Changelog
+## [4.0.0] - 2026-10-09
+### Migration from 3.x
+- Navigation requests now run in order; void APIs enqueue work. Do not await another queued manager operation inside lifecycle callbacks or animation overrides.
+- Existing panels are reused and moved to the top instead of creating duplicate navigation entries. Already shown panels do not replay entrance events or animations.
+- New instances stay inactive until onInit finishes; initialize onInit dependencies in serialized fields or field initializers instead of Awake.
+- Built-in animations use unscaled time by default and propagate cancellation. Custom animations must honor cancellation before modifying targets.
+- Manual input locks and scoped locks use separate counters; manual unlocks cannot release framework-owned scopes. UI mutations and scope disposal require Unity's main thread.
+
+### Changes
+- Make panel transitions safe when activation or cancellation callbacks start newer transitions; restore committed visuals and cancel unfinished sibling animations on failure.
+- Release framework input scopes even when custom animations ignore cancellation; isolate manual locks and block keyboard/controller submission through the root CanvasGroup.
+- Track requested panel types and owned GameObjects separately, including derived prefabs, component-only destruction, and destruction during initialization or activation.
+- Restore sorting after unmanaged show failures and continue cleanup when cancellation callbacks throw.
+- Enforce main-thread mutations, reject non-finite durations/settings, and keep the canvas inside custom camera clipping planes.
+- Serialize navigation and preloading; reuse one instance per type without duplicate navigation entries.
+- Release input locks on failed or cancelled loads, callbacks, and animations; restore recoverable panel state.
+- Await all CloseUntil exit animations, preserve navigation on close failures, and fix replacement sorting and same-panel switches.
+- Add optional cancellable and releasable loader interfaces; release unused preloads and late load results after cancellation.
+- Use Resources.LoadAsync by default; animate with unscaled time and propagate cancellation without snapping to end values.
+- Add explicit settings initialization, shutdown/disposal, optional DestroyOnClose, and popup animation recovery.
+- Handle ClearAll cancellation reentrancy, external destruction, camera registration before initialization, and EventSystem ownership.
+- Replace linear panel lookup and repeated editor prefab scanning; remove per-frame easing delegate creation.
+- Add Unity PlayMode regression tests and document navigation, callbacks, resource ownership, and changed activation timing.
+
 ## [3.7.0] - 2026-05-18
 - Make UIManager methods overridable: GetUI is now virtual, NewUIAsync and NewUI are now protected virtual to allow subclassing/extension without changing existing behavior.
 ## [3.6.9] - 2026-01-23

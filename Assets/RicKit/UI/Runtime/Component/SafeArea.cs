@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 namespace RicKit.UI.Component
@@ -8,6 +8,8 @@ namespace RicKit.UI.Component
     {
         private RectTransform rectTrans;
         private Rect safeArea;
+        private int screenWidth;
+        private int screenHeight;
         private void Awake()
         {
             rectTrans = GetComponent<RectTransform>();
@@ -20,12 +22,15 @@ namespace RicKit.UI.Component
 
         private void LateUpdate()
         {
-            if(safeArea == Screen.safeArea) return;
+            if (safeArea == Screen.safeArea && screenWidth == Screen.width && screenHeight == Screen.height) return;
             AdaptAnchorsValue();
         }
 
         private void AdaptAnchorsValue()
         {
+            if (Screen.width <= 0 || Screen.height <= 0) return;
+            screenWidth = Screen.width;
+            screenHeight = Screen.height;
             safeArea = Screen.safeArea;
             var maxWidth = Screen.width;
             var maxHeight = Screen.height;
