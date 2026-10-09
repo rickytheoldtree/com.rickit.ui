@@ -17,7 +17,7 @@ namespace RicKit.UI.Panels
         public bool CanInteract => IsShow && State == UIPanelState.Shown && CanvasGroup && CanvasGroup.interactable;
         public UIPanelState State { get; private set; }
         public bool IsTransitioning => State == UIPanelState.Showing || State == UIPanelState.Hiding;
-        public string SortingLayerName { get { EnsureComponents(); return Canvas.sortingLayerName; } }
+        public string SortingLayerName => sortingLayer;
         protected CanvasGroup CanvasGroup { get; private set; }
         protected RectTransform CanvasRect { get; private set; }
         private Canvas Canvas { get; set; }
@@ -27,6 +27,7 @@ namespace RicKit.UI.Panels
         private float stableAlpha;
         private bool destroyRequested;
         private int activationDepth;
+        private string sortingLayer = "UI";
         [SerializeField] private bool destroyOnClose;
         public virtual bool DontDestroyOnClear => false;
         public virtual bool DestroyOnClose => destroyOnClose;
@@ -40,8 +41,7 @@ namespace RicKit.UI.Panels
             Canvas = GetComponent<Canvas>();
             CanvasGroup = GetComponent<CanvasGroup>();
             CanvasRect = (RectTransform)transform;
-            Canvas.overrideSorting = true;
-            Canvas.sortingLayerName = "UI";
+            ApplySorting();
             stableAlpha = CanvasGroup.alpha;
         }
 
@@ -164,6 +164,15 @@ namespace RicKit.UI.Panels
             activationDepth++;
             try { gameObject.SetActive(active); }
             finally { activationDepth--; }
+            // Unity drops overrideSorting set on an inactive nested Canvas. Reapply it once active.
+            if (active && this) ApplySorting();
+        }
+
+        private void ApplySorting()
+        {
+            Canvas.overrideSorting = true;
+            Canvas.sortingLayerName = sortingLayer;
+            Canvas.sortingOrder = OrderInLayer;
         }
 
         private void CheckTransition(CancellationTokenSource source, CancellationToken token)
@@ -182,16 +191,15 @@ namespace RicKit.UI.Panels
             UIManager.EnsureMainThread();
             EnsureComponents();
             OrderInLayer = order;
-            Canvas.overrideSorting = true;
-            Canvas.sortingOrder = order;
+            ApplySorting();
         }
 
         public virtual void SetSortingLayer(string layer)
         {
             UIManager.EnsureMainThread();
             EnsureComponents();
-            Canvas.overrideSorting = true;
-            Canvas.sortingLayerName = layer;
+            sortingLayer = layer;
+            ApplySorting();
         }
     }
 }

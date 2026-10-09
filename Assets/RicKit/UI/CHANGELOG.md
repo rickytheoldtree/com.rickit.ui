@@ -1,4 +1,8 @@
 # Changelog
+## [4.0.1] - 2026-10-09
+- Fix panel sorting being ignored after show: Unity drops `Canvas.overrideSorting` set while a nested Canvas is inactive, so the stored sorting layer and order are now reapplied after activation.
+- `SortingLayerName` now returns the stored sorting layer instead of reading the Canvas.
+- Add a PlayMode regression test for sorting after show.
 ## [4.0.0] - 2026-10-09
 ### Migration from 3.x
 - Navigation requests now run in order; void APIs enqueue work. Do not await another queued manager operation inside lifecycle callbacks or animation overrides.

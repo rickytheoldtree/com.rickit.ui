@@ -348,6 +348,31 @@ namespace RicKit.UI.Tests
         });
 
         [UnityTest]
+        public IEnumerator ShownPanelsKeepOverrideSortingAfterInactiveSetup() => Run(async () =>
+        {
+            await manager.PreloadUIAsync<ThirdPanel>("Blocker");
+            await manager.ShowUIAsync<PrimaryPanel>();
+            await manager.ShowUIAsync<SecondaryPanel>();
+            await manager.ShowUIAsync<ThirdPanel>();
+            await manager.BackAsync();
+            await manager.HideCurrentAsync();
+            await manager.ShowUIAsync<SecondaryPanel>();
+            foreach (var panel in new AbstractUIPanel[] { manager.GetUI<PrimaryPanel>(), manager.GetUI<SecondaryPanel>() })
+            {
+                var canvas = panel.GetComponent<Canvas>();
+                Assert.IsTrue(canvas.overrideSorting, panel.name);
+                Assert.AreEqual("UI", canvas.sortingLayerName, panel.name);
+                Assert.AreEqual(panel.OrderInLayer, canvas.sortingOrder, panel.name);
+            }
+            Assert.Greater(manager.GetUI<SecondaryPanel>().OrderInLayer, manager.GetUI<PrimaryPanel>().OrderInLayer);
+            await manager.ShowUIUnmanagableAsync<ThirdPanel>(layer: "Blocker", sortingOrder: 900);
+            var unmanaged = manager.GetUI<ThirdPanel>().GetComponent<Canvas>();
+            Assert.IsTrue(unmanaged.overrideSorting);
+            Assert.AreEqual("Blocker", unmanaged.sortingLayerName);
+            Assert.AreEqual(900, unmanaged.sortingOrder);
+        });
+
+        [UnityTest]
         public IEnumerator InputLockAlsoPreventsKeyboardSubmitOnSelectedButton() => Run(async () =>
         {
             await manager.ShowUIAsync<PrimaryPanel>();
