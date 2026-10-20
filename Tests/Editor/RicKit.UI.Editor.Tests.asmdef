@@ -1,0 +1,9 @@
+{
+    "name": "RicKit.UI.Editor.Tests",
+    "references": ["RicKit.UI", "RicKit.UI.Editor", "RicKit.UI.Editor.Tests.Fixtures", "UniTask", "UnityEngine.UI"],
+    "optionalUnityReferences": ["TestAssemblies"],
+    "includePlatforms": ["Editor"],
+    "excludePlatforms": [],
+    "autoReferenced": false,
+    "defineConstraints": ["UNITY_INCLUDE_TESTS"]
+}

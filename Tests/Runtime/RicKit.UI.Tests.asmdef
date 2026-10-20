@@ -1,0 +1,9 @@
+{
+    "name": "RicKit.UI.Tests",
+    "references": ["RicKit.UI", "UniTask"],
+    "optionalUnityReferences": ["TestAssemblies"],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "autoReferenced": false,
+    "defineConstraints": ["UNITY_INCLUDE_TESTS"]
+}
