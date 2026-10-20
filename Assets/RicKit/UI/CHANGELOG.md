@@ -1,4 +1,12 @@
 # Changelog
+## [4.1.0] - 2026-10-20
+### Added
+- `PanelValidator` (menu `RicKit/UI/Validate Panels`, batch entry `RicKit.UI.Editor.PanelValidator.RunBatch`): checks script file names, that each panel has a prefab named after its class with the panel on the root, missing scripts, empty or missing references (required `PopUIPanel` fields are errors), and that `assetPathPrefix + class name` resolves to that prefab through Resources, Addressables (when installed) or rules registered with `PanelValidator.RegisterResolver`. The batch entry writes a text report and exits with 1 when there are errors.
+- `Documentation~/AI.md`: conventions, lifecycle details and validation steps for AI agents writing panels.
+- Panel editor: Validate button with per-panel results, search field and Refresh button.
+### Changed
+- The panel editor's create folder is stored in `ProjectSettings/RicKitUIEditorSettings.asset` instead of EditorPrefs (an existing EditorPrefs folder is migrated once). New panels go to `Assets/` when no folder is set, and the panel list no longer requires the folder to exist.
+- The panel editor matches prefabs by exact panel type on the root, preferring the prefab named after the class, so a subclass's prefab is no longer shown for its base class.
 ## [4.0.2] - 2026-10-09
 **Restores the 3.7.1 behavior. 4.0.0 and 4.0.1 are withdrawn**: they changed navigation semantics (serialized queue, popping the stack after the exit animation, no replay when re-showing, onInit before Awake) and broke existing projects. Every path that worked in 3.7.1 behaves the same in 4.0.2; the changes below only touch failure paths or are opt-in.
 ### Fixes

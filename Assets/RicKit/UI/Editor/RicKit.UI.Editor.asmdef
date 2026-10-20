@@ -2,7 +2,9 @@
     "name": "RicKit.UI.Editor",
     "rootNamespace": "",
     "references": [
-        "GUID:e6dff8b487708dd4ba70463e1ecc7971"
+        "GUID:e6dff8b487708dd4ba70463e1ecc7971",
+        "Unity.Addressables",
+        "Unity.Addressables.Editor"
     ],
     "includePlatforms": [
         "Editor"
@@ -13,6 +15,12 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.addressables",
+            "expression": "",
+            "define": "RICKIT_ADDRESSABLES"
+        }
+    ],
     "noEngineReferences": false
 }

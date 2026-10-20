@@ -86,6 +86,21 @@ RicKit UI manages UI through `IUIManager`, supports both synchronous and asynchr
 
 ---
 
+## Panel Editor and Validation
+
+- `RicKit => UI => Open Editor` lists every non-abstract panel script in the project: **Open** its prefab, or **Create** `{ClassName}.prefab` when it has none.
+    - Create folder: drop a folder onto the top of the window. It is stored in `ProjectSettings/RicKitUIEditorSettings.asset` so it is shared through version control; when unset or missing, panels are created in `Assets/`.
+    - **Validate** shows the check results next to each panel.
+- `RicKit => UI => Validate Panels` checks that panel scripts, prefabs and runtime load paths line up and logs the results to the Console. From the command line (exit code 0 = no errors, 1 = errors):
+    ```
+    Unity -batchmode -nographics -projectPath . -executeMethod RicKit.UI.Editor.PanelValidator.RunBatch -logFile -
+    ```
+    - Checks: script file name vs class name, a prefab that exists and is named after the class, the root object, missing scripts, empty references (`cgBlocker` and `panel` on PopUIPanel are errors), and whether the load path resolves to that prefab through Resources, Addressables or a custom rule.
+    - With a custom loader, register a path rule with `PanelValidator.RegisterResolver`.
+- **Letting an AI write UI**: `Documentation~/AI.md` in the package covers panel conventions, lifecycle details and how to validate. Add a line to your project's CLAUDE.md / AGENTS.md telling the AI to read `Library/PackageCache/com.rickit.ui@*/Documentation~/AI.md` first.
+
+---
+
 ## Custom Resource Loading (IPanelLoader Example)
 
 Supports custom UI resource loading by implementing `IPanelLoader` and passing it during initialization:

@@ -86,6 +86,21 @@ RicKit UI 通过 `IUIManager` 统一管理 UI，支持同步和异步写法，�
 
 ---
 
+## 界面编辑器与面板检查
+
+- `RicKit => UI => Open Editor`：列出项目里所有非抽象的面板脚本。已有预制体的点 **Open**，没有的点 **Create** 生成 `{类名}.prefab`
+    - 新建目录：把文件夹拖进窗口顶部来设置，存在 `ProjectSettings/RicKitUIEditorSettings.asset` 里，跟着项目提交；没设置或目录已不存在时生成到 `Assets/`
+    - **Validate** 按钮会在每个面板旁边显示检查结果
+- `RicKit => UI => Validate Panels`：检查面板脚本、预制体和运行时加载路径是否对得上，结果输出到 Console。命令行用法（退出码 0 = 没有错误，1 = 有错误）：
+    ```
+    Unity -batchmode -nographics -projectPath . -executeMethod RicKit.UI.Editor.PanelValidator.RunBatch -logFile -
+    ```
+    - 检查项：脚本文件名和类名、预制体是否存在且同名、根节点、Missing Script、空引用（PopUIPanel 的 `cgBlocker`、`panel` 算错误）、加载路径能否通过 Resources / Addressables / 自定义规则解析到这个预制体
+    - 用自定义加载器时，用 `PanelValidator.RegisterResolver` 注册路径解析规则
+- **交给 AI 写 UI**：包里的 `Documentation~/AI.md` 写了面板约定、生命周期要点和验证方法。在项目的 CLAUDE.md / AGENTS.md 里加一行，让 AI 先读 `Library/PackageCache/com.rickit.ui@*/Documentation~/AI.md`
+
+---
+
 ## 资源加载自定义（IPanelLoader 示例）
 
 支持自定义 UI 资源加载方式，只需实现 `IPanelLoader` 接口并在初始化时传入：
